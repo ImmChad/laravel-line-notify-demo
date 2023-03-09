@@ -39,8 +39,8 @@ class UserController extends Controller
             return view('Frontend.view-user')->with(["dataUser" => $inforUser]);
         }else{
             $authUrl = $this->lineService->getLoginBaseUrl();
-    
-            return view('Frontend.login-user', compact('authUrl'));
+            $authGmail = 'authorized/google';
+            return view('Frontend.login-user', compact(['authUrl','authGmail']));
         }
     }
 
@@ -97,7 +97,7 @@ class UserController extends Controller
             date_default_timezone_get();
             $data2 = DB::table('tb_connect_line')->insertGetId([
                 'userId' => $profile['userId'],
-                'status' => "has login",
+                'status' => "connect to line",
                 'date' => date('Y/m/d H:i:s')
             ]);
             

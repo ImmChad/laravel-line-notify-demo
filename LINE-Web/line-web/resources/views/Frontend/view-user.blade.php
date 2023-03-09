@@ -184,7 +184,7 @@
 
         .exit-pop-up-ads {
             position: absolute;
-            border-radius: 20px;
+            /* border-radius: 20px; */
             border: 4px solid var(--green);
             background-color: rgba(183, 249, 192, 0.658);
             width: 60px;
@@ -248,7 +248,7 @@
                 <div class="section-user">
                     <table class="content-user">
                         <tr class="field-user">
-                            <td class="label-field-user">Service Logo</td>
+                            <td class="label-field-user">Display name</td>
                             <td class="value-field-user">
                                 <div class="part-preview-avatar">
                                     @if(isset($dataUser['pictureUrl']))

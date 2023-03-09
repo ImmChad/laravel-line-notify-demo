@@ -8,45 +8,29 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> --}}
+
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.css'>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.16/css/dataTables.bootstrap4.css'>
+
+
     <style>
 
         :root
         {
             --green:#00c34d;
             --blue:#007bff;
+        }
 
-        }
-    
-        @import 'root.css';
-        .btn-submit-notify
-        {
-            background-color: var(--blue) ;
-        }
-        .table-register tbody tr:nth-child(odd)
-        {
-            background-color: var(--blue) !important ;
-            color: white;
-        }
-    
-        h1.text-title-manager {
-            text-align: center;
-        }
-    
-        .container-table-register,.container-form-send-notify {
-            display: flex;
-            justify-content: center;
-        }
-    
-        .table-register,.form-send-notify {
-            width: 90%;
-        }
-        #ipt_text_notify
-        {
-            min-width: 600px;
-            min-height: 180px;
-            resize: none;
-        }
+        .navigation-view-admin:hover {
+            background: var(--blue);
+        } 
+        .navigation-view-admin:hover .direct-navigation {
+            color: white !important;
+        } 
+        /* .direct-navigation:hover {
+            color: blue;
+        } */
     
     
         /* CSS TOAASST */
@@ -58,7 +42,7 @@
             background: #fff;
             padding: 20px 35px 20px 25px;
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-            border: 4px solid var(--blue);
+            border: 4px solid var(--green);
             overflow: hidden;
             transform: translateX(calc(100% + 30px));
             transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.35);
@@ -150,52 +134,20 @@
         }
     </style>
     
-    <title>View Admin</title>
+    <title>Navigation Admin View</title>
 </head>
 <body>
-    <div class="title-manager">
-      <h1 class="text-title-manager" >Table Register Notification Line</h1>
+    <div style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+        <div class="navigation-view-admin" style="width: 400px; height: 50px; display:flex; justify-content: center; align-items: center; border: 1px solid black; margin: 1rem 0rem;">
+            <a class="direct-navigation" href="/admin/line-user-view" style="font-size: 20px; cursor: pointer; text-decoration: none; color: black; font-weight: 700; width: 100%; height: 100%; display: flex; justify-content: center; align-items:center;">Table Register Announce Line</a>
+        </div>
+        <div class="navigation-view-admin" style="width: 400px; height: 50px; display:flex; justify-content: center; align-items: center; border: 1px solid black; margin: 1rem 0rem;">
+            <a class="direct-navigation" href="/admin/send-message-view" style="font-size: 20px; cursor: pointer; text-decoration: none; color: black; font-weight: 700; width: 100%; height: 100%; display: flex; justify-content: center; align-items:center;">Send Announce</a>
+        </div>
+        <div class="navigation-view-admin" style="width: 400px; height: 50px; display:flex; justify-content: center; align-items: center; border: 1px solid black; margin: 1rem 0rem;">
+            <a class="direct-navigation" href="/admin/announce-view" style="font-size: 20px; cursor: pointer; text-decoration: none; color: black; font-weight: 700; width: 100%; height: 100%; display: flex; justify-content: center; align-items:center;">List Announce View</a>
+        </div>
     </div>
-    <div class="container-table-register">
-        <table class="table table-striped table-register">
-            <thead>
-                <tr>
-                    <th scope="col">User name</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">State</th>
-                    <th scope="col">Time Connected</th>
-                    {{-- <th scope="col">Choose receiver</th> --}}
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($dataList as $subDataList )
-                <tr>
-                    <td>{{ $subDataList->displayName }}</td>
-                    <td>{{ $subDataList->email }}</td>
-                    <td>{{ $subDataList->status }}</td>
-                    <td>{{ $subDataList->date }}</td>
-                    {{-- <td>
-                        <div class="form-check">
-                            <input data-id-user="{{ $subDataList->userId }}" class="form-check-input cbx-receiver-choose" type="checkbox" value="" id="flexCheckChecked" >
-                        </div>
-                    </td> --}}
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-
-    {{-- <div class="container-form-send-notify">
-        <form  id="form-send-notify">
-            <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Content Notify</label>
-                <textarea type="texr" class="form-control" class="ipt_notify" id="ipt_text_notify"></textarea>
-            </div>
-            <button id="submit-btn" type="submit" class="btn btn-primary btn-submit-notify">Submit</button>
-            <button class="btn btn-primary btn-select-all-notify">Select All</button>
-        </form>
-    </div> --}}
-    
     
     <div class="toast">
         <div class="toast-content">
@@ -216,10 +168,11 @@
 
 
 
+    {{-- <script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js'></script> --}}
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    {{-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script> --}}
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js'></script>
     <script>
 
@@ -248,42 +201,6 @@
                 clearTimeout(time);
             });
         }
-
-        // window.addEventListener('load',event=>{
-        //     loadEventFormSubmit();
-        // })
-        // function loadEventFormSubmit()
-        // {
-            
-        // }
-        // var elForm = document.querySelector('#form-send-notify')
-        // if(elForm)
-        // {
-        //     elForm.addEventListener('submit',event=>{
-        //         event.preventDefault()
-        //         $('#ipt_text_notify')
-        //         var ipt_text_notify = elForm.querySelector('#ipt_text_notify')
-        //         var elChoosed_receivers = document.querySelectorAll('.cbx-receiver-choose')
-        //         elChoosed_receivers = Array.from(elChoosed_receivers)            
-        //         var dataReceivers = elChoosed_receivers.map(choosed_receiver=>{
-        //             if(choosed_receiver.checked)
-        //             return choosed_receiver.getAttribute('data-id-user')
-        //         })
-        //         dataReceivers = dataReceivers.filter(dataReceiver=>dataReceiver)
-        //         requestSendNotification(ipt_text_notify.value.trim(),dataReceivers)
-        //     })
-        // }
-
-        // var btnSelectAll = elForm.querySelector('.btn-select-all-notify');
-        // btnSelectAll.addEventListener('click',event=>{
-        //     event.preventDefault();
-        //     var elChoosed_receivers = document.querySelectorAll('.cbx-receiver-choose')
-        //     elChoosed_receivers.forEach(
-        //         elChoosed_receiver=>{
-        //             elChoosed_receiver.checked=true
-        //         }
-        //     )
-        // })
 
 
         // function requestSendNotification(textNotification,dataReceivers=[])

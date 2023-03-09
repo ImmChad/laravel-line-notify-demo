@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\User\ConnectGmailController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,10 +32,23 @@ Route::get('line/login', 'UserController@redirectToLine')->name('login.line');
 Route::get('line/login/callback', [UserController::class, 'handleLineCallback'])->name('login.line.callback');
 
 
+// Login Gmail
+Route::get('authorized/google', [ConnectGmailController::class, 'redirectToGoogle']);
+// Callback Gmail
+Route::get('authorized/google/callback', [ConnectGmailController::class, 'handleGoogleCallback']);
 
 
-Route::get('/admin', [AdminController::class, 'index']);
-Route::post('/admin/send-mess', [AdminController::class, 'sendMessForListUser']);
+ // admin 
+Route::group(array('prefix' => '/admin'), function() {
+    Route::get('/', [AdminController::class, 'optionNavigationView']);
+    Route::get('/line-user-view', [AdminController::class, 'index']);
+    Route::get('/send-message-view', [AdminController::class, 'sendMessView']);
+    Route::get('/announce-view', [AdminController::class, 'announceView']);
+
+    Route::post('/send-mess', [AdminController::class, 'sendMessForListUser']);
+    Route::post('/get-announce-content', [AdminController::class, 'getAnnounceContent']);
+});
+
 
 
 
