@@ -141,6 +141,10 @@
         }
     </style>
     
+
+
+    <!-- Set Icon Logo -->
+    <link rel="icon" href="{{ asset('Image/logo.png') }}">
     <title>Send Massage Admin View</title>
 </head>
 <body>
@@ -163,13 +167,11 @@
                                 </span>
                             </div>
 
-                            <div style="display: flex;justify-content: space-between">
+                            {{-- <div style="display: flex;justify-content: space-between">
                                 <div class="card-title col-sm-12" style="font-size: 20px; font-weight: 700; padding: 0px; border: 2px solid black; border-radius: 0.2rem;">
-                                    {{-- <span class="announce_title" style="margin: 0rem 1rem;">Announce 1</span> --}}
-                                    {{-- <input type="text" class="form-control" id="announce_title" placeholder="Enter announce title ... "> --}}
                                     <input type="text" id="created_at" class="form-control"  placeholder="Enter date time to set timer, It can null ..." aria-label="Username" aria-describedby="basic-addon1" >
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <div style="display: flex;justify-content: space-between">
                                 <div class="card-title col-sm-12" style="font-size: 20px; font-weight: 700; padding: 0px;  border-radius: 0.2rem;">
@@ -238,89 +240,128 @@
 
 
         $('.btn-send-mess').click(() => {
-            const now = new Date();
-            // const VNTime = now.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' });
-            const formattedDate = new Intl.DateTimeFormat('en-US', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false,
-            }).format(new Date(now));
+
+            // const now = new Date();
+            // const formattedDate = new Intl.DateTimeFormat('en-US', {
+            //     year: 'numeric',
+            //     month: '2-digit',
+            //     day: '2-digit',
+            //     hour: '2-digit',
+            //     minute: '2-digit',
+            //     second: '2-digit',
+            //     hour12: false,
+            // }).format(new Date(now));
     
-            const [month, day, year, ...time] = formattedDate.split(/[\s/:]/);
-            const newFormattedDate = `${year}/${month}/${day} ${time.join(":")}`;
-            let newDate = newFormattedDate.replace(',', "");
+            // const [month, day, year, ...time] = formattedDate.split(/[\s/:]/);
+            // const newFormattedDate = `${year}/${month}/${day} ${time.join(":")}`;
+            // let newDate = newFormattedDate.replace(',', "");
             
-            let created_at = $('#created_at').val();
+            // let created_at = $('#created_at').val();
+            // let announce_content = $('#announce_content').val();
+            // let announce_title = $('#announce_title').val();
+
+            // let [dateChoose, timeChoose] = newDate.split(' ');
+            // let [hourChoose, minuteChoose, secondChoose] = timeChoose.split(':');
+            // let newHour = hourChoose.replace('24', '00');
+
+            // newDate = dateChoose + " " + newHour + ":" + minuteChoose + ":" + secondChoose;
+
+            // let diffInSeconds = "";
+
+            // if(created_at.trim() != "") {
+            //     const date1 = new Date(newDate);
+            //     const date2 = new Date(created_at);
+            //     diffInSeconds = (date2 - date1) / 1000;
+            //     console.log(newDate);
+            //     console.log(created_at);
+            //     console.log(diffInSeconds);
+            // } else {
+            //     diffInSeconds = 0;
+            // }
+            // if(diffInSeconds < 0) {
+            //     displayToast("Cann't enter this date in the past to set the timer!")
+            // } else {
+            //     if(announce_title.trim() != "" || announce_content.trim() != "") {
+            //         // console.log(created_at + " " + announce_title + " " + announce_content);
+
+            //         console.log(diffInSeconds);
+
+
+            //         var form  = new FormData();
+            //         form.append('message', announce_content);
+            //         form.append('title', announce_title);
+            //         form.append('delayTime', diffInSeconds);
+            //         form.append('created_at', created_at);
+
+    
+            //         $.ajaxSetup({
+            //             headers: {
+            //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            //             }
+            //         });
+            //         $.ajax({
+            //             url: '{{URL::to("/admin/send-mess")}}',
+            //             method: 'post',
+            //             data: form,
+            //             contentType: false,
+            //             processData: false,
+            //             dataType: 'json',
+            //             success: function(data) {
+            //                 console.log(data);
+            //                 displayToast('Send Success!');
+            //                 $('#created_at').val("");
+            //                 $('#announce_content').val("");
+            //                 $('#announce_title').val("");
+            //             },
+            //             error: function() {
+            //                 displayToast('Can not add data!');
+            //             }
+            //         });
+            //     } else {
+            //         displayToast("Please, Enter full!");
+            //     }
+            // }
+
+
             let announce_content = $('#announce_content').val();
             let announce_title = $('#announce_title').val();
 
-            let [dateChoose, timeChoose] = newDate.split(' ');
-            let [hourChoose, minuteChoose, secondChoose] = timeChoose.split(':');
-            let newHour = hourChoose.replace('24', '00');
-
-            newDate = dateChoose + " " + newHour + ":" + minuteChoose + ":" + secondChoose;
-
-            let diffInSeconds = "";
-
-            if(created_at.trim() != "") {
-                const date1 = new Date(newDate);
-                const date2 = new Date(created_at);
-                diffInSeconds = (date2 - date1) / 1000;
-                console.log(newDate);
-                console.log(created_at);
-                console.log(diffInSeconds);
-            } else {
-                diffInSeconds = 0;
-            }
-            if(diffInSeconds < 0) {
-                displayToast("Cann't enter this date in the past to set the timer!")
-            } else {
-                if(announce_title.trim() != "" || announce_content.trim() != "") {
+            if(announce_title.trim() != "" || announce_content.trim() != "") {
                     // console.log(created_at + " " + announce_title + " " + announce_content);
 
-                    console.log(diffInSeconds);
+
+                var form  = new FormData();
+                form.append('message', announce_content);
+                form.append('title', announce_title);
+                form.append('delayTime', "0");
+                // form.append('created_at', created_at);
 
 
-                    var form  = new FormData();
-                    form.append('message', announce_content);
-                    form.append('title', announce_title);
-                    form.append('delayTime', diffInSeconds);
-                    form.append('created_at', created_at);
-
-    
-                    $.ajaxSetup({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        }
-                    });
-                    $.ajax({
-                        url: '{{URL::to("/admin/send-mess")}}',
-                        method: 'post',
-                        data: form,
-                        contentType: false,
-                        processData: false,
-                        dataType: 'json',
-                        success: function(data) {
-                            console.log(data);
-                            displayToast('Send Success!');
-                            $('#created_at').val("");
-                            $('#announce_content').val("");
-                            $('#announce_title').val("");
-                        },
-                        error: function() {
-                            displayToast('Can not add data!');
-                        }
-                    });
-                } else {
-                    displayToast("Please, Enter full!");
-                }
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    url: '{{URL::to("/admin/send-mess")}}',
+                    method: 'post',
+                    data: form,
+                    contentType: false,
+                    processData: false,
+                    dataType: 'json',
+                    success: function(data) {
+                        console.log(data);
+                        displayToast('Send Success!');
+                        $('#announce_content').val("");
+                        $('#announce_title').val("");
+                    },
+                    error: function() {
+                        displayToast('Can not add data!');
+                    }
+                });
+            } else {
+                displayToast("Please, Enter full!");
             }
-
-
 
         });
 

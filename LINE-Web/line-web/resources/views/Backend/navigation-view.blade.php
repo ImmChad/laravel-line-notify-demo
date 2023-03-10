@@ -134,6 +134,10 @@
         }
     </style>
     
+
+
+    <!-- Set Icon Logo -->
+    <link rel="icon" href="{{ asset('Image/logo.png') }}">
     <title>Navigation Admin View</title>
 </head>
 <body>

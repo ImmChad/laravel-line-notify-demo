@@ -15,6 +15,10 @@ use Session;
 use stdClass;
 use Twilio\Rest\Client;
 use App\Mail\NotificationMail;
+use App\Notifications\NotificationMessage;
+use Illuminate\Support\Facades\Notification;
+
+// use Illuminate\Notifications\Notification;
 
 class AdminController extends Controller
 {
@@ -46,24 +50,44 @@ class AdminController extends Controller
 
         $userIds = AdminController::listConnectAll();
 
-        foreach($userIds as $subUserId) {
-            $status = DB::table('tb_connect_line')->where(['userId' =>  $subUserId->userId])->get()[0]->status;
-            if($status == "connect to line") {
-                $param = $request->message;
-                $userId = $subUserId->userId;
-                $doJob = DoSomethingJob::dispatch($param, $userId)->delay(now()->addSeconds(intval($request->delayTime)));
-                
-            } 
-            else if($status == "connect to gmail")
-            {
-                $emailTo = $subUserId->email;
+        // $user = User::find($id);
+        // $user->notify(new MyMultiChannelNotification($message, $user->line_id));
 
-                SendGmail::dispatch($emailTo, $request->message)->delay(now()->addSeconds(intval($request->delayTime)));
+    
 
+        $param = $request->message;
+        // $userId = $subUserId->userId;
+        // $emailTo = $subUserId->email;
+
+
+        DoSomethingJob::dispatch($param)->delay(now()->addSeconds(intval($request->delayTime)));
+        SendGmail::dispatch($request->message)->delay(now()->addSeconds(intval($request->delayTime)));
                 $this->SMS_sendNotification($request);
-                // Mail::to($request->email)->send(new NotificationMail($mailData));
-            }
-        }
+
+
+
+        // dump($userGmail);
+        // dd($userLine);
+
+
+        // foreach($userIds as $subUserId) {
+        //     $status = DB::table('tb_connect_line')->where(['userId' =>  $subUserId->userId])->get()[0]->status;
+        //     if($status == "connect to line") {
+        //         $param = $request->message;
+        //         $userId = $subUserId->userId;
+        //         $doJob = DoSomethingJob::dispatch($param, $userId)->delay(now()->addSeconds(intval($request->delayTime)));
+                
+        //     } 
+        //     else if($status == "connect to gmail")
+        //     {
+        //         $emailTo = $subUserId->email;
+
+        //         SendGmail::dispatch($emailTo, $request->message)->delay(now()->addSeconds(intval($request->delayTime)));
+
+        //         $this->SMS_sendNotification($request);
+        //         // Mail::to($request->email)->send(new NotificationMail($mailData));
+        //     }
+        // }
 
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         date_default_timezone_get();
@@ -184,5 +208,34 @@ class AdminController extends Controller
         );
 
         return $data;
+    }
+
+    public static function listUser($status) {
+        $data = DB::table('tb_connect_line')
+        ->where(['status' => $status])
+        ->get(
+            array(
+                'id',
+                'userId',
+                'status',
+                'date'
+                )
+        );
+
+        $newListData = new stdClass();
+        $List = [];
+        foreach($data as $subData) {
+            $displayName = DB::table('tb_user_info')->where(['userId' =>  $subData->userId])->get()[0]->displayName;
+            $email = DB::table('tb_user_info')->where(['userId' =>  $subData->userId])->get()[0]->email;
+
+            $subData->displayName = $displayName;
+            $subData->email = $email;
+
+            $List[count($List)] = $subData;
+        }
+        $newListData = $List;
+
+
+        return $newListData;
     }
 }

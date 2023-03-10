@@ -22,12 +22,10 @@ class DoSomethingJob implements ShouldQueue
      * Create a new job instance.
      */
     protected $param;
-    protected $userId;
 
-    public function __construct($param, $userId)
+    public function __construct($param)
     {
         $this->param = $param;
-        $this->userId = $userId;
     }
 
     /**
@@ -36,14 +34,17 @@ class DoSomethingJob implements ShouldQueue
     public function handle(): void
     {
 
-        $param = $this->param;
-        $userId = $this->userId;
-
-        $httpClient = new CurlHTTPClient(env('LINE_BOT_CHANNEL_TOKEN'));
-        $bot = new LINEBot($httpClient, ['channelSecret' => env('LINE_BOT_CHANNEL_SECRET')]);
-        
-        $message = new TextMessageBuilder($param);
-        $bot->pushMessage($userId, $message); 
+        $userLine = AdminController::listUser("connect to line");
+        // $userGmail = AdminController::listUser("connect to gmail");
+        foreach($userLine as $subUserLine) {
+            $param = $this->param;
+    
+            $httpClient = new CurlHTTPClient(env('LINE_BOT_CHANNEL_TOKEN'));
+            $bot = new LINEBot($httpClient, ['channelSecret' => env('LINE_BOT_CHANNEL_SECRET')]);
+            
+            $message = new TextMessageBuilder($param);
+            $bot->pushMessage($subUserLine->userId, $message); 
+        }
         
     }
 }

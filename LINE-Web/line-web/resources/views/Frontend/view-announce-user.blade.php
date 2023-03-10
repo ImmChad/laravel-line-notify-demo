@@ -151,7 +151,7 @@
 
     <!-- Set Icon Logo -->
     <link rel="icon" href="{{ asset('Image/logo.png') }}">
-    <title>View Admin</title>
+    <title>View Announce For User</title>
 </head>
 <body>
     <div style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; background: #f0f1f6">
@@ -193,8 +193,14 @@
                             <table style="background: white;" class="table table-striped">
                                 <tbody>
                                     @foreach ($dataList as $subDataList)
+
                                         <tr class="row_data_news" style="background: white; border-bottom: 1px solid #f0f1f6;">
-                                            <td style="vertical-align: middle;">{{ $subDataList->announce_title }}</td>
+
+                                            @if($subDataList->read_at == "null")
+                                                <td class="announce_name_row" style="vertical-align: middle; font-weight: 700;">{{ $subDataList->announce_title }}</td>
+                                            @else
+                                                <td class="announce_name_row" style="vertical-align: middle;">{{ $subDataList->announce_title }}</td>
+                                            @endif
             
                                             <td style="vertical-align: middle;">
                                                 {{ $subDataList->created_at }}
@@ -303,6 +309,8 @@
             item.addEventListener('click', (e) => {
                 e.preventDefault();
 
+                e.currentTarget.closest('.row_data_news').querySelector('.announce_name_row').style.fontWeight = "400";
+
                 // console.log('click');
 
                 var form  = new FormData();
@@ -313,7 +321,7 @@
                     }
                 });
                 $.ajax({
-                    url: '{{URL::to("/admin/get-announce-content")}}',
+                    url: '{{URL::to("/user/get-announce-content")}}',
                     method: 'post',
                     data: form,
                     contentType: false,
@@ -321,7 +329,6 @@
                     dataType: 'json',
                     success: function(data) {
                         console.log(data);
-
                         if(data.length == 0) {
                             $('.announce_title').text("Null");
                             $('.announce_content').text("Null");
@@ -331,6 +338,7 @@
                             $('.announce_content').text(data[0].announce_content);
                             $('.created_at').text(data[0].created_at);
                         }
+
                         // displayToast('Send Success!');
                     },
                     error: function() {

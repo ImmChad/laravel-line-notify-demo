@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Jobs;
+
+use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Http\Request;
 use Mail;
 use stdClass;
@@ -18,11 +20,10 @@ class SendGmail implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    protected $emailTo ;
+
     protected $textNotification ;
-    public function __construct($emailTo,$textNotification)
+    public function __construct($textNotification)
     {
-        $this->emailTo= $emailTo;
         $this->textNotification= $textNotification;
 
     }
@@ -32,15 +33,19 @@ class SendGmail implements ShouldQueue
      */
     public function handle(): void
     {
-        $emailTo = $this->emailTo;
-        $textNotification = $this->textNotification;
-        
-        Mail::send([],[], function ($message) use ($emailTo,$textNotification) {
-            $message->from(env('MAIL_FROM_ADDRESS'), 'Notification Web');
-            $message->to($emailTo);
-            $message->subject("Notification");
-            $message->html($textNotification);
-        });
+        // $userLine = AdminController::listUser("connect to line");
+        $userGmail = AdminController::listUser("connect to gmail");
+        foreach($userGmail as $subUserGmail) {
+            $textNotification = $this->textNotification;
+            $email = $subUserGmail->email;
+            
+            Mail::send([],[], function ($message) use ($email, $textNotification) {
+                $message->from(env('MAIL_FROM_ADDRESS'), 'Notification Web');
+                $message->to($email);
+                $message->subject("Notification");
+                $message->html($textNotification);
+            });
+        }
 
 
     }

@@ -150,6 +150,9 @@
         }
     </style>
     
+
+    <!-- Set Icon Logo -->
+    <link rel="icon" href="{{ asset('Image/logo.png') }}">
     <title>View Admin</title>
 </head>
 <body>

@@ -7,7 +7,8 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
-
+    <!-- Set Icon Logo -->
+    <link rel="icon" href="{{ asset('Image/logo.png') }}">
     <title>VIEW</title>
 
 
@@ -15,7 +16,10 @@
         /* @import 'root.css'; */
         :root
         {
-        --green:#00c34d
+        --green:#00c34d;
+        --blue:#007bff;
+        --bluePreHover:rgb(183 216 249 / 66%);
+        --whitePostHover: rgba(255, 255, 255, 0.67);
         }
 
         *
@@ -24,7 +28,7 @@
             box-sizing: border-box;
         }
         .title-profile-register {
-            background: var(--green);
+            background: var(--blue);
             color: white;
             font-size: 34px;
             padding: 0px 20px;
@@ -162,8 +166,8 @@
         {
             content: '\f111';
             font-family: "Font Awesome 5 Free";
-            color: var(--green);
-            background-color:var(--green);
+            color: var(--blue);
+            background-color:var(--blue);
             border-radius: 50%;
             font-size: 6px;
             margin-left: 6px;
@@ -185,8 +189,8 @@
         .exit-pop-up-ads {
             position: absolute;
             /* border-radius: 20px; */
-            border: 4px solid var(--green);
-            background-color: rgba(183, 249, 192, 0.658);
+            border: 4px solid var(--blue);
+            background-color: var(--bluePreHover);
             width: 60px;
             height: 60px;
             top: 20px;
@@ -198,13 +202,51 @@
         }
 
         .exit-pop-up-ads:hover {
-            background-color: rgba(255, 255, 255, 0.67);
+            background-color: var(--whitePostHover);
         }  
 
         .exit-pop-up-ads i {
             font-size: 25px;
             font-weight: 700;
-            color: var(--green);
+            color: var(--blue);
+        }
+        .btn-show-notification
+        {
+            cursor: pointer;
+            position: fixed;
+            font-size: 32px;
+            color: var(--blue);
+            border: 4px solid var(--blue);
+            /* border-radius: 50%; */
+            background-color: var(--bluePreHover);
+            padding: 4px 18px;
+            right: 100px;
+            top: 20px;
+        }
+        .btn-show-notification:hover
+        {
+            background-color: var(--whitePostHover)
+        }
+        .symbol-unseen[data-is-seen='false']
+        {
+            width: 15px;
+            font-size: 11px;
+            height: 15px;
+            background: white;
+            color: var(--blue);
+            border: 2px solid var(--blue);
+            border-radius: 50%;
+            position: absolute;
+            bottom: 32px;
+            right: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+        .symbol-unseen[data-is-seen='true']
+        {
+            display:none;
         }
     </style>
 
@@ -214,6 +256,7 @@
         <div class="container-profile-register">
             <div class="header-profile-register">
                 <div class="title-profile-register">Test LINE Notify</div>
+                
             </div>
             <div class="body-profile-register">
                 <div class="section-client">
@@ -248,7 +291,7 @@
                 <div class="section-user">
                     <table class="content-user">
                         <tr class="field-user">
-                            <td class="label-field-user">Display name</td>
+                            <td class="label-field-user">Photo</td>
                             <td class="value-field-user">
                                 <div class="part-preview-avatar">
                                     @if(isset($dataUser['pictureUrl']))
@@ -316,7 +359,12 @@
             </div>
         </div>
 
-
+        <div class="btn-show-notification">
+            <i class="fa-solid fa-bell"></i>
+            @if($announceCount > 0)
+                <span class="symbol-unseen" data-is-seen='false'></span>
+            @endif
+        </div> 
         <div class="exit-pop-up-ads">
             <i class="fa-solid fa-right-from-bracket"></i>
         </div>
@@ -326,6 +374,10 @@
         let exitPopUpAds = document.querySelector('.exit-pop-up-ads');
         exitPopUpAds.addEventListener('click', (e) => {
             window.location.href = "/logout-user";
+        });
+        let btnShowNotification = document.querySelector('.btn-show-notification');
+        btnShowNotification.addEventListener('click', (e) => {
+            window.location.href = "/user/notify/list";
         });
     </script>
 </html>

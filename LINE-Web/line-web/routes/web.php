@@ -22,15 +22,14 @@ Route::get('/login', [UserController::class, 'index']);
 Route::get('/user', [UserController::class, 'viewUser']);
 Route::get('/logout-user', [UserController::class, 'logoutUser']);
 
+Route::get('/user/notify/list', [UserController::class, 'viewAllAnnounceUser']);
+Route::post('/user/get-announce-content', [UserController::class, 'getAnnounceContentRead']);
 
-// Route::get('/login/line', [UserController::class, 'redirectToLine']);
-// Route::get('/login/line/callback', [UserController::class, 'handleGoogleCallback']);
 
 // Login Line
-Route::get('line/login', 'UserController@redirectToLine')->name('login.line');
+Route::get('line/login', [UserController::class, 'redirectToLine'])->name('login.line');
 // Callback url
 Route::get('line/login/callback', [UserController::class, 'handleLineCallback'])->name('login.line.callback');
-
 
 // Login Gmail
 Route::get('authorized/google', [ConnectGmailController::class, 'redirectToGoogle']);
