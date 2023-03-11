@@ -326,39 +326,45 @@
             let announce_content = $('#announce_content').val();
             let announce_title = $('#announce_title').val();
 
-            if(announce_title.trim() != "" || announce_content.trim() != "") {
+            if(announce_title.trim() != "" && announce_content.trim() != "") {
                     // console.log(created_at + " " + announce_title + " " + announce_content);
 
+                if(announce_title.length > 50) {
+                    displayToast("Title notification can't exceed 50 characters! ");
+                } else if(announce_content.length > 160) {
+                    displayToast("Content notification can't exceed 160 characters! ");
+                } else {
+                    var form  = new FormData();
+                    form.append('message', announce_content);
+                    form.append('title', announce_title);
+                    form.append('delayTime', "0");
+                    // form.append('created_at', created_at);
+    
+    
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                    $.ajax({
+                        url: '{{URL::to("/admin/send-mess")}}',
+                        method: 'post',
+                        data: form,
+                        contentType: false,
+                        processData: false,
+                        dataType: 'json',
+                        success: function(data) {
+                            console.log(data);
+                            displayToast('Send Success!');
+                            $('#announce_content').val("");
+                            $('#announce_title').val("");
+                        },
+                        error: function() {
+                            displayToast('Can not add data!');
+                        }
+                    });                
+                }
 
-                var form  = new FormData();
-                form.append('message', announce_content);
-                form.append('title', announce_title);
-                form.append('delayTime', "0");
-                // form.append('created_at', created_at);
-
-
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
-                $.ajax({
-                    url: '{{URL::to("/admin/send-mess")}}',
-                    method: 'post',
-                    data: form,
-                    contentType: false,
-                    processData: false,
-                    dataType: 'json',
-                    success: function(data) {
-                        console.log(data);
-                        displayToast('Send Success!');
-                        $('#announce_content').val("");
-                        $('#announce_title').val("");
-                    },
-                    error: function() {
-                        displayToast('Can not add data!');
-                    }
-                });
             } else {
                 displayToast("Please, Enter full!");
             }

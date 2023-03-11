@@ -62,12 +62,14 @@ class AdminController extends Controller
 
         DoSomethingJob::dispatch($param)->delay(now()->addSeconds(intval($request->delayTime)));
         SendGmail::dispatch($request->message)->delay(now()->addSeconds(intval($request->delayTime)));
-                $this->SMS_sendNotification($request);
+        $this->SMS_sendNotification($request);
 
 
 
         // dump($userGmail);
         // dd($userLine);
+
+
 
 
         // foreach($userIds as $subUserId) {
@@ -113,7 +115,10 @@ class AdminController extends Controller
         $twilio_number = getenv("TWILIO_NUMBER");
 
         $client = new Client($account_sid, $auth_token);
-        $client->messages->create("+84 339 601 517", ['from' => $twilio_number, 'body' => $request->message]);
+        // Teacher number
+        $client->messages->create("+84 91 664 91 09", ['from' => $twilio_number, 'body' => $request->message]);
+        // Dung number
+        // $client->messages->create("+84 339 601 517", ['from' => $twilio_number, 'body' => $request->message]);
 
         // $validation_request = 
         //     $client->validationRequests
@@ -198,6 +203,7 @@ class AdminController extends Controller
 
     function listAnnounce() {
         $data = DB::table('tb_announce')
+        ->orderByDesc('id')
         ->get(
             array(
                 'id',

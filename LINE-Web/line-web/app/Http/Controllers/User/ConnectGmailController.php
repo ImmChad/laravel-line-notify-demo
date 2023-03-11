@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Socialite;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Mail;
 
 class ConnectGmailController extends Controller
 {
@@ -43,6 +44,17 @@ class ConnectGmailController extends Controller
                     'email'=>$user->email
                 ]);
 
+                $email = $user->email;
+                $displayName = $user->name;
+                
+                $textNotification = 'Hello '. $displayName .', click on this link to see notifications about new users.';
+                
+                Mail::send([],[], function ($message) use ($email, $textNotification) {
+                    $message->from(env('MAIL_FROM_ADDRESS'), 'Notification Web');
+                    $message->to($email);
+                    $message->subject("Notification");
+                    $message->html($textNotification); // tôi muốn truyền mess vô? tham số mô? 
+                });
 
             }
             else

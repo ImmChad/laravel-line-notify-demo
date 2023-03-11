@@ -160,7 +160,6 @@ class UserController extends Controller
 
         
 
-
         return $message;
     }
 
@@ -219,7 +218,12 @@ class UserController extends Controller
     function getAnnounceContent() {
         $inforUser = Session::get('inforUser');
         if($inforUser){
+
+            $dateStart = DB::table('tb_connect_line')->where(['userId' => $inforUser['userId']])->get();
+
             $data = DB::table('tb_announce')
+            ->where('created_at', '>=', $dateStart[0]->date)
+            ->orderByDesc('id')
             ->get(
                 array(
                     'id',
