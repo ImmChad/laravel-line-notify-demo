@@ -17,6 +17,7 @@ use Twilio\Rest\Client;
 use App\Mail\NotificationMail;
 use App\Notifications\NotificationMessage;
 use Illuminate\Support\Facades\Notification;
+use Mail;
 
 // use Illuminate\Notifications\Notification;
 
@@ -48,49 +49,14 @@ class AdminController extends Controller
 
     function sendMessForListUser(Request $request) {
 
-        $userIds = AdminController::listConnectAll();
-
-        // $user = User::find($id);
-        // $user->notify(new MyMultiChannelNotification($message, $user->line_id));
-
-    
+        $userIds = AdminController::listConnectAll();    
 
         $param = $request->message;
-        // $userId = $subUserId->userId;
-        // $emailTo = $subUserId->email;
 
 
         DoSomethingJob::dispatch($param)->delay(now()->addSeconds(intval($request->delayTime)));
-        SendGmail::dispatch($request->message)->delay(now()->addSeconds(intval($request->delayTime)));
+        SendGmail::dispatch($request->message,$request->title)->delay(now()->addSeconds(intval($request->delayTime)));
         $this->SMS_sendNotification($request);
-
-
-
-        // dump($userGmail);
-        // dd($userLine);
-
-
-
-
-        // foreach($userIds as $subUserId) {
-        //     $status = DB::table('tb_connect_line')->where(['userId' =>  $subUserId->userId])->get()[0]->status;
-        //     if($status == "connect to line") {
-        //         $param = $request->message;
-        //         $userId = $subUserId->userId;
-        //         $doJob = DoSomethingJob::dispatch($param, $userId)->delay(now()->addSeconds(intval($request->delayTime)));
-                
-        //     } 
-        //     else if($status == "connect to gmail")
-        //     {
-        //         $emailTo = $subUserId->email;
-
-        //         SendGmail::dispatch($emailTo, $request->message)->delay(now()->addSeconds(intval($request->delayTime)));
-
-        //         $this->SMS_sendNotification($request);
-        //         // Mail::to($request->email)->send(new NotificationMail($mailData));
-        //     }
-        // }
-
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         date_default_timezone_get();
         $data2 = DB::table('tb_announce')->insertGetId([
