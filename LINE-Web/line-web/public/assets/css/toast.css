@@ -1,0 +1,153 @@
+:root
+{
+    --green:#00c34d;
+    --blue:#007bff;
+}
+
+.navigation-view-admin:hover {
+    background: var(--blue);
+} 
+.navigation-view-admin:hover .direct-navigation {
+    color: white !important;
+} 
+/* .direct-navigation:hover {
+    color: blue;
+} */
+
+
+/* CSS TOAASST */
+.toast {
+    position: fixed;
+    top: 55px;
+    right: 15px;
+    /* border-radius: 20px; */
+    background: #fff;
+    padding: 20px 35px 20px 25px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    border: 4px solid var(--blue);
+    overflow: hidden;
+    transform: translateX(calc(100% + 30px));
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.35);
+    z-index: 1035;
+    display: none;
+}
+
+.toast.active {
+    transform: translateX(0%);
+    opacity: 1 !important;
+    display: block;
+}
+
+.toast .toast-content {
+    display: flex;
+    align-items: center;
+}
+
+.toast-content .check {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 35px;
+    width: 35px;
+    background-color: #0073ff;
+    color: #fff;
+    font-size: 20px;
+    border-radius: 50%;
+}
+
+.toast-content .message {
+    display: flex;
+    flex-direction: column;
+    margin: 0 20px;
+}
+
+.message .text {
+    font-size: 20px;
+    font-weight: 400;
+    ;
+    color: #666666;
+}
+
+.message .text.text-1 {
+    font-weight: 600;
+    color: #333;
+}
+
+.toast .close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    padding: 5px;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.toast .close:hover {
+    opacity: 1;
+}
+
+.toast .progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background: #ddd;
+}
+
+.toast .progress:before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #0088ff;
+}
+
+.progress.active:before {
+    animation: progress 5s linear forwards;
+}
+
+@keyframes progress {
+    100% {
+        right: 100%;
+    }
+}
+
+
+.scroll-card::-webkit-scrollbar {
+    display: none;
+}
+
+
+/* Form popup */
+.parent-form-popup {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: #637ac68f;
+    z-index: 100;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+.parent-form-popup .row {
+
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.form-popup  {
+    width: 400px;
+}
+
+.parent-form-popup.active {
+    display: flex;
+}

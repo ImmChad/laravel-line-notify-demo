@@ -176,7 +176,7 @@
         </div> --}}
     
         <div class="row" style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 1rem; background: #f0f1f6"">
-            <div class="col-sm-5" style="padding-left: 0px; padding-right: 0px;">
+            <div class="col-sm-10" style="padding-left: 0px; padding-right: 0px;">
                 <div class="col-lg-12 grid-margin stretch-card">
                     <div class="card scroll-card" style=" height: calc(100vh - 2rem); overflow-y: scroll;">
                         <div class="card-body">
@@ -194,55 +194,34 @@
                                 <tbody>
                                     @foreach ($dataList as $subDataList)
 
-                                        <tr class="row_data_news" style="background: white; border-bottom: 1px solid #f0f1f6;">
-
+                                        <tr data-link="/user/notification/{{$subDataList->id}}/detail" class="row_data_news" style="background: white; border-bottom: 1px solid #f0f1f6;">
                                             @if($subDataList->read_at == "null")
-                                                <td class="announce_name_row" style="vertical-align: middle; font-weight: 700;">{{ $subDataList->announce_title }}</td>
+                                                <td style="vertical-align: middle; font-weight: 700;">
+                                                    {{ date('d/m/Y',strtotime($subDataList->created_at)) }}
+                                                </td>
+                                                <td class="announce_name_row" style="vertical-align: middle; font-weight: 700;">
+                                                    <a href="/user/notification/{{$subDataList->id}}/detail" style="color: black;text-decoration: none;">{{ $subDataList->announce_title }}</a>
+                                                </td>
+                                                <td style="vertical-align: middle; font-weight: 700;">
+                                                    {{ $subDataList->name_type }}
+                                                </td>
                                             @else
-                                                <td class="announce_name_row" style="vertical-align: middle;">{{ $subDataList->announce_title }}</td>
+                                                <td class="announce_name_row" style="vertical-align: middle;">
+                                                {{ date('d/m/Y',strtotime($subDataList->created_at)) }}
+                                                </td>
+                                                <td class="announce_name_row" style="vertical-align: middle;">
+                                                <a href="/user/notification/{{$subDataList->id}}/detail" style="color: black;text-decoration: none;">{{ $subDataList->announce_title }}</a>
+                                                </td>
+                                                <td class="announce_name_row" style="vertical-align: middle;">
+                                                {{ $subDataList->name_type }}
+                                                </td>                                                
                                             @endif
-            
-                                            <td style="vertical-align: middle;">
-                                                {{ $subDataList->created_at }}
-                                            </td>
-            
-                                            <td>
-                                                <button id="submit-btn " announce_id="{{ $subDataList->id }}" type="submit" class="btn btn-primary btn-submit-notify btn-get-content">View</button>
-                                            </td>
                                         </tr>
                                     @endforeach
                                     
                                 </tbody>
             
                             </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-7" style="padding-left: 0px; padding-right: 0px;">
-                <div class="col-lg-12 grid-margin stretch-card">
-                    <div class="card scroll-card" style=" height: calc(100vh - 2rem); overflow-y: scroll;">
-                        <div class="card-body">
-                            <div style="display: flex;justify-content: space-between">
-                                <div class="card-title col-sm-12" style="font-size: 20px; font-weight: 700; padding-left: 0px; border: 2px solid black; border-radius: 0.2rem;">
-                                    <span class="announce_title" style="margin: 0rem 1rem;"></span>
-                                </div>
-                            </div>
-                            <nav aria-label="breadcrumb" style="border-radius: 0px">
-                                <ul class="breadcrumb" style="border-radius: 0px; margin-bottom: 0px; background: none;">
-                                    <li class="breadcrumb-item active" aria-current="page">
-                                        <span class="created_at"><?php
-                                            $today = date('d/m/Y');
-                                            echo $today;
-                                            ?></span>
-                                    </li>
-                                </ul>
-                            </nav>
-                            <div class="card-title col-sm-12 scroll-card" style="font-size: 20px; font-weight: 700; border: 2px solid black; border-radius: 0.2rem; height: 550px; overflow-y: scroll;">
-                                <span class="announce_content" style="padding: 1rem;">
-                                    
-                                </span>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -304,49 +283,49 @@
             });
         }
 
-        let btnGetContent = document.querySelectorAll('.btn-get-content');
-        btnGetContent.forEach((item) => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
+        // let btnGetContent = document.querySelectorAll('.btn-get-content');
+        // btnGetContent.forEach((item) => {
+        //     item.addEventListener('click', (e) => {
+        //         e.preventDefault();
 
-                e.currentTarget.closest('.row_data_news').querySelector('.announce_name_row').style.fontWeight = "400";
+        //         e.currentTarget.closest('.row_data_news').querySelector('.announce_name_row').style.fontWeight = "400";
 
-                // console.log('click');
+        //         // console.log('click');
 
-                var form  = new FormData();
-                form.append('id', e.currentTarget.getAttribute('announce_id'));
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
-                $.ajax({
-                    url: '{{URL::to("/user/get-announce-content")}}',
-                    method: 'post',
-                    data: form,
-                    contentType: false,
-                    processData: false,
-                    dataType: 'json',
-                    success: function(data) {
-                        console.log(data);
-                        if(data.length == 0) {
-                            $('.announce_title').text("Null");
-                            $('.announce_content').text("Null");
-                            $('.created_at').text("Null");
-                        } else {
-                            $('.announce_title').text(data[0].announce_title);
-                            $('.announce_content').text(data[0].announce_content);
-                            $('.created_at').text(data[0].created_at);
-                        }
+        //         var form  = new FormData();
+        //         form.append('id', e.currentTarget.getAttribute('announce_id'));
+        //         $.ajaxSetup({
+        //             headers: {
+        //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //             }
+        //         });
+        //         $.ajax({
+        //             url: '{{URL::to("/user/get-announce-content")}}',
+        //             method: 'post',
+        //             data: form,
+        //             contentType: false,
+        //             processData: false,
+        //             dataType: 'json',
+        //             success: function(data) {
+        //                 console.log(data);
+        //                 if(data.length == 0) {
+        //                     $('.announce_title').text("Null");
+        //                     $('.announce_content').text("Null");
+        //                     $('.created_at').text("Null");
+        //                 } else {
+        //                     $('.announce_title').text(data[0].announce_title);
+        //                     $('.announce_content').text(data[0].announce_content);
+        //                     $('.created_at').text(data[0].created_at);
+        //                 }
 
-                        // displayToast('Send Success!');
-                    },
-                    error: function() {
-                        displayToast('Can not add data!');
-                    }
-                });
-            });
-        });
+        //                 // displayToast('Send Success!');
+        //             },
+        //             error: function() {
+        //                 displayToast('Can not add data!');
+        //             }
+        //         });
+        //     });
+        // });
 
         // function requestSendNotification(textNotification,dataReceivers=[])
         // {
