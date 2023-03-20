@@ -52,6 +52,9 @@
 
 <body>
     <style>
+        .page-wrapper .page-header .header-wrapper {
+            padding: 0.2rem 1rem;
+        }
         .nav-menus path, .nav-menus a{
             color:black;
         }
@@ -103,126 +106,8 @@
                     <ul class="horizontal-menu">
                         <li class="mega-menu outside">
                             <a class="nav-link" href="#"><span>Girl Meee</span></a>
-                            {{-- <div class="mega-menu-container nav-submenu menu-to-be-close header-mega">
-                                <div class="container-fluid">
-                                    <div class="row">
-                                        <div class="col mega-box">
-                                            <div class="mobile-title d-none">
-                                                <h5>Mega menu</h5>
-                                                <i data-feather="x"></i>
-                                            </div>
-                                            <div class="link-section icon">
-                                                <div>
-                                                    <h6>Error Page</h6>
-                                                </div>
-                                                <ul>
-                                                    <li><a href="#">Error page 400</a></li>
-                                                    <li><a href="#">Error page 401</a></li>
-                                                    <li><a href="#">Error page 403</a></li>
-                                                    <li><a href="#">Error page 404</a></li>
-                                                    <li><a href="#">Error page 500</a></li>
-                                                    <li><a href="#">Error page 503</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="col mega-box">
-                                            <div class="link-section doted">
-                                                <div>
-                                                    <h6> Authentication</h6>
-                                                </div>
-                                                <ul>
-                                                    <li><a href="#">Login Simple</a></li>
-                                                    <li><a href="#">Login Bg Image</a></li>
-                                                    <li><a href="#">Login Bg video</a></li>
-                                                    <li><a href="#">Register Simple</a></li>
-                                                    <li><a href="#">Register Bg Image</a></li>
-                                                    <li><a href="#">Register Bg video</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="col mega-box">
-                                            <div class="link-section dashed-links">
-                                                <div>
-                                                    <h6>Usefull Pages</h6>
-                                                </div>
-                                                <ul>
-                                                    <li><a href="#">Search Website </a></li>
-                                                    <li><a href="#">Unlock User</a></li>
-                                                    <li><a href="#">Forget Password</a></li>
-                                                    <li><a href="#">Reset Password</a></li>
-                                                    <li><a href="#">Maintenance</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="col mega-box">
-                                            <div class="link-section">
-                                                <div>
-                                                    <h6>Email templates</h6>
-                                                </div>
-                                                <ul>
-                                                    <li><a href="#">Basic Email</a></li>
-                                                    <li><a href="#">Basic With Header</a></li>
-                                                    <li><a href="#">Ecomerce Template</a></li>
-                                                    <li><a href="#">Email Template 2</a></li>
-                                                    <li><a href="#">Ecommerce Email</a></li>
-                                                    <li><a href="#">Order Success</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="col mega-box">
-                                            <div class="link-section">
-                                                <div>
-                                                    <h6>Coming Soon</h6>
-                                                </div>
-                                                <ul class="svg-icon">
-                                                    <li><a href="#"> <i data-feather="file"> </i>Coming-soon</a>
-                                                    </li>
-                                                    <li><a href="#"> <i data-feather="film">
-                                                            </i>Coming-video</a></li>
-                                                    <li><a href="#"><i data-feather="image">
-                                                            </i>Coming-Image</a></li>
-                                                </ul>
-                                                <div>
-                                                    <h6>Other Soon</h6>
-                                                </div>
-                                                <ul class="svg-icon">
-                                                    <li><a class="txt-primary" href="#"> <i
-                                                                data-feather="cast"></i>Landing Page</a></li>
-                                                    <li><a class="txt-secondary" href="#"> <i
-                                                                data-feather="airplay"></i>Sample Page</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> --}}
+                           
                         </li>
-                        {{-- <li class="level-menu outside">
-                            <a class="nav-link" href="#!"><i data-feather="inbox"></i><span>Level
-                                    Menu</span></a>
-                            <ul class="header-level-menu menu-to-be-close">
-                                <li><a href="#" data-original-title="" title=""> <i
-                                            data-feather="git-pull-request"></i><span>File manager </span></a></li>
-                                <li>
-                                    <a href="#!" data-original-title="" title=""> <i
-                                            data-feather="users"></i><span>Users</span></a>
-                                    <ul class="header-level-sub-menu">
-                                        <li><a href="#" data-original-title="" title=""> <i
-                                                    data-feather="user"></i><span>User Profile</span></a></li>
-                                        <li><a href="#" data-original-title="" title=""> <i
-                                                    data-feather="user-minus"></i><span>User Edit</span></a></li>
-                                        <li><a href="#" data-original-title="" title=""> <i
-                                                    data-feather="user-check"></i><span>Users Cards</span></a></li>
-                                    </ul>
-                                </li>
-                                <li><a href="#" data-original-title="" title=""> <i
-                                            data-feather="airplay"></i><span>Kanban Board</span></a></li>
-                                <li><a href="#" data-original-title="" title=""> <i
-                                            data-feather="heart"></i><span>Bookmark</span></a></li>
-                                <li><a href="#" data-original-title="" title=""> <i
-                                            data-feather="zap"></i><span>Social App </span></a></li>
-                            </ul>
-                        </li> --}}
                     </ul>
                 </div>
                 <div class="nav-right col-8 pull-right right-header p-0">
@@ -234,7 +119,7 @@
                         </li>
                         <li class="language-nav">
                             <a class="sidebar-link sidebar-title link-nav link-iframe-notification" target="iframe-notification-user" href="/user/setting-notification">
-                                <i data-feather="list"> </i>
+                                <i data-feather="settings"> </i>
                             </a>
                         </li>
                         
@@ -244,16 +129,6 @@
                             </a>
                         </li>
                         
-                        <li class="profile-nav onhover-dropdown p-0 me-0">
-                            <div class="media profile-media">
-                                <img class="b-r-10" style="width: 40px; height: 40px; object-fit: cover;" src="{{ asset('assets/images/dashboard/boy_chu_tich.png') }}"
-                                    alt="">
-                                <div class="media-body">
-                                    <span>{{$dataUser['displayName']}}</span>
-                                    <p class="mb-0 font-roboto">User <i class="middle fa fa-angle-down"></i></p>
-                                </div>
-                            </div>
-                        </li>
                     </ul>
                 </div>
                 <script class="result-template" type="text/x-handlebars-template">
