@@ -17,7 +17,7 @@
                     <h5>Notification</h5>
                     <div class="card-header-right">
                         <ul class="list-unstyled card-option">
-                        <li class="return-notification-list"><i data-feather="corner-down-left" style="cursor: pointer;"></i></li>                            
+                        <li class="return-notification-list"><i data-feather="corner-down-left" style="cursor: pointer;"></i></li>
                         </ul>
                     </div>
                 </div>
@@ -54,8 +54,8 @@
 
             $('.parent-form-popup').css("display", "flex");
             $('.parent-form-popup .title-popup').text("Do you want to schedule to send it? If not, it will send now.");
-            
-            
+
+
             let newHtml = `
             <input class="form-control digits" id="example-datetime-local-input" type="datetime-local"  data-bs-original-title="" title="">
             <button class="btn btn-info send-notification" notification_type="2" style="margin-top: 1rem;">SEND IT</button>
@@ -153,11 +153,7 @@
                         processData: false,
                         dataType: 'json',
                         success: function(data) {
-                            console.log(data);
-                            displayToast('Send Success!');
-                            $('#created_at').val("");
-                            $('#announce_content').val("");
-                            $('#announce_title').val("");
+                            window.location.href = "/admin/send-notification-view/2?messToast=Send Success!";
                         },
                         error: function() {
                             displayToast('Can not add data!');
@@ -170,7 +166,7 @@
 
         }
 
-        
+
 
     </script>
     {{-- display calendar --}}
@@ -195,11 +191,11 @@
                         <div class="card-body">
                             <div style="display: flex;justify-content: space-between">
                                 <div class="card-title col-sm-12" style="font-size: 20px; font-weight: 700; padding: 0px; border: 2px solid black; border-radius: 0.2rem;">
-                                    
+
                                     <input type="text" class="form-control" id="announce_title" placeholder="Enter announce title ... ">
                                 </div>
                             </div>
-                            
+
                             <div class="card-title col-sm-12 scroll-card" style="font-size: 20px; font-weight: 700; padding: 0px; border: 2px solid black; border-radius: 0.2rem; height: 350px; overflow-y: scroll;">
                                 <span class="announce_content" style="padding: 0rem;">
                                     <textarea class="form-control input-ads scroll-card" id="announce_content" style="width: 100%; height: 100%; resize: none;" placeholder="Enter announce content ..."></textarea>
@@ -220,7 +216,7 @@
 
     </div> --}}
 
-        
+
 
     {{-- display calendar --}}
     {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>

@@ -12,24 +12,37 @@
             width: 30px;
             height: 30px;
         }
+        .btn-new-notification {
+            border: 2px solid var(--theme-deafult);
+            color: var(--theme-deafult);
+        }
+        .btn-new-notification:hover {
+            background: var(--theme-deafult);
+            color: white;
+        }
+        th, td {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .btn-secondary {
+            background-color: #6c757d !important;
+            border-color: #6c757d  !important;
+        }
     </style>
-    {{-- <div class="title-manager">
-    <h1 class="text-title-manager" >Table Register Notification Line</h1>
-    </div> --}}
 
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header" style="padding: 10px 40px;">
                 <div class="media" style="display: flex; padding: 0px;">
                     <form class="form-inline" style=" border: 1px solid #f4f4f4;  padding: 0px 20px; border-radius: 5px;">
-                        <div class="form-group mb-0" style="justify-content: center; align-items: center;">                                      
+                        <div class="form-group mb-0" style="justify-content: center; align-items: center;">
                             <i id="btn-submit-search-notification" class="fa fa-search" style="padding-right: 10px" ></i>
                             <input id="ipt-search-notification" class="form-control-plaintext" type="text" value="{{isset($_GET['txt-search-notification'])?$_GET['txt-search-notification']:''}}" placeholder="Search title notification">
                         </div>
                     </form>
                     <div class="media-body text-end" style="display: flex; justify-content: flex-end;">
                         <div class="btn btn-outline-primary ms-2 btn-new-notification" style="display: flex; justify-content: center; align-items: center; width: 300px;">
-                            <i data-feather="send"></i>New Notification  
+                            <i data-feather="send"></i>New Notification
                         </div>
                     </div>
                 </div>
@@ -50,24 +63,38 @@
                             <th scope="col">Type</th>
                             <th scope="col">Title</th>
                             <th scope="col">Time</th>
+                            <th scope="col">View</th>
                             <th scope="col">Management</th>
                         </tr>
                     </thead>
                     <tbody>
                     @foreach ($dataList as $subDataList )
-                        <tr class="link-detail-announce" data-id-notification='{{$subDataList->id}}'>
-                            <td >{{$subDataList->name_type}}</td>
-                            <td>{{$subDataList->announce_title}}</td>
-                            <td>{{$subDataList->created_at}}</td>
-                            <td>
-                            <div class="btn-management">Show</div>
-                            <div class="btn-management">Update</div>
-                            <div class="btn-management">Delete</div>
-                            <div class="btn-management">Show User readed</div></td>
-
-                        </tr>
-                    @endforeach 
-
+                        @if($subDataList->deleted_at == null)
+                            <tr class="link-detail-announce" data-id-notification='{{$subDataList->id}}' style="">
+                                <td >{{$subDataList->name_type}}</td>
+                                <td>{{$subDataList->announce_title}}</td>
+                                <td>{{$subDataList->created_at}}</td>
+                                <td>{{$subDataList->read_user}}/{{$subDataList->total_user}}</td>
+                                <td>
+                                    <button class="btn btn-success btn-update-notification" data-id-notification='{{$subDataList->id}}' {{$subDataList->is_sent==1?'disabled':''}} >Update</button>
+                                    <button class="btn btn-danger btn-delete-notification" data-id-notification='{{$subDataList->id}}'>Delete</button>
+                                    <button class="btn btn-primary btn-show-details-notification" data-id-notification='{{$subDataList->id}}'>Show</button>
+                                </td>
+                            </tr>
+                        @else
+                            <tr class="link-detail-announce" data-id-notification='{{$subDataList->id}}' >
+                                <td style="color: #b6afaf !important;">{{$subDataList->name_type}}</td>
+                                <td style="color: #b6afaf !important;">{{$subDataList->announce_title}}</td>
+                                <td style="color: #b6afaf !important;">{{$subDataList->created_at}}</td>
+                                <td style="color: #b6afaf !important;">{{$subDataList->read_user}}/{{$subDataList->total_user}}</td>
+                                <td>
+                                    <button class="btn btn-secondary btn-update-notification" disabled style="background-color: #6c757d !important; border-color: #6c757d  !important;">Update</button>
+                                    <button class="btn btn-secondary btn-delete-notification" disabled style="background-color: #6c757d !important; border-color: #6c757d  !important;">Delete</button>
+                                    <button class="btn btn-secondary btn-show-details-notification" data-id-notification='{{$subDataList->id}}' disabled style="background-color: #6c757d !important; border-color: #6c757d  !important;">Show</button>
+                                </td>
+                            </tr>
+                        @endif
+                    @endforeach
                     </tbody>
                 </table>
                 <div class="control-page">
@@ -76,15 +103,31 @@
             </div>
         </div>
     </div>
-    
+
 
     <script>
-        var tr_announces = document.querySelectorAll('.link-detail-announce');
-        tr_announces.forEach(tr_announce=>{
-            tr_announce.addEventListener('click',event=>{
+        let btnShowDetailsNotification = document.querySelectorAll('.btn-show-details-notification');
+        btnShowDetailsNotification.forEach(item => {
+            item.addEventListener('click', event => {
                 location.href =`/admin/notification/${event.currentTarget.getAttribute('data-id-notification')}/detail`
             })
-        })
+        });
+
+        let btnDeleteNotification = document.querySelectorAll('.btn-delete-notification');
+        btnDeleteNotification.forEach((item) => {
+            item.addEventListener('click', event => {
+                location.href = `/admin/notification/delete/${event.currentTarget.getAttribute('data-id-notification')}`
+            })
+        });
+
+        let btnUpdateNotification = document.querySelectorAll('.btn-update-notification');
+        btnUpdateNotification.forEach((item) => {
+            item.addEventListener('click', event => {
+                location.href = `/admin/update-notification-view/${event.currentTarget.getAttribute('data-id-notification')}`
+            })
+        });
+
+
         let btnNewNotification = document.querySelector('.btn-new-notification');
         btnNewNotification.addEventListener('click', (e)=> {
             $('.parent-form-popup').css("display", "flex");
@@ -103,7 +146,7 @@
                     let notification_type = e.currentTarget.getAttribute('notification_type');
                     window.location.href = "/admin/send-notification-view/" + notification_type;
                 });
-            
+
             })
 
             $('.parent-form-popup .close-popup').click(function() {
@@ -115,55 +158,19 @@
 
     </script>
 
-<script defer>
-        
+    <script defer>
         var btn_search= document.querySelector("#btn-submit-search-notification");
         btn_search.addEventListener('click',(event)=>{
             var  ipt_search = document.querySelector("#ipt-search-notification");
-            var url = new URL(location.href); 
+            var url = new URL(location.href);
             url.searchParams.set('txt-search-notification', ipt_search.value);
             location.href = url.toString();
-            // console.log(url.toString());
-            // var form  = new FormData();
-                // form.append('txt-search-notification', ipt_search.value);
-                // $.ajaxSetup({
-                //     headers: {
-                //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                //     }
-                // });
-                // $.ajax({
-                //     url: '{{URL::to("/admin/search-notification")}}',
-                //     method: 'post',
-                //     data: form,
-                //     contentType: false,
-                //     processData: false,
-                //     dataType: 'json',
-                //     success: function(data) {
-                //         document.querySelector('#table-list-notification tbody').innerHTML=
-                //             `
-                //             ${                
-                //             data.map(subDataList=>{
-                //             return `
-                //             <tr class="link-detail-announce" data-id-notification='${subDataList.id}'>
-                //             <td>${subDataList.name_type}</td>
-                //             <td>${subDataList.announce_title}</td>
-                //             <td>${subDataList.created_at}</td>
-                //         </tr>
-                //             `
-                //         }).join('')}
-                //             `
-                //         console.log(data);
-                //     },
-                //     error: function() {
-                //     }
-                // });
         })
-
-                
     </script>
+
 @endsection
 
- 
+
 
 
 
