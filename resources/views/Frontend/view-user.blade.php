@@ -337,14 +337,11 @@
                                             <li>Name <span class="font-primary first_name_0">{{ $dataUser['displayName'] }}</span></li>
                                             <li>User ID<span class="font-primary mobile_num_0">{{ $dataUser['userId'] }}</span>
                                             </li>
-                                            @if(isset($dataUser['email']))
-                                            <li>Email <span class="font-primary email_add_0">{{ $dataUser['email'] }}
-                                                </span></li>
-                                            @elseif(isset($dataUser['phone_number']))
-                                            <li>Phone Number <span class="font-primary email_add_0">{{ $dataUser['phone_number'] }}
-                                                </span></li>
-                                            @endif
-
+                                            <li>Address Notification
+                                                <span class="font-primary email_add_0">
+                                                    {{ $dataUser['address'] }}
+                                                </span>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>

@@ -212,7 +212,8 @@ class NotificationController extends Controller
                 'id',
                 'user_id',
                 'notification_channel_id',
-                'created_at'
+                'created_at',
+                'address'
                 )
         );
 
@@ -220,10 +221,10 @@ class NotificationController extends Controller
         $List = [];
         foreach($data as $subData) {
             $displayName = DB::table('notification_user_info')->where(['id' =>  $subData->user_id])->get()[0]->displayName;
-            $email = DB::table('notification_user_info')->where(['id' =>  $subData->user_id])->get()[0]->email;
+            // $email = DB::table('notification_user_info')->where(['id' =>  $subData->user_id])->get()[0]->email;
 
             $subData->displayName = $displayName;
-            $subData->email = $email;
+            // $subData->email = $email;
 
             $List[count($List)] = $subData;
         }
@@ -248,10 +249,8 @@ class NotificationController extends Controller
         $List = [];
         foreach($data as $subData) {
             $displayName = DB::table('notification_user_info')->where(['id' =>  $subData->user_id])->get()[0]->displayName;
-            $email = DB::table('notification_user_info')->where(['id' =>  $subData->user_id])->get()[0]->email;
-
             $subData->displayName = $displayName;
-            $subData->email = $email;
+            // $subData->email = $email;
 
             $List[count($List)] = $subData;
         }
@@ -285,7 +284,8 @@ class NotificationController extends Controller
                 'id',
                 'user_id',
                 'notification_channel_id',
-                'created_at'
+                'created_at',
+                'address'
                 )
         );
 
@@ -295,7 +295,6 @@ class NotificationController extends Controller
             $dataTmpUser = DB::table('notification_user_info')->where(['id' =>  $subData->user_id])->first();
 
             $subData->displayName = $dataTmpUser->displayName;
-            $subData->email = $dataTmpUser->email;
 
             $List[count($List)] = $subData;
         }

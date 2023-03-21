@@ -28,7 +28,7 @@
                     <thead>
                         <tr>
                             <th scope="col">Username</th>
-                            <th scope="col">Email</th>
+                            <th scope="col">Address</th>
                             <th scope="col">Time Connected</th>
                         </tr>
                     </thead>
@@ -36,7 +36,7 @@
                     @foreach ($dataList as $subDataList )
                         <tr data-id-register='{{$subDataList->id}}'>
                             <td>{{ $subDataList->displayName }}</td>
-                            <td>{{ $subDataList->email }}</td>
+                            <td>{{ $subDataList->address }}</td>
                             <td>{{ $subDataList->created_at }}</td>
                         </tr>
                     @endforeach 

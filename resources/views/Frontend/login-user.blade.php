@@ -100,12 +100,12 @@
                                             <div class="mb-3">
                                                 <label class="col-form-label" for="exampleInputEmail1">SMS Number</label>
                                                 <input required class="form-control" id="sms_number" type="text"
-                                                    name="sms_number" placeholder="+84123456789">
+                                                maxlength="15" minlength="10"    name="sms_number" placeholder="Format: +84123456789">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="exampleInputName">Password</label>
                                                 <input required class="form-control" id="password" type="password"
-                                                    name="password" placeholder="Password">
+                                                maxlength="18" minlength="8"  name="password" placeholder="Password">
                                             </div>
                                             <a href="/signup-user" class="link-other-option">Sign Up NOW</a>
                                             <div class="text-sm-end">
