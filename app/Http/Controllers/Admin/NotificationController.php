@@ -162,7 +162,6 @@ class NotificationController extends Controller
     function sendMessView() {
         return view('Backend.view-send-mess');
     }
-
     function index() {
 
         $dataList = NotificationController::listConnectLine();
@@ -178,13 +177,13 @@ class NotificationController extends Controller
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         date_default_timezone_get();
         $is_scheduled = $request->delayTime>0;
-        $is_sent = false;
+        $is_sent = !$is_scheduled;
         $scheduled_at = $is_scheduled?now()->addSeconds(intval($request->delayTime)):null;
         $new_notification_id = DB::table('notification')->insertGetId([
             'type'=>$request->type_notification,
             'announce_title' => $request->title,
             'announce_content' => $request->message,
-            'is_sent'=>true,
+            'is_sent'=>$is_sent,
             'is_scheduled'=>$is_scheduled,
             'created_at' => date('Y/m/d H:i:s'),
             'scheduled_at'=>$scheduled_at
@@ -396,10 +395,13 @@ class NotificationController extends Controller
                 foreach ($count_person as $key_2 => $each_person) {
                     $check_read = DB::table('notification_read')
                         ->where('user_id', $each_person->user_id)
+                        ->where('notification_id', $notification->id)
                         ->get();
+                        // dump($each_person->user_id,$check_read);
                     if(count($check_read) > 0)
                         $count_read += 1;
                 }
+
                 $matched_notifications[$key]->read_user = $count_read;
                 $matched_notifications[$key]->total_user = count($count_person);
 
@@ -413,6 +415,7 @@ class NotificationController extends Controller
                 foreach ($count_person as $key_2 => $each_person) {
                     $check_read = DB::table('notification_read')
                         ->where('user_id', $each_person->user_id)
+                        ->where('notification_id', $notification->id)
                         ->get();
                     if(count($check_read) > 0)
                         $count_read += 1;

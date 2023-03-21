@@ -154,29 +154,9 @@
     <title>View Announce For User</title>
 </head>
 <body>
-    <div style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; background: #f0f1f6">
-        {{-- <div class="page-header">
-            <h3 class="page-title">
-                Quản Lý Sản Phẩm
-                <span class="page-title-icon bg-gradient-primary text-white me-2">
-                    <i class="fa fa-certificate" aria-hidden="true" style="color: black;"></i>
-                </span> 
-            </h3>
-            <nav aria-label="breadcrumb">
-                <ul class="breadcrumb">
-                    <li class="breadcrumb-item active" aria-current="page">
-                        <i class="mdi mdi-timetable"></i>
-                        <span>php
-                        $today = date('d/m/Y');
-                        echo $today;
-                        ></span>
-                    </li>
-                </ul>
-            </nav>
-        </div> --}}
-    
-        <div class="row" style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 1rem; background: #f0f1f6"">
-            <div class="col-sm-10" style="padding-left: 0px; padding-right: 0px;">
+    <div style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; background: #f0f1f6">    
+        <div class="row" style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 1rem 0px; background: #f0f1f6"">
+            <div class="col-sm-12" style="padding-left: 0px; padding-right: 0px;">
                 <div class="col-lg-12 grid-margin stretch-card">
                     <div class="card scroll-card" style=" height: calc(100vh - 2rem); overflow-y: scroll;">
                         <div class="card-body">
@@ -190,21 +170,15 @@
                             <nav aria-label="breadcrumb" style="border-radius: 0px">
                                 <ul class="breadcrumb" style="border-radius: 0px; margin-bottom: 0px; background: none;">
                                     <li class="breadcrumb-item active" aria-current="page">
-                                        <span class="created_at"><?php
-                                            $today = date('d/m/Y');
-                                            echo $today;
-                                            ?></span>
+                                        <span class="created_at">
+                                            {{$notification->created_at}}
+                                        </span>
                                     </li>
                                 </ul>
                             </nav>
-                            <div class="card-title col-sm-12" style="font-size: 20px; font-weight: 700; padding-left: 0px; border: 2px solid black; border-radius: 0.2rem;">
-                                    <span class="announce_title" style="margin: 0rem 1rem;">
-                                    {{$notification->announce_title}}
-                                    </span>
-                                </div>
                             <div class="card-title col-sm-12 scroll-card" style="font-size: 20px; {{$notification->type!=3?'font-weight: 700;':''}} border: 2px solid black; border-radius: 0.2rem; height: 550px; overflow-y: scroll;">
-                                <span class="announce_content" style="padding: 1rem;">
-                                {!! $notification->announce_content !!}
+                                <span class="announce_content" style="padding:  1rem 0rem;">
+                                {{$notification->announce_title}} - {!! $notification->announce_content !!}
                                 </span>
                             </div>
                         </div>
@@ -267,93 +241,6 @@
                 clearTimeout(time);
             });
         }
-
-        // let btnGetContent = document.querySelectorAll('.btn-get-content');
-        // btnGetContent.forEach((item) => {
-        //     item.addEventListener('click', (e) => {
-        //         e.preventDefault();
-
-        //         e.currentTarget.closest('.row_data_news').querySelector('.announce_name_row').style.fontWeight = "400";
-
-        //         // console.log('click');
-
-        //         var form  = new FormData();
-        //         form.append('id', e.currentTarget.getAttribute('announce_id'));
-        //         $.ajaxSetup({
-        //             headers: {
-        //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        //             }
-        //         });
-        //         $.ajax({
-        //             url: '{{URL::to("/user/get-announce-content")}}',
-        //             method: 'post',
-        //             data: form,
-        //             contentType: false,
-        //             processData: false,
-        //             dataType: 'json',
-        //             success: function(data) {
-        //                 console.log(data);
-        //                 if(data.length == 0) {
-        //                     $('.announce_title').text("Null");
-        //                     $('.announce_content').text("Null");
-        //                     $('.created_at').text("Null");
-        //                 } else {
-        //                     $('.announce_title').text(data[0].announce_title);
-        //                     $('.announce_content').text(data[0].announce_content);
-        //                     $('.created_at').text(data[0].created_at);
-        //                 }
-
-        //                 // displayToast('Send Success!');
-        //             },
-        //             error: function() {
-        //                 displayToast('Can not add data!');
-        //             }
-        //         });
-        //     });
-        // });
-
-        // function requestSendNotification(textNotification,dataReceivers=[])
-        // {
-        //     if(textNotification.length<=0)
-        //     {
-        //         displayToast('Please Enter input content notify')
-        //         // alert('Please Enter input content notify')
-        //     }
-        //     else if (dataReceivers.length<=0)
-        //     {
-        //         displayToast('Please Select receiver')
-        //         // alert('Please Select receiver')
-        //     }
-        //     else
-        //     {
-        //         var form  = new FormData();
-        //         form.append('message', textNotification);
-        //         form.append('listUserId', JSON.stringify(dataReceivers));  
-                
-        //         $.ajaxSetup({
-        //             headers: {
-        //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        //             }
-        //         });
-        //         $.ajax({
-        //             url: '{{URL::to("/admin/send-mess")}}',
-        //             method: 'post',
-        //             data: form,
-        //             contentType: false,
-        //             processData: false,
-        //             dataType: 'json',
-        //             success: function(data) {
-        //                 document.querySelector('#ipt_text_notify').value = "";
-        //                 displayToast('Send Success!');
-        //             },
-        //             error: function() {
-        //                 displayToast('Can not add data!');
-        //             }
-        //         });
-        //         console.log(textNotification,dataReceivers);
-        //     }
-            
-        // }
     </script>
 </body>
 

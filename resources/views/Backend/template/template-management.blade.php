@@ -55,10 +55,13 @@
                             <ul class="files">
                                 @foreach ($dataTemplate as $subDataTemplate)
                                     <li class="file-box template-box" template_id="{{ $subDataTemplate->id }}">
-                                        <div class="file-top" id="test-display-image">
-                                            <i class="fa fa-file-text-o txt-info"></i><i
-                                                class="fa fa-ellipsis-v f-14 ellips"></i>
+                                        <div class="file-top div2"  id="test-display-image" style="overflow:hidden">
+                                            <!-- <i class="fa fa-file-text-o txt-info"></i>
+                                            <i class="fa fa-ellipsis-v f-14 ellips"></i> -->
+                                            <div class="div1">
+                                                {!! $subDataTemplate->template_content !!}
                                             </div>
+                                        </div>
                                         <div class="file-bottom">
                                             <h6>{{ $subDataTemplate->template_name }}</h6>
                                             <p class="mb-1">0.90 KB</p>
@@ -91,6 +94,17 @@
 
 
 
+    <script>
+        let div2 = document.querySelectorAll(".div2");
+        div2.forEach(div_item=>{
+            let div1 = div_item.querySelector(".div1");
+            const scale = Math.min(div_item.offsetWidth / div1.offsetWidth, div_item.offsetHeight / div1.offsetHeight);
+            div1.style.transform = `scale(${scale})`;
+        })
+        
+        // div1.style.transformOrigin = "0 0";
+
+    </script>
 
     <script>
         let btnAddTemplate = document.querySelector('.btn-add-template');

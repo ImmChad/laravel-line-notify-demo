@@ -98,7 +98,7 @@
                                             <!-- <h6 class="text-muted mt-4 or"> Connect with</h6> -->
                                             <!-- <div class="form-icon"><i class="icofont icofont-envelope-open"></i></div> -->
                                             <div class="mb-3">
-                                                <label class="col-form-label" for="exampleInputEmail1">SMS Number</label>
+                                                <label class="col-form-label" for="exampleInputEmail1">Phone Number</label>
                                                 <input required class="form-control" id="sms_number" type="text"
                                                 maxlength="15" minlength="10"    name="sms_number" placeholder="Format: +84123456789">
                                             </div>

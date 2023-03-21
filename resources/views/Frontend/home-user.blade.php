@@ -48,7 +48,9 @@
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/responsive.css') }}">
     @yield('style')
+</head>
 
+<body>
     <style>
         .page-wrapper .page-header .header-wrapper {
             padding: 0.2rem 1rem;
@@ -61,17 +63,23 @@
         } */
         .nav-menus a.active path, .nav-menus a.active{
             color:var(--theme-deafult)!important;
-
+        
         }
-        .nav-menus a.marked path
+        .nav-menus a.marked
         {
-            color:red!important
+            position: relative;
+        }
+        .nav-menus a.marked::after
+        {
+            position: absolute;
+            content: "";
+            width: 10px;
+            height: 10px;
+            background: var(--theme-deafult);
+            border-radius: 50%;
+            right: 0;
         }
     </style>
-</head>
-
-<body>
-
     <!-- tap on top starts-->
     <div class="tap-top"><i data-feather="chevrons-up"></i></div>
     <!-- tap on tap ends-->
@@ -99,21 +107,22 @@
                     <div class="logo-wrapper"><a href="#"><img class="img-fluid" style="width: 40px; height: 40px; object-fit: cover;"
                                 src="{{ asset('Image/logo.png') }}" alt="" ></a>
                     </div>
-
-                    <div class="toggle-sidebar">
-                        <i class="status_toggle middle sidebar-toggle" data-feather="align-center"></i>
-                    </div>
                 </div>
                 <div class="left-header col horizontal-wrapper ps-0">
                     <ul class="horizontal-menu">
                         <li class="mega-menu outside">
                             <a class="nav-link" href="#"><span>Girl Meee</span></a>
-
+                           
                         </li>
                     </ul>
                 </div>
                 <div class="nav-right col-8 pull-right right-header p-0">
                     <ul class="nav-menus">
+                        <li class="language-nav">
+                            <a style="" class="sidebar-link sidebar-title link-nav link-iframe-notification active" target="iframe-notification-user" href="/user/view-user">
+                                <i data-feather="home"> </i>
+                            </a>
+                        </li>
                          <li class="language-nav">
                             <a style="" class="sidebar-link sidebar-title link-nav link-iframe-notification {{$announceCount > 0?'marked':''}}" target="iframe-notification-user" href="/user/notify/list">
                                 <i data-feather="bell"> </i>
@@ -124,17 +133,17 @@
                                 <i data-feather="settings"> </i>
                             </a>
                         </li>
-
+                        
                         <li>
                             <a href="/logout-user">
                                 <i data-feather="log-in"> </i>
                             </a>
                         </li>
-
+                        
                     </ul>
                 </div>
                 <script class="result-template" type="text/x-handlebars-template">
-                    <div class="ProfileCard u-cf">
+                    <div class="ProfileCard u-cf">                        
                     <div class="ProfileCard-avatar"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-airplay m-0"><path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path><polygon points="12 15 17 21 7 21 12 15"></polygon></svg></div>
                     <div class="ProfileCard-details">
                     <div class="ProfileCard-realName">@{{name}}</div>
@@ -155,19 +164,19 @@
                             <div class="">
                                 <div class="row">
                                     <iframe
-                                        style="
+                                        style="    
                                         height: 480px;
                                         border-radius: 20px;
                                         box-shadow: 0 0 21px 0 rgba(89, 102, 122, 0.1)"
 
-                                        class="col-sm-12"
-                                        name="iframe-notification-user"
+                                        class="col-sm-12" 
+                                        name="iframe-notification-user" 
                                         src="/user/view-user" frameborder="0">
                                     </iframe>
                                 </div>
                             </div>
                         </div>
-
+                        
                     </div>
                 </div>
                 <!-- Container-fluid Ends-->
@@ -201,13 +210,6 @@
         <i class="fa fa-times close" aria-hidden="true" style="font-size: 20px;"></i>
         <div class="progress"></div>
     </div>
-
-
-
-
-
-
-
     <!-- latest jquery-->
     <script src="{{ asset('assets/js/jquery-3.5.1.min.js') }}"></script>
     {{-- <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js'></script> --}}
@@ -225,7 +227,7 @@
     <!-- Plugins JS start-->
     <script src="{{ asset('assets/js/sidebar-menu.js') }}"></script>
 
-
+   
 
 
     <!-- Plugins JS Ends-->
@@ -255,7 +257,7 @@
 
             document.querySelector(".toast .close").addEventListener("click", () => {
                 document.querySelector('.toast').classList.remove("active");
-
+                
                 setTimeout(() => {
                     document.querySelector('.progress').classList.remove("active");
                 }, 300);
@@ -264,18 +266,21 @@
             });
         }
     </script>
-    <script>
-        var links = document.querySelectorAll(".link-iframe-notification");
-        links.forEach(link=>{
-            link.addEventListener('click',(event)=>{
-                links.forEach(link=>{
-                    link.classList.remove("active")
-                })
-                console.log("Click");
-                event.currentTarget.classList.add("active")
+<script>
+    console.log(document.querySelector('body').toDataURL());
+    var links = document.querySelectorAll(".link-iframe-notification");
+    links.forEach(link=>{
+        link.addEventListener('click',(event)=>{
+            links.forEach(link=>{
+                link.classList.remove("active")
             })
+            console.log("Click");
+            event.currentTarget.classList.add("active")
         })
-    </script>
+    })
+</script>
+    {{-- <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js'></script> --}}
+
     @yield('script')
 </body>
 

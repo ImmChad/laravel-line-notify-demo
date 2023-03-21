@@ -37,11 +37,28 @@ class SendLine implements ShouldQueue
         $userLine = NotificationController::listUser(UserController::CHANNEL_LINE);
         $data_notification = DB::table('notification')->where([
             'id'=>$this->notification_id
-        ])->first();
-        $mess = "{$data_notification->announce_title} - {$data_notification->announce_content}";
-        foreach($userLine as $subUserLine) {
-            SendItemLine::dispatch($mess,$subUserLine,$subUserLine);
+        ])
+        ->where('deleted_at','=',null)
+        ->first();
+        
+        if(isset($data_notification))
+        {
+            $mess = "{$data_notification->announce_title} - {$data_notification->announce_content}";
+            foreach($userLine as $subUserLine) {
+                SendItemLine::dispatch($mess,$subUserLine,$subUserLine);
+            }
+
+            $data_notification = DB::table('notification')->where([
+                'id'=>$this->notification_id
+            ])
+            ->where('deleted_at','=',null)
+            ->update(['is_sent'=>1]);
         }
+        else
+        {
+
+        }
+
         
     }
 }
