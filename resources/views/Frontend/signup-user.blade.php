@@ -96,7 +96,7 @@
                                                 <div class="mb-3">
                                                     <label class="col-form-label" for="exampleInputEmail1">SMS Number</label>
                                                     <input required class="form-control" id="number_sms" type="text"
-                                                        name="number_sms" placeholder="+84123456789">
+                                                        name="number_sms" placeholder="Format: +84123456789">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="col-form-label" for="exampleInputEmail1">Display Name</label>

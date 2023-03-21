@@ -43,13 +43,14 @@ class SendMail implements ShouldQueue
         $userGmail = NotificationController::listUser(UserController::CHANNEL_EMAIL);
             // for($i=1;$i<=100;$i++)
             // {
+        // dd($userGmail);
         $data_notification = DB::table('notification')->where([
             'id'=>$this->notification_id
         ])->first();
         // $mess = "{$data_notification->announce_title} - {$data_notification->announce_content}";
                 foreach($userGmail as $subUserGmail) {
                     $textNotification = $data_notification->announce_content;
-                    $email = $subUserGmail->email;
+                    $email = $subUserGmail->address;
                     $titleSubject =$data_notification->announce_title;
                     SendItemMail::dispatch($email,$textNotification,$titleSubject);
                 }

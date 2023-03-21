@@ -61,13 +61,12 @@
                             <div class="login-main">
                                 <form class="theme-form">
                                     <h4>Connect to account</h4>
-                                    <p>Connect to Line, email or sms</p>
+                                    <p>Connect to Line, email</p>
                                     <h6 class="text-muted mt-4 or"> Connect with</h6>
                                     <div class="social mt-4">
                                         <div class="btn-showcase" style="width: 100%; display: flex; justify-content: center; align-items: center; flex-direction: column;">
                                             <a class="btn btn-light" style="margin: 0.5rem 0rem;" href="{{$authUrl}}" target="_blank"><i class="txt-linkedin" data-feather="message-circle"></i>LINE</a>
                                             <a class="btn btn-light" style="margin: 0.5rem 0rem;" href="{{url($authGmail)}}" target="_blank"><i class="txt-twitter" data-feather="mail"></i>GMAIL</a>
-                                            <a class="btn btn-light" style="margin: 0.5rem 0rem;" href="/user/login-sms" target="_blank"><i class="txt-fb" data-feather="smartphone"></i>SMS</a>
                                         </div>
                                     </div>
                                 </form>

@@ -295,8 +295,7 @@ class UserController extends Controller
         // Get profile from access token.
         $profile = $this->lineService->getUserProfile($response['access_token']);
         $profile['email'] = $profile1['email'];
-        $count = DB::table('notification_user_settings')->where(['user_id' =>  $inforUser['userId'],'notification_channel_id' => UserController::CHANNEL_LINE])->get();
-        if(count($count) == 0) {
+        
             if(!isset($profile['pictureUrl'])) {
                 $profile['pictureUrl'] = "";
             }
@@ -304,25 +303,29 @@ class UserController extends Controller
                 $profile['email'] = "";
             }
 
-            UserController::sendMessForUser($profile['userId'], $profile['displayName']);
-            $uuid = Str::uuid()->toString();
+            
             $time = date('Y/m/d H:i:s');
+            $inforUser = Session::get('inforUser');
 
-            $result_inserted = DB::table('notification_user_settings')->insertGetId([
-                'id'=>$uuid,
-                'user_id' => $inforUser['userId'],
-                'notification_channel_id' => UserController::CHANNEL_LINE,
-                'created_at' => $time
-            ]);
+                $resultUpdate_user_info= DB::table('notification_user_info')->
+                where(['id'=> $inforUser['userId']])
+                ->update([
+                    'pictureUrl'=>$profile['pictureUrl']
+                ]);
+                $resultUpdate_user_setting = DB::table('notification_user_settings')->
+                where([
+                    'user_id'=>$inforUser['userId'],
+                ])->update([
+                    'address'=>$profile['userId'],
+                    'notification_channel_id'=>UserController::CHANNEL_LINE,
+                    'updated_at'=>$time,
+                ]);
+                $inforUser['address']=$profile['userId'];
+                $inforUser['pictureUrl']=$profile['pictureUrl'];
+                $request->session()->put('inforUser', $inforUser);
 
-            $result_inserted = DB::table('notification_user_line')->insertGetId([
-                'user_id'=>$inforUser['userId'],
-                'user_id_line' => $profile['userId'],
-            ]);
-        }
-        
-
-
+                UserController::sendMessForUser($profile['userId'], $profile['displayName']);
+    
         return Redirect::to('/user');
     }
 
@@ -337,6 +340,9 @@ class UserController extends Controller
 
     function loginUser(Request $request)
     {
+        $validated = $this->validate($request,[
+            'sms_number'=>'required|regex:/^([0-9\s\+\(\)]*)$/|min:10'
+        ]);
         $dataUser = UserController::getDataAccount_CaseLogin($request->sms_number,$request->password);
         // dd($request->username,$request->password);
         $mess="Successfully Login ";
@@ -349,17 +355,14 @@ class UserController extends Controller
         }
         else
         {
-            $mess = "Wrong Username or Password";
+            $mess = "Wrong SMS Number or Password";
         }
         return ['isLogined'=>isset($dataUser),
                 'mess'=>$mess];
     }
     function signupUser(Request $request)
     {
-
-
         return UserController::connectSMS($request);
-    
     }
 
     function sendMessForUser($userId, $displayName) {
@@ -389,6 +392,20 @@ class UserController extends Controller
         ->where(['phone_number'=>$phone_number,
                  'password'=>$password])
         ->first();
+        if(isset($dataAccount))
+        {
+            $dataUserSetting = DB::table('notification_user_settings')->
+            where([
+                'user_id'=>$dataAccount->id,
+            ])->get([
+                'address'
+            ])->first();
+            $dataAccount->address = $dataUserSetting->address;
+        }
+        else
+        {
+            
+        }
         return $dataAccount;
     }
     function getAnnounceContentRead(Request $request) {

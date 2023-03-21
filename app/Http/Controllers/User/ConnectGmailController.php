@@ -28,25 +28,25 @@ class ConnectGmailController extends Controller
             date_default_timezone_set('Asia/Ho_Chi_Minh');
             date_default_timezone_get();    
             $inforUser = Session::get('inforUser');
-            $count = DB::table('notification_user_settings')->where(['user_id' =>  $inforUser['userId'],'notification_channel_id'=>UserController::CHANNEL_EMAIL])->get();
-            if(count($count)==0)
-            {
-                $uuid = Str::uuid()->toString();
-                $resultInsert= DB::table('notification_user_settings')->
-                insert([
-                    'id'=> $uuid,
-                    'user_id'=>$inforUser['userId'],
-                    'notification_channel_id'=>UserController::CHANNEL_EMAIL,
-                    'created_at'=>date('Y/m/d H:i:s'),
+
+                $resultUpdate_user_info= DB::table('notification_user_info')->
+                where(['id'=> $inforUser['userId']])
+                ->update([
+                    'pictureUrl'=>$user->avatar
                 ]);
-                $resultUpdate_user_info = DB::table('notification_user_info')->
+                $resultUpdate_user_setting = DB::table('notification_user_settings')->
                 where([
-                    'id'=>$inforUser['userId'],
+                    'user_id'=>$inforUser['userId'],
                 ])->update([
-                    'email'=>$user->email
+                    'address'=>$user->email,
+                    'notification_channel_id'=>UserController::CHANNEL_EMAIL,
+                    'updated_at'=>date('Y/m/d H:i:s'),
                 ]);
-                $inforUser['email']=$user->email;
+                $inforUser['address']=$user->email;
+                $inforUser['pictureUrl']=$user->avatar;
                 $request->session()->put('inforUser', $inforUser);
+
+
                 $email = $user->email;
                 $displayName = $user->name;
                 $textNotification = 'Hello '. $displayName .', click on this link to see notifications about new users.';
@@ -67,8 +67,7 @@ class ConnectGmailController extends Controller
                      'is_scheduled'=>false,
                      'scheduled_at'=>null   
                      ]
-                );
-            }            
+                );         
         return Redirect::to('/user');
     }
 
