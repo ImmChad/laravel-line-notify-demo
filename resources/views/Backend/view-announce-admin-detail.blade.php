@@ -24,11 +24,11 @@
 
         /* .navigation-view-admin:hover {
             background: var(--blue);
-        } 
+        }
         .navigation-view-admin:hover .direct-navigation {
             color: white !important;
         }  */
-    
+
         code {
             background-color: #f2f2f2;
             border: 1px solid #ddd;
@@ -39,7 +39,7 @@
             font-weight: bold;
             font-style: italic;
         }
-    
+
         /* CSS TOAASST */
         .toast {
             position: fixed;
@@ -56,18 +56,18 @@
             z-index: 1035;
             display: none;
         }
-    
+
         .toast.active {
             transform: translateX(0%);
             opacity: 1 !important;
             display: block;
         }
-    
+
         .toast .toast-content {
             display: flex;
             align-items: center;
         }
-    
+
         .toast-content .check {
             display: flex;
             align-items: center;
@@ -79,25 +79,25 @@
             font-size: 20px;
             border-radius: 50%;
         }
-    
+
         .toast-content .message {
             display: flex;
             flex-direction: column;
             margin: 0 20px;
         }
-    
+
         .message .text {
             font-size: 20px;
             font-weight: 400;
             ;
             color: #666666;
         }
-    
+
         .message .text.text-1 {
             font-weight: 600;
             color: #333;
         }
-    
+
         .toast .close {
             position: absolute;
             top: 10px;
@@ -106,11 +106,11 @@
             cursor: pointer;
             opacity: 0.7;
         }
-    
+
         .toast .close:hover {
             opacity: 1;
         }
-    
+
         .toast .progress {
             position: absolute;
             bottom: 0;
@@ -119,7 +119,7 @@
             width: 100%;
             background: #ddd;
         }
-    
+
         .toast .progress:before {
             content: '';
             position: absolute;
@@ -129,11 +129,11 @@
             width: 100%;
             background-color: #4dff00;
         }
-    
+
         .progress.active:before {
             animation: progress 5s linear forwards;
         }
-    
+
         @keyframes progress {
             100% {
                 right: 100%;
@@ -141,13 +141,13 @@
         }
 
 
-        
+
 
         .scroll-card::-webkit-scrollbar {
             display: none;
         }
     </style>
-    
+
 
     <!-- Set Icon Logo -->
     <link rel="icon" href="{{ asset('Image/logo.png') }}">
@@ -155,26 +155,7 @@
 </head>
 <body>
     <div style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; background: #f0f1f6">
-        {{-- <div class="page-header">
-            <h3 class="page-title">
-                Quản Lý Sản Phẩm
-                <span class="page-title-icon bg-gradient-primary text-white me-2">
-                    <i class="fa fa-certificate" aria-hidden="true" style="color: black;"></i>
-                </span> 
-            </h3>
-            <nav aria-label="breadcrumb">
-                <ul class="breadcrumb">
-                    <li class="breadcrumb-item active" aria-current="page">
-                        <i class="mdi mdi-timetable"></i>
-                        <span>php
-                        $today = date('d/m/Y');
-                        echo $today;
-                        ></span>
-                    </li>
-                </ul>
-            </nav>
-        </div> --}}
-    
+
         <div class="row" style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 1rem; background: #f0f1f6"">
             <div class="col-sm-10" style="padding-left: 0px; padding-right: 0px;">
                 <div class="col-lg-12 grid-margin stretch-card">
@@ -190,21 +171,15 @@
                             <nav aria-label="breadcrumb" style="border-radius: 0px">
                                 <ul class="breadcrumb" style="border-radius: 0px; margin-bottom: 0px; background: none;">
                                     <li class="breadcrumb-item active" aria-current="page">
-                                        <span class="created_at"><?php
-                                            $today = date('d/m/Y');
-                                            echo $today;
-                                            ?></span>
+                                        <span class="created_at">
+                                            {{$notification->created_at}}
+                                        </span>
                                     </li>
                                 </ul>
                             </nav>
-                            <div class="card-title col-sm-12" style="font-size: 20px; font-weight: 700; padding-left: 0px; border: 2px solid black; border-radius: 0.2rem;">
-                                    <span class="announce_title" style="margin: 0rem 1rem;">
-                                    {{$notification->announce_title}}
-                                    </span>
-                                </div>
                             <div class="card-title col-sm-12 scroll-card" style="font-size: 20px; {{$notification->type!=3?'font-weight: 700;':''}} border: 2px solid black; border-radius: 0.2rem; height: 550px; overflow-y: scroll;">
-                                <span class="announce_content" style="padding: 1rem;">
-                                {!! $notification->announce_content !!}
+                                <span class="announce_content" style="padding: 1rem 0rem;">
+                                {{$notification->announce_title}} - {!! $notification->announce_content !!}
                                 </span>
                             </div>
                         </div>
@@ -214,7 +189,7 @@
         </div>
 
     </div>
-    
+
     <div class="toast">
         <div class="toast-content">
             {{-- <i class="fa-solid fa-circle-info"></i> --}}
@@ -259,7 +234,7 @@
 
             document.querySelector(".toast .close").addEventListener("click", () => {
                 document.querySelector('.toast').classList.remove("active");
-                
+
                 setTimeout(() => {
                     document.querySelector('.progress').classList.remove("active");
                 }, 300);
@@ -328,8 +303,8 @@
         //     {
         //         var form  = new FormData();
         //         form.append('message', textNotification);
-        //         form.append('listUserId', JSON.stringify(dataReceivers));  
-                
+        //         form.append('listUserId', JSON.stringify(dataReceivers));
+
         //         $.ajaxSetup({
         //             headers: {
         //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -352,7 +327,7 @@
         //         });
         //         console.log(textNotification,dataReceivers);
         //     }
-            
+
         // }
     </script>
 </body>

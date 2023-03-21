@@ -38,6 +38,7 @@ class NotificationController extends Controller
     const NOTIFICATION_NEW_REGISTER = 1;
     const NOTIFICATION_FROM_ADMIN = 2;
     const NOTIFICATION_EMAIL_MAGAZINE = 3;
+
     function loginAdmin()
     {
         $data_admin = Session::get('data_admin');
@@ -49,8 +50,9 @@ class NotificationController extends Controller
         {
             return view('Backend.login-admin');
         }
-        
+
     }
+
     function handleSubmitLogin(Request $request)
     {
 
@@ -69,8 +71,9 @@ class NotificationController extends Controller
             {
                 // dump('wrong');
                 return ['mess'=>"Wrong username or password"];
-            }        
+            }
     }
+
     function NavigationView() {
         $dataList = NotificationController::listConnectLine();
         // dump($dataList);
@@ -78,27 +81,29 @@ class NotificationController extends Controller
         return Redirect::to('/admin/register-line-list');
     }
 
+
     function RegisterLineList() {
         $dataList = NotificationController::listConnectLine();
-        
-        
+
+
         return view('Backend.register-line-list')->with(["dataList" => $dataList]);;
     }
+
     public function paginate($items, $perPage = 5, $page = null, $options = [])
     {
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
         $items = $items instanceof Collection ? $items : Collection::make($items);
-        
+
         return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
+
     function NotificationList(Request $request) {
         $data_admin = Session::get('data_admin');
         if($data_admin)
         {
             $dataList = NotificationController::searchNotification($request);
-            // dump($dataList)
-            // $dataList = NotificationController::listAnnounce();
-            $dataList = $this->paginate($dataList); 
+
+            $dataList = $this->paginate($dataList);
             $dataList->withPath('/admin/notification-list');
             return view('Backend.notification-list')->with(['dataList' => $dataList]);
         }
@@ -132,17 +137,31 @@ class NotificationController extends Controller
         }
     }
 
-
-
-
-
-
-
+    function UpdateNotificationView($notification_id) {
+        $return_data = DB::table('notification')
+            ->where('id', $notification_id)
+            ->get(
+                array(
+                    'id',
+                    'type',
+                    'announce_title',
+                    'announce_content'
+                )
+            );
+        if($return_data[0]->type == 2) {
+            return view('Backend.update-notification-view-2')
+                ->with('dataNotification', $return_data[0]);
+        } else if($return_data[0]->type == 3) {
+            $dataTemplate = NotificationController::getTemplate();
+            return view('Backend.update-notification-view-3')
+                ->with('dataTemplate', $dataTemplate)
+                ->with('dataNotification', $return_data[0]);
+        }
+    }
 
     function sendMessView() {
         return view('Backend.view-send-mess');
     }
-
 
     function index() {
 
@@ -152,11 +171,9 @@ class NotificationController extends Controller
         return NotificationController::RegisterLineList()->with(["dataList" => $dataList]);
     }
 
-    
-
     function sendMessForListUser(Request $request) {
 
-        $userIds = NotificationController::listConnectAll();    
+        $userIds = NotificationController::listConnectAll();
         // dd($request->message,$request->title,$request->delayTime);
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         date_default_timezone_get();
@@ -172,20 +189,31 @@ class NotificationController extends Controller
             'created_at' => date('Y/m/d H:i:s'),
             'scheduled_at'=>$scheduled_at
         ]);
-        
-        if(intval($request->type_notification )=== NotificationController::NOTIFICATION_EMAIL_MAGAZINE)
+
+        if(intval($request->type_notification) === NotificationController::NOTIFICATION_EMAIL_MAGAZINE)
         {
             // dd($request->type_notification,$request->scheduled_at);
             event((new NewEmailMagazineEvent($new_notification_id)));
-        
+
         }
-        else if (intval($request->type_notification )=== NotificationController::NOTIFICATION_FROM_ADMIN)
+        else if (intval($request->type_notification) === NotificationController::NOTIFICATION_FROM_ADMIN)
         {
             event((new NewNotificationFromAdminEvent($new_notification_id)));
         }
-               
+
         $userIds = $request->delayTime;
         return $userIds;
+    }
+
+    function sendUpdateForListUser(Request $request) {
+        $update_notification = DB::table('notification')
+            ->where('id', $request->announce_id)
+            ->update([
+            'announce_title' => $request->title,
+            'announce_content' => $request->message
+        ]);
+
+        return $update_notification;
     }
 
     function getAnnounceContent(Request $request) {
@@ -303,6 +331,7 @@ class NotificationController extends Controller
 
         return $newListData;
     }
+
     function detailNotification(Request $request,$id)
     {
         $dataAdmin = Session::get('data_admin');
@@ -323,47 +352,81 @@ class NotificationController extends Controller
         }
 
     }
+
+    function DeleteNotification($notification_id) {
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
+        date_default_timezone_get();
+
+        $delete_id = DB::table('notification')
+            ->where('id', $notification_id)
+            ->update([
+                'deleted_at' => date('Y/m/d H:i:s')
+            ]);
+
+        return Redirect::to('/admin/notification-list');
+    }
+
     public function reqLogout()
     {
         Session::forget('data_admin');
         return Redirect::to('/admin');
     }
+
     function searchNotification(Request $request)
     {
         $text_search = $request['txt-search-notification'];
-        $matched_notifications = 
-            DB::table('notification')
-            ->orWhere('announce_title','like',"%{$text_search}%")
-            // ->orWhere('announce_content','like',"%{$text_search}%")
-            // ->orWhere('scheduled_at','like',"%{$text_search}%")
+        $matched_notifications = DB::table('notification')
+            ->where('type', '!=', 1 )
+            ->where('announce_title','like',"%{$text_search}%")
+            ->orderBy('created_at', 'DESC')
             ->get();
-            // dump($matched_notifications);
-        // foreach($matched_notifications as $key=>$value){
-        //     // $matched_notifications
-        //     if(!str_contains($value->announce_title,$text_search)&&$value->type==NotificationController::NOTIFICATION_EMAIL_MAGAZINE)
-        //     {
-        //         $dom = new DOMDocument();
-        //         $dom->loadhtml($value->announce_content);
-        //         if(!str_contains($dom->textContent,$text_search))
-        //         {
-        //             // dump($value->announce_content,$dom->textContent);
-        //             unset($matched_notifications[$key]);
-        //         }
-        //     }
 
-        // }
         foreach($matched_notifications as $key=>$notification)
         {
             $type_notification = DB::table('notification_type')
-            ->where('id',$notification->type)->first();
-            if($type_notification);
+            ->where('id', $notification->type)->first();
             $matched_notifications[$key]->name_type = $type_notification->type;
+
+            if($matched_notifications[$key]->type == 2) {
+                $count_person = DB::table('notification_user_settings')
+                    ->where('created_at','<=', $matched_notifications[$key]->created_at)->get();
+
+
+                $count_read = 0;
+                foreach ($count_person as $key_2 => $each_person) {
+                    $check_read = DB::table('notification_read')
+                        ->where('user_id', $each_person->user_id)
+                        ->get();
+                    if(count($check_read) > 0)
+                        $count_read += 1;
+                }
+                $matched_notifications[$key]->read_user = $count_read;
+                $matched_notifications[$key]->total_user = count($count_person);
+
+            } else if($matched_notifications[$key]->type == 3) {
+                $count_person = DB::table('notification_user_settings')
+                    ->where('updated_at', '<=', $matched_notifications[$key]->created_at)
+                    ->where('notification_channel_id', 2)->get();
+
+
+                $count_read = 0;
+                foreach ($count_person as $key_2 => $each_person) {
+                    $check_read = DB::table('notification_read')
+                        ->where('user_id', $each_person->user_id)
+                        ->get();
+                    if(count($check_read) > 0)
+                        $count_read += 1;
+                }
+                $matched_notifications[$key]->read_user = $count_read;
+                $matched_notifications[$key]->total_user = count($count_person);
+
+            }
         }
-        
+
         return $matched_notifications;
     }
-    
-static public function sendMessTwilio($sms_number,$message)
+
+    static public function sendMessTwilio($sms_number,$message)
     {
         $account_sid = getenv("TWILIO_SID");
         $auth_token = getenv("TWILIO_AUTH_TOKEN");
@@ -381,14 +444,12 @@ static public function sendMessTwilio($sms_number,$message)
 
 
 
+
     function TemplateManagementView() {
-
-
         $dataTemplate = NotificationController::getTemplate();
         return view('Backend.template.template-management')
         ->with('dataTemplate', $dataTemplate);
     }
-
 
     function AddNewTemplateView() {
 
@@ -424,7 +485,7 @@ static public function sendMessTwilio($sms_number,$message)
                 )
         );
         // dump($data[0]);
-   
+
 
 
         $dataRegion = NotificationController::getRegion();
@@ -459,6 +520,7 @@ static public function sendMessTwilio($sms_number,$message)
        ]);
        return ['result'=>$result];
     }
+
     public function reqUpdateNewTemplate(Request $request)
     {
        $result = DB::table('template')
@@ -476,30 +538,6 @@ static public function sendMessTwilio($sms_number,$message)
        ]);
        return ['result'=>$result];
     }
-
-    
-
-
-    // function AddNewTemplateView() {
-
-
-    //     $dataRegion = NotificationController::getRegion();
-    //     $dataArea = NotificationController::getArea();
-    //     $dataIndustry = NotificationController::getIndustry();
-    //     $dataStore = NotificationController::getStore();
-
-
-
-
-    //     return view('Backend.template.add-new-template-view')
-    //     ->with('dataRegion', $dataRegion)
-    //     ->with('dataArea', $dataArea)
-    //     ->with('dataIndustry', $dataIndustry)
-    //     ->with('dataStore', $dataStore);
-    // }
-
-
-
 
     function GetTemplateForSendMail(Request $request) {
         $data = DB::table('template')
@@ -521,6 +559,7 @@ static public function sendMessTwilio($sms_number,$message)
 
         return $data[0];
     }
+
 
 
     function getTemplate() {
@@ -591,6 +630,5 @@ static public function sendMessTwilio($sms_number,$message)
 
         return $data;
     }
-
 
 }
