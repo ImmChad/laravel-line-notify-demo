@@ -139,12 +139,43 @@
                 right: 100%;
             }
         }
-
-
-        
-
         .scroll-card::-webkit-scrollbar {
             display: none;
+        }
+        .btn-detail-notification
+        {
+            cursor: pointer;
+            color:var(--blue);
+            border:1px solid var(--blue);
+            border-radius:4px;
+            padding:10px;
+            transition:.2s;
+        }
+        .btn-detail-notification:hover
+        {
+            text-decoration: none;
+
+            color:white;
+            background:var(--blue);
+        }
+        .iframe-detail-notification
+        {
+            width:0px;
+            
+        }
+        .iframe-detail-notification.active
+        {
+            width:60%
+            
+        }
+        .side-list-notification.show-detail
+        {
+            transition:.3s;
+            width: 40%!important;
+        }
+        body
+        {
+            display:flex;
         }
     </style>
     
@@ -154,29 +185,9 @@
     <title>View Announce For User</title>
 </head>
 <body>
-    <div style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; background: #f0f1f6">
-        {{-- <div class="page-header">
-            <h3 class="page-title">
-                Quản Lý Sản Phẩm
-                <span class="page-title-icon bg-gradient-primary text-white me-2">
-                    <i class="fa fa-certificate" aria-hidden="true" style="color: black;"></i>
-                </span> 
-            </h3>
-            <nav aria-label="breadcrumb">
-                <ul class="breadcrumb">
-                    <li class="breadcrumb-item active" aria-current="page">
-                        <i class="mdi mdi-timetable"></i>
-                        <span>php
-                        $today = date('d/m/Y');
-                        echo $today;
-                        ></span>
-                    </li>
-                </ul>
-            </nav>
-        </div> --}}
-    
-        <div class="row" style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 1rem; background: #f0f1f6"">
-            <div class="col-sm-10" style="padding-left: 0px; padding-right: 0px;">
+    <div class="side-list-notification" style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; background: #f0f1f6">
+        <div class="row" style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 1rem 0px; background: #f0f1f6"">
+            <div class="col-sm-12" style="padding-left: 0px; padding-right: 0px;">
                 <div class="col-lg-12 grid-margin stretch-card">
                     <div class="card scroll-card" style=" height: calc(100vh - 2rem); overflow-y: scroll;">
                         <div class="card-body">
@@ -194,34 +205,39 @@
                                 <tbody>
                                     @foreach ($dataList as $subDataList)
 
-                                        <tr data-link="/user/notification/{{$subDataList->id}}/detail" class="row_data_news" style="background: white; border-bottom: 1px solid #f0f1f6;">
-                                            @if($subDataList->read_at == "null")
-                                                <td style="vertical-align: middle; font-weight: 700;">
-                                                    {{ date('d/m/Y',strtotime($subDataList->created_at)) }}
+                                    @if($subDataList->read_at == "null")
+                                            <tr data-link="/user/notification/{{$subDataList->id}}/detail" class="row_data_news" style="background: white; border-bottom: 1px solid #f0f1f6;font-weight:700">
+                                                <td style="vertical-align: middle;">
+                                                    {{ date('Y/m/d',strtotime($subDataList->created_at)) }}
                                                 </td>
-                                                <td class="announce_name_row" style="vertical-align: middle; font-weight: 700;">
-                                                    <a href="/user/notification/{{$subDataList->id}}/detail" style="color: black;text-decoration: none;">{{ $subDataList->announce_title }}</a>
+                                                <td class="announce_name_row" style="vertical-align: middle;">
+                                                    <a href="/user/notification/{{$subDataList->id}}/detail" target="iframe-detail-notification" style="color: black;text-decoration: none;">{{ $subDataList->announce_title }}</a>
                                                 </td>
-                                                <td style="vertical-align: middle; font-weight: 700;">
-                                                    {{ $subDataList->name_type }}
-                                                </td>
+                                                <td class="announce_name_row" style="vertical-align: middle;">
+                                                    <div><a class="btn-detail-notification" href="/user/notification/{{$subDataList->id}}/detail" target="iframe-detail-notification">View</a> </div>
+                                                </td> 
+                                            </tr>
                                             @else
+                                            <tr data-link="/user/notification/{{$subDataList->id}}/detail" class="row_data_news" style="background: white; border-bottom: 1px solid #f0f1f6;">
+
                                                 <td class="announce_name_row" style="vertical-align: middle;">
-                                                {{ date('d/m/Y',strtotime($subDataList->created_at)) }}
+                                                {{ date('Y/m/d',strtotime($subDataList->created_at)) }}
                                                 </td>
                                                 <td class="announce_name_row" style="vertical-align: middle;">
-                                                <a href="/user/notification/{{$subDataList->id}}/detail" style="color: black;text-decoration: none;">{{ $subDataList->announce_title }}</a>
+                                                <a href="/user/notification/{{$subDataList->id}}/detail" target="iframe-detail-notification" style="color: black;text-decoration: none;">{{ $subDataList->announce_title }}</a>
                                                 </td>
                                                 <td class="announce_name_row" style="vertical-align: middle;">
-                                                {{ $subDataList->name_type }}
+                                                    <div><a class="btn-detail-notification" href="/user/notification/{{$subDataList->id}}/detail" target="iframe-detail-notification">View</a> </div>
                                                 </td>                                                
-                                            @endif
-                                        </tr>
+                                            </tr>
+                                        @endif
                                     @endforeach
                                     
                                 </tbody>
             
                             </table>
+
+                            {{ $dataList->appends(request()->input())->links('vendor.pagination.custom') }}
                         </div>
                     </div>
                 </div>
@@ -229,7 +245,8 @@
         </div>
 
     </div>
-    
+        <iframe class="iframe-detail-notification" name="iframe-detail-notification" frameborder="0"></iframe>
+
     <div class="toast">
         <div class="toast-content">
             {{-- <i class="fa-solid fa-circle-info"></i> --}}
@@ -260,7 +277,16 @@
         @if(isset($messToast))
             displayToast('{{ json_decode($messToast) }}');
         @endif
-
+        var btnDetails = document.querySelectorAll('.btn-detail-notification');
+            btnDetails.forEach(btnDetail => {
+                btnDetail.addEventListener('click',(event)=>{
+                    event.currentTarget.closest('.row_data_news').style.fontWeight='400';
+                    var iframe = document.querySelector('.iframe-detail-notification');
+                    iframe.classList.add('active');
+                    var sideList = document.querySelector('.side-list-notification');
+                    sideList.classList.add('show-detail');
+                })
+            })
         function displayToast(mess) {
             document.querySelector('.toast .text.text-2').textContent = mess;
             document.querySelector('.toast').classList.add('active');
@@ -282,93 +308,6 @@
                 clearTimeout(time);
             });
         }
-
-        // let btnGetContent = document.querySelectorAll('.btn-get-content');
-        // btnGetContent.forEach((item) => {
-        //     item.addEventListener('click', (e) => {
-        //         e.preventDefault();
-
-        //         e.currentTarget.closest('.row_data_news').querySelector('.announce_name_row').style.fontWeight = "400";
-
-        //         // console.log('click');
-
-        //         var form  = new FormData();
-        //         form.append('id', e.currentTarget.getAttribute('announce_id'));
-        //         $.ajaxSetup({
-        //             headers: {
-        //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        //             }
-        //         });
-        //         $.ajax({
-        //             url: '{{URL::to("/user/get-announce-content")}}',
-        //             method: 'post',
-        //             data: form,
-        //             contentType: false,
-        //             processData: false,
-        //             dataType: 'json',
-        //             success: function(data) {
-        //                 console.log(data);
-        //                 if(data.length == 0) {
-        //                     $('.announce_title').text("Null");
-        //                     $('.announce_content').text("Null");
-        //                     $('.created_at').text("Null");
-        //                 } else {
-        //                     $('.announce_title').text(data[0].announce_title);
-        //                     $('.announce_content').text(data[0].announce_content);
-        //                     $('.created_at').text(data[0].created_at);
-        //                 }
-
-        //                 // displayToast('Send Success!');
-        //             },
-        //             error: function() {
-        //                 displayToast('Can not add data!');
-        //             }
-        //         });
-        //     });
-        // });
-
-        // function requestSendNotification(textNotification,dataReceivers=[])
-        // {
-        //     if(textNotification.length<=0)
-        //     {
-        //         displayToast('Please Enter input content notify')
-        //         // alert('Please Enter input content notify')
-        //     }
-        //     else if (dataReceivers.length<=0)
-        //     {
-        //         displayToast('Please Select receiver')
-        //         // alert('Please Select receiver')
-        //     }
-        //     else
-        //     {
-        //         var form  = new FormData();
-        //         form.append('message', textNotification);
-        //         form.append('listUserId', JSON.stringify(dataReceivers));  
-                
-        //         $.ajaxSetup({
-        //             headers: {
-        //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        //             }
-        //         });
-        //         $.ajax({
-        //             url: '{{URL::to("/admin/send-mess")}}',
-        //             method: 'post',
-        //             data: form,
-        //             contentType: false,
-        //             processData: false,
-        //             dataType: 'json',
-        //             success: function(data) {
-        //                 document.querySelector('#ipt_text_notify').value = "";
-        //                 displayToast('Send Success!');
-        //             },
-        //             error: function() {
-        //                 displayToast('Can not add data!');
-        //             }
-        //         });
-        //         console.log(textNotification,dataReceivers);
-        //     }
-            
-        // }
     </script>
 </body>
 

@@ -46,14 +46,27 @@ class SendMail implements ShouldQueue
         // dd($userGmail);
         $data_notification = DB::table('notification')->where([
             'id'=>$this->notification_id
-        ])->first();
-        // $mess = "{$data_notification->announce_title} - {$data_notification->announce_content}";
-                foreach($userGmail as $subUserGmail) {
-                    $textNotification = $data_notification->announce_content;
-                    $email = $subUserGmail->address;
-                    $titleSubject =$data_notification->announce_title;
-                    SendItemMail::dispatch($email,$textNotification,$titleSubject);
-                }
-            // }
+        ])
+        ->where('deleted_at','=',null)
+        ->first();
+        if(isset($data_notification))
+        {
+            foreach($userGmail as $subUserGmail) {
+                $textNotification = $data_notification->announce_content;
+                $email = $subUserGmail->address;
+                $titleSubject =$data_notification->announce_title;
+                SendItemMail::dispatch($email,$textNotification,$titleSubject);
+            }
+            $data_notification = DB::table('notification')->where([
+                'id'=>$this->notification_id
+            ])
+            ->where('deleted_at','=',null)
+            ->update(['is_sent'=>1]);
+        }
+        else
+        {
+            
+        }
+
     }
 }

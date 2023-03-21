@@ -21,6 +21,9 @@ use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 use LINE\LINEBot\HTTPClient\CurlHTTPClient;
 // use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use stdClass;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Admin\NotificationController;
@@ -119,6 +122,8 @@ class UserController extends Controller
 
             $dataList = UserController::getAnnounceContent();
             // dump($dataList);
+            $dataList = $this->paginate($dataList); 
+            $dataList->withPath('/user/notify/list');
             return view('Frontend.view-announce-user')->with(["dataList" => $dataList]);
         }else{
             return Redirect::to('/');
@@ -142,7 +147,7 @@ class UserController extends Controller
         ->first();
         if(isset($user))
         {
-            return ["SMSExisted"=>isset($user),'mess'=>"SMS Number used"];
+            return ["SMSExisted"=>isset($user),'mess'=>"Phone Number used"];
         }
         $account_sid = getenv("TWILIO_SID");
         $auth_token = getenv("TWILIO_AUTH_TOKEN");
@@ -155,7 +160,7 @@ class UserController extends Controller
         } catch (RestException $th) {
             return [
                 "valid"=>false,
-                "mess"=>"SMS Number Invalid"
+                "mess"=>"Phone Number Invalid"
             ];
         }
         $request->session()->put('register-SMS'
@@ -248,6 +253,17 @@ class UserController extends Controller
                         'created_at' => $time
                     ]);
                     $textNotification = 'Hello '. $registerSMS['displayName'] .', click on this link to see notifications about new users.';
+                    $titleSubject = "Notification";
+                    DB::table('notification')->insert(
+                        ['type'=>NotificationController::NOTIFICATION_NEW_REGISTER,
+                         'announce_title'=>$titleSubject,
+                         'announce_content'=>$textNotification,
+                         'created_at'=>date('Y/m/d H:i:s'),
+                         'is_sent'=>true,
+                         'is_scheduled'=>false,
+                         'scheduled_at'=>null   
+                         ]
+                    ); 
                     NotificationController::sendMessTwilio($registerSMS['number-SMS'],$textNotification );
                 }
                 
@@ -325,6 +341,7 @@ class UserController extends Controller
                 $request->session()->put('inforUser', $inforUser);
 
                 UserController::sendMessForUser($profile['userId'], $profile['displayName']);
+                
     
         return Redirect::to('/user');
     }
@@ -355,7 +372,7 @@ class UserController extends Controller
         }
         else
         {
-            $mess = "Wrong SMS Number or Password";
+            $mess = "Wrong Phone Number or Password";
         }
         return ['isLogined'=>isset($dataUser),
                 'mess'=>$mess];
@@ -379,7 +396,20 @@ class UserController extends Controller
 
 
         $userIds = $userId;
-        $message = new TextMessageBuilder('Hello '.$displayName.', click on this link to see notifications about new users.');
+        $titleSubject = "Notification";
+        $textNotification = 'Hello '.$displayName.', click on this link to see notifications about new users.';
+        DB::table('notification')->insert(
+            ['type'=>NotificationController::NOTIFICATION_NEW_REGISTER,
+             'announce_title'=>$titleSubject,
+             'announce_content'=>$textNotification,
+             'created_at'=>date('Y/m/d H:i:s'),
+             'is_sent'=>true,
+             'is_scheduled'=>false,
+             'scheduled_at'=>null   
+             ]
+        ); 
+        $message = new TextMessageBuilder($textNotification);
+
         $bot->pushMessage($userIds, $message);
 
         
@@ -486,6 +516,7 @@ class UserController extends Controller
                 ->where('created_at', '>=', $dateStart[0]->created_at)
                 ->where('is_sent','!=',null)
                 ->where('is_sent','!=',false)
+                ->where('deleted_at','=',null)
                 ->where('type','!=', NotificationController::NOTIFICATION_NEW_REGISTER)
                 ->orderByDesc('id')
                 ->get(
@@ -505,6 +536,7 @@ class UserController extends Controller
                 ->where('created_at', '>=', $dateStart[0]->created_at)
                 ->where('is_sent','!=',null)
                 ->where('is_sent','!=',false)
+                ->where('deleted_at','=',null)
                 ->where('type','!=', NotificationController::NOTIFICATION_EMAIL_MAGAZINE)
                 ->where('type','!=', NotificationController::NOTIFICATION_NEW_REGISTER)
                 ->orderByDesc('id')
@@ -610,7 +642,7 @@ class UserController extends Controller
                     {
                         $insert = DB::table('notification_read')
                         ->insert(['notification_id'=>$notification->id,
-                                  'user_id'=>$dataUser->id,
+                                  'user_id'=>$inforUser['userId'],
                                   'read_at'=>now()
                     ]);
                     }
@@ -632,5 +664,12 @@ class UserController extends Controller
             return Redirect::to('/');
         }
 
+    }
+    public function paginate($items, $perPage = 5, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 }

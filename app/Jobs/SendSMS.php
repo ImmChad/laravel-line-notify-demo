@@ -45,10 +45,20 @@ class SendSMS implements ShouldQueue
         $userSMS = NotificationController::listUser(UserController::CHANNEL_SMS);
         $data_notification = DB::table('notification')->where([
             'id'=>$this->notification_id
-        ])->first();
-        $mess = "{$data_notification->announce_title} - {$data_notification->announce_content}";
-        foreach($userSMS as $subUserSMS) {
-            SendItemSMS::dispatch($client,$mess,$subUserSMS);
+        ])
+        ->where('deleted_at','=',null)
+        ->first();
+        if(isset($data_notification))
+        {
+            $mess = "{$data_notification->announce_title} - {$data_notification->announce_content}";
+            foreach($userSMS as $subUserSMS) {
+                SendItemSMS::dispatch($client,$mess,$subUserSMS);
+            }
         }
+        else
+        {
+            
+        }
+
     }
 }
