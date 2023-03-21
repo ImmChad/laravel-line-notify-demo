@@ -194,9 +194,6 @@
         </div>
     </div>
 
-
-
-
     <div class="toast">
         <div class="toast-content">
             {{-- <i class="fa-solid fa-circle-info"></i> --}}

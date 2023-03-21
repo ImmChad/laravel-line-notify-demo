@@ -573,7 +573,7 @@ class UserController extends Controller
                     if($subData->id)
                     $dataAnnounce = DB::table('notification_read')
                     ->where(['notification_id' => $subData->id])
-                    ->where(['user_id' => $dataUser->id])
+                    ->where(['user_id' => $inforUser['userId']])
                     ->get(
                         array(
                             'read_at'
@@ -585,8 +585,7 @@ class UserController extends Controller
                     if($subData->id && $subData->type != NotificationController::NOTIFICATION_EMAIL_MAGAZINE)
                     $dataAnnounce = DB::table('notification_read')
                     ->where(['notification_id' => $subData->id])
-                    ->where(['user_id' => $dataUser->id])
-                    ->where(['user_id' => $dataUser->id])
+                    ->where(['user_id' => $inforUser['userId']])
                     ->get(
                         array(
                             'read_at'
@@ -636,7 +635,7 @@ class UserController extends Controller
                 {
                     $count = DB::table('notification_read')
                     ->where(['notification_id'=>$notification->id,
-                              'user_id'=>$dataUser->id,
+                              'user_id'=>$inforUser['userId'],
                     ])->get();
                     if(count($count)==0)
                     {
