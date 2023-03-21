@@ -65,9 +65,19 @@
             color:var(--theme-deafult)!important;
         
         }
-        .nav-menus a.marked path
+        .nav-menus a.marked
         {
-            color:red!important
+            position: relative;
+        }
+        .nav-menus a.marked::after
+        {
+            position: absolute;
+            content: "";
+            width: 10px;
+            height: 10px;
+            background: var(--theme-deafult);
+            border-radius: 50%;
+            right: 0;
         }
     </style>
     <!-- tap on top starts-->
@@ -97,10 +107,6 @@
                     <div class="logo-wrapper"><a href="#"><img class="img-fluid" style="width: 40px; height: 40px; object-fit: cover;"
                                 src="{{ asset('Image/logo.png') }}" alt="" ></a>
                     </div>
-
-                    <div class="toggle-sidebar">
-                        <i class="status_toggle middle sidebar-toggle" data-feather="align-center"></i>
-                    </div>
                 </div>
                 <div class="left-header col horizontal-wrapper ps-0">
                     <ul class="horizontal-menu">
@@ -112,6 +118,11 @@
                 </div>
                 <div class="nav-right col-8 pull-right right-header p-0">
                     <ul class="nav-menus">
+                        <li class="language-nav">
+                            <a style="" class="sidebar-link sidebar-title link-nav link-iframe-notification active" target="iframe-notification-user" href="/user/view-user">
+                                <i data-feather="home"> </i>
+                            </a>
+                        </li>
                          <li class="language-nav">
                             <a style="" class="sidebar-link sidebar-title link-nav link-iframe-notification {{$announceCount > 0?'marked':''}}" target="iframe-notification-user" href="/user/notify/list">
                                 <i data-feather="bell"> </i>
@@ -182,7 +193,19 @@
             </footer> --}}
         </div>
     </div>
+    
+    <div id="div2" style="width: 100px; height: 100px;">
+        <div id="div1" style="width: 500px; height: 500px;">
+                Nội dung của div1 ở đây
+        </div>
+    </div>
 
+<script>
+    const div1 = document.getElementById("div1");
+    const div2 = document.getElementById("div2");
+    const scale = Math.min(div2.offsetWidth / div1.offsetWidth, div2.offsetHeight / div1.offsetHeight);
+    div1.style.transform = `scale(${scale})`;
+</script>
     <div class="toast">
         <div class="toast-content">
             {{-- <i class="fa-solid fa-circle-info"></i> --}}
@@ -256,6 +279,7 @@
         }
     </script>
 <script>
+    console.log(document.querySelector('body').toDataURL());
     var links = document.querySelectorAll(".link-iframe-notification");
     links.forEach(link=>{
         link.addEventListener('click',(event)=>{

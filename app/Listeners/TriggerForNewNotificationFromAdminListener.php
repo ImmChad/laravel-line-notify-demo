@@ -38,6 +38,7 @@ class TriggerForNewNotificationFromAdminListener implements ShouldQueue
                 SendLine::dispatch($event->notification_id)->delay(Carbon::parse($data_notification->scheduled_at));
                 SendMail::dispatch($event->notification_id)->delay(Carbon::parse($data_notification->scheduled_at));
                 SendSMS::dispatch($event->notification_id)->delay(Carbon::parse($data_notification->scheduled_at)); 
+                
             }
             else
             {
