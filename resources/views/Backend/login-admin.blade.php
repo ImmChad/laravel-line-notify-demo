@@ -28,15 +28,15 @@
 
         .navigation-view-admin:hover {
             background: var(--blue);
-        } 
+        }
         .navigation-view-admin:hover .direct-navigation {
             color: white !important;
-        } 
+        }
         /* .direct-navigation:hover {
             color: blue;
         } */
-    
-    
+
+
         /* CSS TOAASST */
         .toast {
             position: fixed;
@@ -53,18 +53,18 @@
             z-index: 1035;
             display: none;
         }
-    
+
         .toast.active {
             transform: translateX(0%);
             opacity: 1 !important;
             display: block;
         }
-    
+
         .toast .toast-content {
             display: flex;
             align-items: center;
         }
-    
+
         .toast-content .check {
             display: flex;
             align-items: center;
@@ -76,25 +76,25 @@
             font-size: 20px;
             border-radius: 50%;
         }
-    
+
         .toast-content .message {
             display: flex;
             flex-direction: column;
             margin: 0 20px;
         }
-    
+
         .message .text {
             font-size: 20px;
             font-weight: 400;
             ;
             color: #666666;
         }
-    
+
         .message .text.text-1 {
             font-weight: 600;
             color: #333;
         }
-    
+
         .toast .close {
             position: absolute;
             top: 10px;
@@ -103,11 +103,11 @@
             cursor: pointer;
             opacity: 0.7;
         }
-    
+
         .toast .close:hover {
             opacity: 1;
         }
-    
+
         .toast .progress {
             position: absolute;
             bottom: 0;
@@ -116,7 +116,7 @@
             width: 100%;
             background: #ddd;
         }
-    
+
         .toast .progress:before {
             content: '';
             position: absolute;
@@ -126,18 +126,18 @@
             width: 100%;
             background-color: var(--blue);
         }
-    
+
         .progress.active:before {
             animation: progress 5s linear forwards;
         }
-    
+
         @keyframes progress {
             100% {
                 right: 100%;
             }
         }
         .container-login-admin
-        {   
+        {
             /* paddings:40px; */
             width: 100vw;
             height:100vh;
@@ -197,7 +197,7 @@
             width: 100%;
             display:flex;
             justify-content: flex-end;
-            
+
         }
         .option-other-form
         {
@@ -223,7 +223,7 @@
             font-weight: bold;
         }
     </style>
-    
+
 
 
     <!-- Set Icon Logo -->
@@ -232,8 +232,9 @@
 </head>
 <body>
     <div class="container-login-admin">
-        <div class="side-brand">
-            <img class="img-brand" src="{{ asset('Image/brand-login.jpg') }}" alt="" srcset="">
+        <div class="side-brand" style="background: #be3851; height: 100%; display: flex; justify-content: center; align-items: center;">
+            <span style="font-weight: 700; font-size: 20px; color: white">GIRL MEEE</span>
+{{--            <img class="img-brand" src="{{ asset('Image/brand-login.jpg') }}" alt="" srcset="">--}}
         </div>
         <div class="side-form-login">
             <div class="name-brand-app">Meeee</div>
@@ -247,7 +248,7 @@
                 </div>
                 <button class="btn-form-admin" id="btn-submit-form-login-admin" type="submit">Login</button>
             </form>
-            
+
         </div>
     </div>
     <div class="toast">
@@ -269,7 +270,7 @@
     <script src="{{ asset('assets/js/jquery-3.5.1.min.js') }}"></script>
 
     <script>
-       
+
 
         function displayToast(mess) {
             document.querySelector('.toast .text.text-2').textContent = mess;
@@ -284,7 +285,7 @@
 
             document.querySelector(".toast .close").addEventListener("click", () => {
                 document.querySelector('.toast').classList.remove("active");
-                
+
                 setTimeout(() => {
                     document.querySelector('.progress').classList.remove("active");
                 }, 300);
@@ -296,7 +297,7 @@
 
 
         var form_submit = document.querySelector('#form-login-admin');
-        
+
         form_submit.addEventListener('submit',event=>{
             var username = document.querySelector('#ipt-username-admin').value;
             var password = document.querySelector('#ipt-password-admin').value;
@@ -335,7 +336,7 @@
                         }
                     });
             }
-            
+
             else
             {
                 displayToast('Please fill in full form');
