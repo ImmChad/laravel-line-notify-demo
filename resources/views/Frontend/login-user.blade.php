@@ -72,11 +72,12 @@
             }
             .toast .toast-content {
                 margin: 5px 5px;
+                padding: 1rem;
             }
         </style>
     <div class="">
 
-    
+
         <div class="row">
             <div style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column;">
                 <div class="container-fluid p-0">
@@ -86,8 +87,8 @@
                                 <div>
                                     <div>
                                         <a class="logo" href="/" style="margin-bottom: 0px; display: flex; justify-content: center; align-items: center;">
-                                            <img class="img-fluid for-light" src="{{ asset('Image/logo.png') }}" style="width: 50px; height: 50px;" alt="looginpage"> 
-                                            <span style="font-size: 20px; display: flex; justify-content: center; align-items: center;">Girl Meee</span> 
+                                            <img class="img-fluid for-light" src="{{ asset('Image/logo.png') }}" style="width: 50px; height: 50px;" alt="looginpage">
+                                            <span style="font-size: 20px; display: flex; justify-content: center; align-items: center;">Girl Meee</span>
                                         </a>
                                     </div>
                                     <div class="login-main">
@@ -112,7 +113,7 @@
                                                 <button id="btn-login-user"class="btn btn-primary-gradien btn-send-it">LOGIN</button>
                                             </div>
                                         </form>
-                                        
+
                                     </div>
                                 </div>
                             </div>
@@ -155,7 +156,7 @@
     <!-- Plugins JS start-->
     <script src="{{ asset('assets/js/sidebar-menu.js') }}"></script>
 
-   
+
 
 
     <!-- Plugins JS Ends-->
@@ -185,7 +186,7 @@
 
             document.querySelector(".toast .close").addEventListener("click", () => {
                 document.querySelector('.toast').classList.remove("active");
-                
+
                 setTimeout(() => {
                     document.querySelector('.progress').classList.remove("active");
                 }, 300);
@@ -196,9 +197,9 @@
     </script>
     <script>
         @php
-        if(!isset($_SESSION)) 
-            { 
-                session_start(); 
+        if(!isset($_SESSION))
+            {
+                session_start();
             }
         @endphp
         @if(isset($_SESSION['toast']))
@@ -213,7 +214,7 @@
         let formLoginUser = document.querySelector("#form-login-user");
         formLoginUser.addEventListener('submit', (e)=> {
             e.preventDefault();
-            
+
             submitLoginUser(formLoginUser)
             // formLoginUser.style.display="none";
             // formVerify.style.display="block";
@@ -248,7 +249,7 @@
                             // console.log(error.responseJSON.message);
                         }
                     });
-        }      
+        }
 
     </script>
 

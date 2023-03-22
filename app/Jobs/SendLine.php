@@ -40,7 +40,7 @@ class SendLine implements ShouldQueue
         ])
         ->where('deleted_at','=',null)
         ->first();
-        
+
         if(isset($data_notification))
         {
             $mess = "{$data_notification->announce_title} - {$data_notification->announce_content}";
@@ -54,11 +54,5 @@ class SendLine implements ShouldQueue
             ->where('deleted_at','=',null)
             ->update(['is_sent'=>1]);
         }
-        else
-        {
-
-        }
-
-        
     }
 }
