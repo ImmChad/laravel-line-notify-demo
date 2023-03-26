@@ -2,23 +2,19 @@
 
 namespace App\Jobs;
 
-use App\Http\Controllers\Admin\NotificationController;
+use App\Handler\NotificationHandler;
 use App\Http\Controllers\User\UserController;
 
+use App\Repository\NotificationRepository;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
 use Mail;
-use stdClass;
 
-use Illuminate\Bus\Batch;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Jobs\SendItemMail;
+
 class SendMail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -28,10 +24,10 @@ class SendMail implements ShouldQueue
      */
 
     protected $notification_id ;
+
     public function __construct($notification_id)
     {
         $this->notification_id= $notification_id;
-       
     }
 
     /**
@@ -39,16 +35,18 @@ class SendMail implements ShouldQueue
      */
     public function handle(): void
     {
-        
-        $userGmail = NotificationController::listUser(UserController::CHANNEL_EMAIL);
-            // for($i=1;$i<=100;$i++)
-            // {
-        // dd($userGmail);
+        $notificationRepository = new NotificationRepository();
+        $handler = new NotificationHandler($notificationRepository);
+        $userGmail = $handler->listUser(UserController::CHANNEL_EMAIL);
+
+//        $userGmail = NotificationHandler::listUser(UserController::CHANNEL_EMAIL);
+
         $data_notification = DB::table('notification')->where([
             'id'=>$this->notification_id
         ])
         ->where('deleted_at','=',null)
         ->first();
+
         if(isset($data_notification))
         {
             foreach($userGmail as $subUserGmail) {
@@ -62,10 +60,6 @@ class SendMail implements ShouldQueue
             ])
             ->where('deleted_at','=',null)
             ->update(['is_sent'=>1]);
-        }
-        else
-        {
-            
         }
 
     }
