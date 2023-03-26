@@ -23,10 +23,10 @@ class ConnectGmailController extends Controller
     }
 
     public function handleGoogleCallback(Request $request)
-    {      
+    {
             $user = Socialite::driver('google')->stateless()->user();
             date_default_timezone_set('Asia/Ho_Chi_Minh');
-            date_default_timezone_get();    
+            date_default_timezone_get();
             $inforUser = Session::get('inforUser');
 
                 $resultUpdate_user_info= DB::table('notification_user_info')->
@@ -55,19 +55,19 @@ class ConnectGmailController extends Controller
                     $message->from(env('MAIL_FROM_ADDRESS'), 'Notification Web');
                     $message->to($email);
                     $message->subject($titleSubject);
-                    $message->html($textNotification); // tôi muốn truyền mess vô? tham số mô? 
+                    $message->html($textNotification); // tôi muốn truyền mess vô? tham số mô?
                 });
 
                 DB::table('notification')->insert(
-                    ['type'=>NotificationController::NOTIFICATION_NEW_REGISTER,
+                    ['type'=> 1,
                      'announce_title'=>$titleSubject,
                      'announce_content'=>$textNotification,
                      'created_at'=>date('Y/m/d H:i:s'),
                      'is_sent'=>true,
                      'is_scheduled'=>false,
-                     'scheduled_at'=>null   
+                     'scheduled_at'=>null
                      ]
-                );         
+                );
         return Redirect::to('/user');
     }
 

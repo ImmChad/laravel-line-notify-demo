@@ -10,6 +10,9 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ *
+ */
 class NewEmailMagazineEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
@@ -17,21 +20,13 @@ class NewEmailMagazineEvent
     /**
      * Create a new event instance.
      */
-    public $notification_id;
-    public function __construct($notification_id)
-    {
-        $this->notification_id = $notification_id;
-    }
+    public int $notificationId;
 
     /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
+     * @param $notificationId
      */
-    // public function broadcastOn(): array
-    // {
-    //     return [
-    //         new PrivateChannel('channel-name'),
-    //     ];
-    // }
+    public function __construct($notificationId)
+    {
+        $this->notificationId = $notificationId;
+    }
 }

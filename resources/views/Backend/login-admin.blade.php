@@ -293,10 +293,11 @@
                 clearTimeout(time);
             });
         }
+
         {{isset($mess)?"displayToast(`{$mess}`)":""}}
 
 
-        var form_submit = document.querySelector('#form-login-admin');
+        let form_submit = document.querySelector('#form-login-admin');
 
         form_submit.addEventListener('submit',event=>{
             var username = document.querySelector('#ipt-username-admin').value;
@@ -328,8 +329,6 @@
                             {
                                 displayToast(data.mess);
                             }
-
-
                         },
                         error: function() {
                             displayToast('Can not add data!');

@@ -72,7 +72,7 @@
 
 
     <script>
-       
+
         let dataTemplate = document.querySelector('#dataTemplate');
         dataTemplate.addEventListener('change', (e) => {
             let template_id = e.currentTarget.options[e.currentTarget.selectedIndex].getAttribute('template_id');
@@ -102,16 +102,16 @@
                         var announce_content = CKEDITOR.instances['announce_content'];
                         let newDiv = `${data.template_content}`;
                         announce_content.insertHtml(newDiv);
-                           
+
                         document.querySelector('#announce_title').value = data.template_title;
-                       
+
                     },
                     error: function() {
                         displayToast('Can not add data!');
                     }
                 });
             } else {
-           
+
             }
         })
 
@@ -129,8 +129,8 @@
 
             $('.parent-form-popup').css("display", "flex");
             $('.parent-form-popup .title-popup').text("Do you want to schedule to send it? If not, it will send now.");
-           
-           
+
+
             let newHtml = `
             <input class="form-control digits" id="example-datetime-local-input" type="datetime-local"  data-bs-original-title="" title="">
             <button class="btn btn-info send-notification" notification_type="3" style="margin-top: 1rem;">SEND IT</button>
@@ -185,7 +185,7 @@
             let announce_title = $('#announce_title').val();
             // let span = document.createElement('span')
             // span.innerHTML = announce_content
-            // let lengthText = span.textContent.length;  
+            // let lengthText = span.textContent.length;
             let [dateChoose, timeChoose] = newDate.split(' ');
             let [hourChoose, minuteChoose, secondChoose] = timeChoose.split(':');
             let newHour = hourChoose.replace('24', '00');
@@ -247,9 +247,9 @@
                         processData: false,
                         dataType: 'json',
                         success: function(data) {
-                           
+
                             window.location.href = "/admin/send-notification-view/3?messToast=Send Success!";
-                           
+
                         },
                         error: function() {
                             displayToast('Can not add data!');
@@ -264,7 +264,7 @@
         }
 
 
-       
+
 
 
     </script>

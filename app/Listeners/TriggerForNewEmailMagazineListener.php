@@ -24,11 +24,11 @@ class TriggerForNewEmailMagazineListener implements ShouldQueue
     public function handle(NewEmailMagazineEvent $event): void
     {
         $data_notification = DB::table('notification')->where([
-            'id'=>$event->notification_id
+            'id'=>$event->notificationId
         ])->first();
             if(isset($data_notification))
             {
-                SendMail::dispatch($event->notification_id)->delay(Carbon::parse($data_notification->scheduled_at));
+                SendMail::dispatch($event->notificationId)->delay(Carbon::parse($data_notification->scheduled_at));
             }
             else
             {

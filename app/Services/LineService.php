@@ -22,38 +22,6 @@ class LineService
         return $url;
     }
 
-    // public function getLineToken($code)
-    // {
-
-
-    //     $client = new Client();
-    //     $response = $client->post(config("line.line_token_uri"), [
-    //         // 'form_params' => [
-    //         //     'grant_type' => 'authorization_code',
-    //         //     'code' => $code,
-    //         //     'redirect_uri' => route('login.line.callback'),
-    //         //     'client_id' => env('LINE_LOGIN_CHANNEL_ID'),
-    //         //     'client_secret' => env('LINE_LOGIN_CHANNEL_SECRET')
-    //         // ]
-    //         'form_params' => [
-    //             'grant_type' => 'authorization_code',
-    //             'code' => $code,
-    //             'redirect_uri' => route('login.line.callback'),
-    //             'client_id' => env('LINE_LOGIN_CHANNEL_ID'),
-    //             'client_secret' => env('LINE_LOGIN_CHANNEL_SECRET')
-    //         ]
-    //     ]);
-
-    //     $body = $response->getBody();
-
-    //     // dump($body);
-    //     // dump($response);
-    //     // dump(json_decode($body)->access_token);
-    //     // dd($response);
-
-    //     $token = json_decode($body)->access_token;
-    //     return $token;
-    // }
 
     public function getLineToken($code)
     {
