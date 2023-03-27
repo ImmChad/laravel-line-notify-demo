@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
 use Session;
+use stdClass;
 use Twilio\Rest\Client;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Pagination\Paginator;
@@ -122,7 +123,7 @@ class NotificationController extends Controller
     {
         $request->validate([
             'title' => 'required|max:255',
-            'message' => 'required|max:255',
+            'message' => 'required|max:500',
         ]);
         return $this->notificationHandler->sendMessForListUser($request);
     }
@@ -144,7 +145,7 @@ class NotificationController extends Controller
     {
         $request->validate([
             'title' => 'required|max:255',
-            'message' => 'required|max:255',
+            'message' => 'required|max:500',
         ]);
         return $this->notificationHandler->sendUpdateForListUser($request);
     }
@@ -201,7 +202,7 @@ class NotificationController extends Controller
         $request->validate([
             'template_name' => 'required|max:255',
             'template_title' => 'required|max:255',
-            'template_content' => 'required|max:255'
+            'template_content' => 'required|max:500'
         ]);
         return $this->notificationHandler->reqAddNewTemplate($request);
     }
@@ -215,16 +216,16 @@ class NotificationController extends Controller
         $request->validate([
             'template_name' => 'required|max:255',
             'template_title' => 'required|max:255',
-            'template_content' => 'required|max:255'
+            'template_content' => 'required|max:500'
         ]);
         return $this->notificationHandler->reqUpdateNewTemplate($request);
     }
 
     /**
      * @param Request $request
-     * @return array
+     * @return Collection|stdClass|array
      */
-    function getTemplateForSendMail(Request $request) : array
+    function getTemplateForSendMail(Request $request) : Collection|stdClass|array
     {
         return $this->notificationHandler->getTemplateForSendMail($request);
     }

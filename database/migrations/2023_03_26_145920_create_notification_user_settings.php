@@ -16,8 +16,8 @@ return new class extends Migration
             $table->char('user_id', 36);
             $table->string('address', 255);
             $table->integer('notification_channel_id');
-            $table->timestamps('created_at');
-            $table->timestamps('updated_at');
+            $table->dateTime('created_at');
+            $table->dateTime('updated_at')->nullable();
         });
     }
 

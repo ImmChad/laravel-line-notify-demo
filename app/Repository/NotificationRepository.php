@@ -14,6 +14,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use stdClass;
+use function Webmozart\Assert\Tests\StaticAnalysis\object;
 
 class NotificationRepository
 {
@@ -291,12 +292,12 @@ class NotificationRepository
 
     /**
      * @param String $templateId
-     * @return array
+     * @return Collection|stdClass|array
      */
-    public function getTemplateForSendMail(String $templateId) : array
+    public function getTemplateForSendMail(String $templateId) : Collection|stdClass|array
     {
-        $returnData = NotificationTemplate::where('id', $templateId)->get()->toArray();
-        return $returnData;
+            return  NotificationTemplate::where('id', $templateId)
+            ->get()->toArray();
     }
 
 
