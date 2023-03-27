@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class NotificationCampaignWaiting extends Model
+class NotificationDraft extends Model
 {
     public $timestamps = false; //set time to false
     /**

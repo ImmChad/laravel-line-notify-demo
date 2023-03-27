@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('notification_template', function (Blueprint $table) {
             $table->char('id', 36);
+            $table->string('template_type', 10);
             $table->string('template_name', 255);
             $table->string('template_title', 255);
             $table->text('template_content');
