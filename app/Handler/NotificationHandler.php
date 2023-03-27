@@ -322,9 +322,9 @@ class NotificationHandler
 
     /**
      * @param object $request
-     * @return Collection|stdClass
+     * @return Collection|stdClass|array
      */
-    function getTemplateForSendMail(object $request) : Collection|stdClass
+    function getTemplateForSendMail(object $request) : Collection|stdClass|array
     {
         $data = $this->notificationRepository->getTemplateForSendMail($request->template_id);
 

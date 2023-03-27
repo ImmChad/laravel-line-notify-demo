@@ -17,10 +17,10 @@ return new class extends Migration
             $table->string('announce_title', 255);
             $table->text('announce_content');
             $table->dateTime('created_at');
-            $table->binary('is_sent');
-            $table->binary('is_scheduled');
-            $table->timestamps('scheduled_at');
-            $table->timestamps('deleted_at');
+            $table->boolean('is_sent');
+            $table->boolean('is_scheduled');
+            $table->dateTime('scheduled_at')->nullable();
+            $table->dateTime('deleted_at')->nullable();
         });
     }
 

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('notification_user_info', function (Blueprint $table) {
             $table->string('id', 36);
             $table->string('displayName', 255);
-            $table->text('pictureUrl');
+            $table->text('pictureUrl')->nullable();
             $table->string('phone_number', 15);
             $table->string('password', 255);
         });
