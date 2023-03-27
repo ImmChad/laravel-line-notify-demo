@@ -222,9 +222,9 @@ class NotificationController extends Controller
 
     /**
      * @param Request $request
-     * @return Collection|\stdClass
+     * @return array
      */
-    function getTemplateForSendMail(Request $request) : Collection|\stdClass
+    function getTemplateForSendMail(Request $request) : array
     {
         return $this->notificationHandler->getTemplateForSendMail($request);
     }

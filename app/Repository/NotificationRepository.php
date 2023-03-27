@@ -291,12 +291,12 @@ class NotificationRepository
 
     /**
      * @param String $templateId
-     * @return Collection|stdClass
+     * @return array
      */
-    public function getTemplateForSendMail(String $templateId) : Collection|stdClass
+    public function getTemplateForSendMail(String $templateId) : array
     {
-        return NotificationTemplate::where('id', $templateId)
-            ->get();
+        $returnData = NotificationTemplate::where('id', $templateId)->get()->toArray();
+        return $returnData;
     }
 
 
