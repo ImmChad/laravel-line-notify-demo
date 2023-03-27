@@ -15,7 +15,7 @@ return new class extends Migration
             $table->increments('id');
             $table->char('notification_id', 36);
             $table->string('user_id', 255);
-            $table->timestamps('read_at');
+            $table->dateTime('read_at');
         });
     }
 

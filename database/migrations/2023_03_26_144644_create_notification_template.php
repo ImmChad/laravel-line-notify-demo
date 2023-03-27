@@ -16,11 +16,11 @@ return new class extends Migration
             $table->string('template_name', 255);
             $table->string('template_title', 255);
             $table->text('template_content');
-            $table->integer('region_id');
-            $table->integer('area_id');
-            $table->integer('industry_id');
-            $table->integer('store_id');
-            $table->timestamps('created_at');
+            $table->integer('region_id')->nullable();
+            $table->integer('area_id')->nullable();
+            $table->integer('industry_id')->nullable();
+            $table->integer('store_id')->nullable();
+            $table->dateTime('created_at');
         });
     }
 

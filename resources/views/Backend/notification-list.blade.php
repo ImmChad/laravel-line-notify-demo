@@ -1,5 +1,8 @@
 @extends('Backend.backend-view')
 @section('ContentAdmin')
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <style>
         .link-detail-announce
         {
@@ -41,10 +44,20 @@
                         </div>
                     </form>
                     <div class="media-body text-end" style="display: flex; justify-content: flex-end;">
-                        <div class="btn btn-outline-primary ms-2 btn-new-notification" style="display: flex; justify-content: center; align-items: center; width: 300px;">
-                            <i data-feather="send"></i>New Notification
+                        <div class="btn-group">
+                            <button 
+                                class="btn dropdown-toggle btn-outline-primary ms-2 btn-new-notification" 
+                                style="display: flex; justify-content: center; align-items: center; width: 300px;"
+                                data-toggle="dropdown"
+                                >
+                                <i data-feather="send"></i>New Notification
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/admin/send-notification-view/2">Total Everyone</a>
+                                <a class="dropdown-item" href="/admin/send-notification-view/3">Only Email</a>
+                            </div>
+                            </div>
                         </div>
-                    </div>
                 </div>
             </div>
             <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 40px;">
@@ -129,32 +142,32 @@
 
 
         let btnNewNotification = document.querySelector('.btn-new-notification');
-        btnNewNotification.addEventListener('click', (e)=> {
-            $('.parent-form-popup').css("display", "flex");
-            $('.parent-form-popup .title-popup').text("Choose a method of notification");
+        // btnNewNotification.addEventListener('click', (e)=> {
+        //     $('.parent-form-popup').css("display", "flex");
+        //     $('.parent-form-popup .title-popup').text("Choose a method of notification");
 
-            let newHtml = `
-                <button class="btn-lg btn-primary send-notification" notification_type="2">Total Everyone</button>
-                <button class="btn-lg btn-info send-notification" notification_type="3">Only Email</button>
-            `;
-            // document.querySelector('.parent-form-popup .faq-form').insertAdjacentHTML('beforeend', newHtml);
-            document.querySelector('.parent-form-popup .faq-form').innerHTML = newHtml;
+        //     let newHtml = `
+        //         <button class="btn-lg btn-primary send-notification" notification_type="2">Total Everyone</button>
+        //         <button class="btn-lg btn-info send-notification" notification_type="3">Only Email</button>
+        //     `;
+        //     // document.querySelector('.parent-form-popup .faq-form').insertAdjacentHTML('beforeend', newHtml);
+        //     document.querySelector('.parent-form-popup .faq-form').innerHTML = newHtml;
 
-            let sendNotification = document.querySelectorAll('.send-notification');
-            sendNotification.forEach((item) => {
-                item.addEventListener('click', (e) => {
-                    let notification_type = e.currentTarget.getAttribute('notification_type');
-                    window.location.href = "/admin/send-notification-view/" + notification_type;
-                });
+        //     let sendNotification = document.querySelectorAll('.send-notification');
+        //     sendNotification.forEach((item) => {
+        //         item.addEventListener('click', (e) => {
+        //             let notification_type = e.currentTarget.getAttribute('notification_type');
+        //             window.location.href = "/admin/send-notification-view/" + notification_type;
+        //         });
 
-            })
+        //     })
 
-            $('.parent-form-popup .close-popup').click(function() {
-                $('.parent-form-popup').css("display", "none");
-            });
+        //     $('.parent-form-popup .close-popup').click(function() {
+        //         $('.parent-form-popup').css("display", "none");
+        //     });
 
 
-        });
+        // });
 
     </script>
 
