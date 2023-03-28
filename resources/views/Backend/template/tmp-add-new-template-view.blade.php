@@ -165,12 +165,12 @@
                             <tbody>
                             <tr>
                                 <th scope="row">1</th>
-                                <td>region_nm</td>
+                                <td class="name-param">region_nm</td>
                                 <td>Region name</td>
                             </tr>
                             <tr>
                                 <th scope="row">2</th>
-                                <td>shop_id</td>
+                                <td class="name-param">shop_id</td>
                                 <td>Shop Name</td>
                             </tr>
                             </tbody>
@@ -201,8 +201,61 @@
 
 
 @section('script')
-    <script src="{{asset('assets/js/email-app.js')}}"></script>
+    <script>
+        function getCaretPosition(editableDiv) {
+            var caretPos = 0,
+                sel, range;
+            if (window.getSelection) {
+                sel = window.getSelection();
+                if (sel.rangeCount) {
+                    range = sel.getRangeAt(0);
+                    if (range.commonAncestorContainer == editableDiv) {
+                        caretPos = range.endOffset;
+                    }
+                }
+            } else if (document.selection && document.selection.createRange) {
+                range = document.selection.createRange();
+                if (range.parentElement() == editableDiv) {
+                    var tempEl = document.createElement("span");
+                    editableDiv.insertBefore(tempEl, editableDiv.firstChild);
+                    var tempRange = range.duplicate();
+                    tempRange.moveToElementText(tempEl);
+                    tempRange.setEndPoint("EndToEnd", range);
+                    caretPos = tempRange.text.length;
+                }
+            }
+            return caretPos;
+        }
 
+
+            const nameParams = document.querySelectorAll(".name-param")
+            const edt = document.querySelector("#ipt-content-notification")
+            let startPos = 0;
+            edt.addEventListener('blur', event=>{
+                if(window.getSelection().getRangeAt(0).commonAncestorContainer.parentNode == edt||window.getSelection().getRangeAt(0).commonAncestorContainer == edt)
+                {
+                    startPos = window.getSelection().getRangeAt(0).endOffset
+                }
+            })
+
+
+
+            nameParams.forEach(nameParam=>{
+                nameParam.addEventListener("click",event => {
+                    // edt.focus();
+                    // edt.setSelectionRange(startPos, startPos);
+                    const range = window.getSelection().getRangeAt(0);
+                    const btn = document.createElement('button');
+                    btn.textContent = event.currentTarget.textContent;
+                    btn.contentEditable = false
+                    // console.log(startPos,btn.outerHTML,edt.innerHTML.toString().slice(startPos, 0, btn.outerHTML))
+                    edt.innerHTML = [edt.innerHTML.slice(0, startPos), btn.outerHTML, edt.innerHTML.slice(startPos)].join('')
+                    startPos += btn.outerHTML.length
+                    // range.insertNode(btn);
+                    // range.collapse(false);
+                })
+            })
+    </script>
 
     <script>
 
@@ -249,9 +302,9 @@
         {{--})--}}
 
 
-        let returnNotificationList = document.querySelector('.return-notification-list');
+        let returnNotificationList = document.querySelector('#btn-back-page');
         returnNotificationList.addEventListener('click', (e)=>{
-            window.location.href = "/admin/notification-list";
+            window.location.href = "/admin/template-management";
         });
 
 
