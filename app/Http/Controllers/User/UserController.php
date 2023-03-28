@@ -101,7 +101,6 @@ class UserController extends Controller
         } else {
             return view('Frontend.signup-user');
         }
-
     }
 
     function viewUser()
