@@ -50,7 +50,7 @@ class SendLine implements ShouldQueue
         {
             $mess = "{$data_notification->announce_title} - {$data_notification->announce_content}";
             foreach($userLine as $subUserLine) {
-                SendItemLine::dispatch($mess,$subUserLine,$subUserLine);
+                SendItemLine::dispatch($mess,$subUserLine);
             }
 
             $data_notification = DB::table('notification')->where([

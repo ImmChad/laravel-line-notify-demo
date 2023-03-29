@@ -133,6 +133,17 @@ class NotificationRepository
     }
 
     /**
+     * @param array $attribute
+     * @return int
+     */
+    public function insertNotificationNewStoreRegistration(array $attribute): int
+    {
+        return DB::table('notification')->insert(
+            $attribute
+        );
+    }
+
+    /**
      * @param object $request
      * @return mixed
      */
@@ -158,6 +169,7 @@ class NotificationRepository
      * @param object $request
      * @return int
      */
+
     function updateNotificationForListUser(object $request): int
     {
         return Notification::where('id', $request->announce_id)
@@ -354,6 +366,7 @@ class NotificationRepository
                     'template_name',
                     'template_title',
                     'template_content',
+                    'template_type',
                     'region_id',
                     'area_id',
                     'industry_id',

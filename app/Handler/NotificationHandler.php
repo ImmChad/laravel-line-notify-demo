@@ -4,14 +4,16 @@ namespace App\Handler;
 
 use App\Events\NewEmailMagazineEvent;
 use App\Events\NewNotificationFromAdminEvent;
+use App\Models\User;
 use App\Repository\NotificationRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Redirect;
-
+use DB;
 use Session;
 use stdClass;
 
@@ -176,7 +178,6 @@ class NotificationHandler
      */
     public function showSendNotificationView(int $notificationType, String $notificationSender = null, String $notificationTemplate = null) : View|Factory|RedirectResponse|Application
     {
-
         if ($notificationType == 2) {
 
             if (isset($_GET['messToast'])) {
