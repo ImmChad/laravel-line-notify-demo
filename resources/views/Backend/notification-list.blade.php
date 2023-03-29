@@ -142,32 +142,11 @@
 
 
         let btnNewNotification = document.querySelector('.btn-new-notification');
-        // btnNewNotification.addEventListener('click', (e)=> {
-        //     $('.parent-form-popup').css("display", "flex");
-        //     $('.parent-form-popup .title-popup').text("Choose a method of notification");
-
-        //     let newHtml = `
-        //         <button class="btn-lg btn-primary send-notification" notification_type="2">Total Everyone</button>
-        //         <button class="btn-lg btn-info send-notification" notification_type="3">Only Email</button>
-        //     `;
-        //     // document.querySelector('.parent-form-popup .faq-form').insertAdjacentHTML('beforeend', newHtml);
-        //     document.querySelector('.parent-form-popup .faq-form').innerHTML = newHtml;
-
-        //     let sendNotification = document.querySelectorAll('.send-notification');
-        //     sendNotification.forEach((item) => {
-        //         item.addEventListener('click', (e) => {
-        //             let notification_type = e.currentTarget.getAttribute('notification_type');
-        //             window.location.href = "/admin/send-notification-view/" + notification_type;
-        //         });
-
-        //     })
-
-        //     $('.parent-form-popup .close-popup').click(function() {
-        //         $('.parent-form-popup').css("display", "none");
-        //     });
 
 
-        // });
+        btnNewNotification.addEventListener('click', (e)=> {
+            window.location.href = "/admin/send-notification-view/3";
+        })
 
     </script>
 

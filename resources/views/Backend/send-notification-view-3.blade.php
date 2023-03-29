@@ -269,18 +269,20 @@
                             <div class="col-md-3">
                                 <div
                                     class="form-check form-check-inline radio radio-dark btn btn-outline-primary btn-tick-send">
-                                    <input class="form-check-input radio-send-with-schedule" type="radio" name="radio1"
-                                           value="option1">
-                                    <label class="form-check-label mb-0" style="margin: 0;">Send with
+                                    <input  class="form-check-input radio-send-with-schedule" type="radio" name="radio1"
+                                           id="radio1"
+                                            value="scheduled">
+                                    <label for="radio1" class="form-check-label mb-0" style="margin: 0;">Send with
                                         schedule</label>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div
                                     class="form-check form-check-inline radio radio-dark btn btn-outline-primary btn-tick-send">
-                                    <input class="form-check-input radio-send-now" type="radio" name="radio1"
+                                    <input checked class="form-check-input radio-send-now" type="radio" name="radio1"
+                                           id="radio2"
                                            value="option1" >
-                                    <label class="form-check-label mb-0" style="margin: 0;">Send
+                                    <label for="radio2" class="form-check-label mb-0" style="margin: 0;">Send
                                         now</label>
                                 </div>
                             </div>
@@ -288,7 +290,9 @@
                         <div class="row" style="width: 100%; margin-top: 15px;">
                             <div class="col-md-3"></div>
                             <div class="col-md-3"></div>
-                            <div class="col-md-3"></div>
+                            <div class="col-md-3">
+                                <input style="display: none" class="form-control digits ipt-time-schedule" id="example-datetime-local-input" type="datetime-local"  data-bs-original-title="" title="">
+                            </div>
                             <div class="col-md-3">
                                 <button class="btn btn-outline-primary btn-send">
                                     Send
@@ -303,13 +307,31 @@
 
 
     {{-- display calendar --}}
-    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script> --}}
+{{--     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>--}}
 
 @endsection
 
 
 @section('script')
+    <script>
+        const iptTimeScheduled= document.querySelector(".ipt-time-schedule")
+        const radioSchedule = document.querySelector(".radio-send-with-schedule")
+        radioSchedule.addEventListener("change",event =>{
+            console.log(event.currentTarget.checked)
 
+            if(event.currentTarget.checked)
+            {
+                iptTimeScheduled.style.display = "block"
+            }
+        })
+        const radioNow = document.querySelector(".radio-send-now")
+        radioNow.addEventListener("change",event => {
+            if(event.currentTarget.checked = "scheduled")
+            {
+                iptTimeScheduled.style.display = "none"
+            }
+        })
+    </script>
     <script>
         // choose type function
         let notificationTypeSelect = document.querySelector('.notification-type-select');
@@ -382,6 +404,12 @@
                 .join("")}
             `
         }
+
+        // back to /admin/notification-list
+        let btnBackPage = document.querySelector('#btn-back-page');
+        btnBackPage.addEventListener('click', (e) => {
+            window.location.href = "/admin/notification-list";
+        });
 
         //
 
@@ -478,107 +506,105 @@
         //
         // });
 
+            let sendNotification = document.querySelector('.send-notification');
+            sendNotification.addEventListener('click', (e) => {
+                var editorData = CKEDITOR.instances.announce_content.getData();
+                let notification_type = e.currentTarget.getAttribute('notification_type');
+                sendNotificationOnService(notification_type, editorData);
+            });
 
-        {{--function sendNotificationOnService(notification_type, editorData) {--}}
-        {{--    const now = new Date();--}}
-        {{--    const formattedDate = new Intl.DateTimeFormat('en-US', {--}}
-        {{--        year: 'numeric',--}}
-        {{--        month: '2-digit',--}}
-        {{--        day: '2-digit',--}}
-        {{--        hour: '2-digit',--}}
-        {{--        minute: '2-digit',--}}
-        {{--        second: '2-digit',--}}
-        {{--        hour12: false,--}}
-        {{--    }).format(new Date(now));--}}
+        function sendNotificationOnService(notification_type, editorData) {
+            const now = new Date();
+            const formattedDate = new Intl.DateTimeFormat('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false,
+            }).format(new Date(now));
 
-
-        {{--    const [month, day, year, ...time] = formattedDate.split(/[\s/:]/);--}}
-        {{--    const newFormattedDate = `${year}/${month}/${day} ${time.join(":")}`;--}}
-        {{--    let newDate = newFormattedDate.replace(',', "");--}}
-
-
-        {{--    let created_at = $('#example-datetime-local-input').val();--}}
-        {{--    let announce_content = editorData;--}}
-        {{--    let announce_title = $('#announce_title').val();--}}
-        {{--    // let span = document.createElement('span')--}}
-        {{--    // span.innerHTML = announce_content--}}
-        {{--    // let lengthText = span.textContent.length;--}}
-        {{--    let [dateChoose, timeChoose] = newDate.split(' ');--}}
-        {{--    let [hourChoose, minuteChoose, secondChoose] = timeChoose.split(':');--}}
-        {{--    let newHour = hourChoose.replace('24', '00');--}}
+            const [month, day, year, ...time] = formattedDate.split(/[\s/:]/);
+            const newFormattedDate = `${year}/${month}/${day} ${time.join(":")}`;
+            let newDate = newFormattedDate.replace(',', "");
 
 
-        {{--    newDate = dateChoose + " " + newHour + ":" + minuteChoose + ":" + secondChoose;--}}
+            let created_at = $('#example-datetime-local-input').val();
+            let announce_content = editorData;
+            let announce_title = $('#announce_title').val();
+            // let span = document.createElement('span')
+            // span.innerHTML = announce_content
+            // let lengthText = span.textContent.length;
+            let [dateChoose, timeChoose] = newDate.split(' ');
+            let [hourChoose, minuteChoose, secondChoose] = timeChoose.split(':');
+            let newHour = hourChoose.replace('24', '00');
 
 
-        {{--    let diffInSeconds = "";--}}
+            newDate = dateChoose + " " + newHour + ":" + minuteChoose + ":" + secondChoose;
 
 
-        {{--    if(created_at.trim() != "") {--}}
-        {{--        const date1 = new Date(newDate);--}}
-        {{--        const date2 = new Date(created_at);--}}
-        {{--        diffInSeconds = (date2 - date1) / 1000;--}}
-        {{--        console.log(newDate);--}}
-        {{--        console.log(created_at);--}}
-        {{--        console.log(diffInSeconds);--}}
-        {{--    } else {--}}
-        {{--        created_at = 0;--}}
-        {{--        diffInSeconds = 0;--}}
-        {{--    }--}}
-        {{--    if(diffInSeconds < 0) {--}}
-        {{--        displayToast("Can't enter this date in the past to set the timer!")--}}
-        {{--    } else {--}}
-        {{--        if(announce_title.trim() != "" && announce_content.trim() != "") {--}}
-        {{--            // console.log(created_at + " " + announce_title + " " + announce_content);--}}
+            let diffInSeconds = "";
 
 
-        {{--            console.log(notification_type);--}}
-        {{--            console.log(announce_title);--}}
-        {{--            console.log(announce_content);--}}
-        {{--            console.log(created_at);--}}
-        {{--            console.log(diffInSeconds);--}}
+            if(created_at.trim() != "") {
+                const date1 = new Date(newDate);
+                const date2 = new Date(created_at);
+                diffInSeconds = (date2 - date1) / 1000;
+                console.log(newDate);
+                console.log(created_at);
+                console.log(diffInSeconds);
+            } else {
+                created_at = 0;
+                diffInSeconds = 0;
+            }
+            if(diffInSeconds < 0) {
+                displayToast("Can't enter this date in the past to set the timer!")
+            } else {
+                if(announce_title.trim() != "" && announce_content.trim() != "") {
+                    // console.log(created_at + " " + announce_title + " " + announce_content);
 
 
+                    console.log(notification_type);
+                    console.log(announce_title);
+                    console.log(announce_content);
+                    console.log(created_at);
+                    console.log(diffInSeconds);
+
+                    var form  = new FormData();
+                    form.append('message', announce_content);
+                    form.append('title', announce_title);
+                    form.append('delayTime', diffInSeconds);
+                    form.append('scheduled_at', created_at);
+                    form.append('type_notification', notification_type);
 
 
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                    $.ajax({
+                        url: '{{URL::to("/admin/send-mess")}}',
+                        method: 'post',
+                        data: form,
+                        contentType: false,
+                        processData: false,
+                        dataType: 'json',
+                        success: function(data) {
 
+                            window.location.href = "/admin/send-notification-view/3?messToast=Send Success!";
 
-        {{--            var form  = new FormData();--}}
-        {{--            form.append('message', announce_content);--}}
-        {{--            form.append('title', announce_title);--}}
-        {{--            form.append('delayTime', diffInSeconds);--}}
-        {{--            form.append('scheduled_at', created_at);--}}
-        {{--            form.append('type_notification', notification_type);--}}
-
-
-        {{--            $.ajaxSetup({--}}
-        {{--                headers: {--}}
-        {{--                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')--}}
-        {{--                }--}}
-        {{--            });--}}
-        {{--            $.ajax({--}}
-        {{--                url: '{{URL::to("/admin/send-mess")}}',--}}
-        {{--                method: 'post',--}}
-        {{--                data: form,--}}
-        {{--                contentType: false,--}}
-        {{--                processData: false,--}}
-        {{--                dataType: 'json',--}}
-        {{--                success: function(data) {--}}
-
-        {{--                    window.location.href = "/admin/send-notification-view/3?messToast=Send Success!";--}}
-
-        {{--                },--}}
-        {{--                error: function() {--}}
-        {{--                    displayToast('Can not add data!');--}}
-        {{--                }--}}
-        {{--            });--}}
-        {{--        } else {--}}
-        {{--            displayToast("Please, Enter full!");--}}
-        {{--        }--}}
-        {{--    }--}}
-
-
-        {{--}--}}
+                        },
+                        error: function() {
+                            displayToast('Can not add data!');
+                        }
+                    });
+                } else {
+                    displayToast("Please, Enter full!");
+                }
+            }
+        }
     </script>
     <script>
         // const dropdowns = document.querySelectorAll(".dropdown");
