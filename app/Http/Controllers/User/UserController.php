@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Events\NewStoreRequestRegistration;
+use App\Handler\UserHandler;
 use App\Services\LineService;
 
 use App\Http\Controllers\Controller;
@@ -40,7 +42,7 @@ class UserController extends Controller
     const CHANNEL_EMAIL = 2;
     const CHANNEL_SMS = 3;
 
-    public function __construct(LineService $lineService)
+    public function __construct(private UserHandler $userHandler,LineService $lineService)
     {
         $this->lineService = $lineService;
     }
@@ -390,8 +392,7 @@ class UserController extends Controller
         // $userIds = [$userId];
         // $bot->multicast($userIds, '<message>');
 
-        $httpClient = new CurlHTTPClient(env('LINE_BOT_CHANNEL_TOKEN'));
-        $bot = new LINEBot($httpClient, ['channelSecret' => env('LINE_BOT_CHANNEL_SECRET')]);
+
 
         // $responseUser = $bot->getProfile($userId);
 
@@ -409,9 +410,12 @@ class UserController extends Controller
                 'scheduled_at' => null
             ]
         );
+//        $httpClient = new CurlHTTPClient(env('LINE_BOT_CHANNEL_TOKEN'));
+//        $bot = new LINEBot($httpClient, ['channelSecret' => env('LINE_BOT_CHANNEL_SECRET')]);
         $message = new TextMessageBuilder($textNotification);
+//        $bot->pushMessage($userIds, $message);
 
-        $bot->pushMessage($userIds, $message);
+        event(new NewStoreRequestRegistration(UserController::CHANNEL_LINE, $userIds, $titleSubject, $textNotification));
 
 
         return $message;
