@@ -44,20 +44,14 @@
                         </div>
                     </form>
                     <div class="media-body text-end" style="display: flex; justify-content: flex-end;">
-                        <div class="btn-group">
-                            <button
-                                class="btn dropdown-toggle btn-outline-primary ms-2 btn-new-notification"
-                                style="display: flex; justify-content: center; align-items: center;"
-                                data-toggle="dropdown"
-                                >
-                                <i data-feather="send"></i>New Notification
-                            </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="/admin/send-notification-view/2">Total Everyone</a>
-                                <a class="dropdown-item" href="/admin/send-notification-view/3/">Only Email</a>
-                            </div>
-                            </div>
-                        </div>
+                        <button
+                            class="btn btn-outline-primary ms-2 btn-new-notification"
+                            style="display: flex; justify-content: center; align-items: center;"
+                            data-toggle="dropdown"
+                        >
+                            <i data-feather="send"></i>New Notification
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 40px;">
@@ -142,32 +136,11 @@
 
 
         let btnNewNotification = document.querySelector('.btn-new-notification');
-        // btnNewNotification.addEventListener('click', (e)=> {
-        //     $('.parent-form-popup').css("display", "flex");
-        //     $('.parent-form-popup .title-popup').text("Choose a method of notification");
-
-        //     let newHtml = `
-        //         <button class="btn-lg btn-primary send-notification" notification_type="2">Total Everyone</button>
-        //         <button class="btn-lg btn-info send-notification" notification_type="3">Only Email</button>
-        //     `;
-        //     // document.querySelector('.parent-form-popup .faq-form').insertAdjacentHTML('beforeend', newHtml);
-        //     document.querySelector('.parent-form-popup .faq-form').innerHTML = newHtml;
-
-        //     let sendNotification = document.querySelectorAll('.send-notification');
-        //     sendNotification.forEach((item) => {
-        //         item.addEventListener('click', (e) => {
-        //             let notification_type = e.currentTarget.getAttribute('notification_type');
-        //             window.location.href = "/admin/send-notification-view/" + notification_type;
-        //         });
-
-        //     })
-
-        //     $('.parent-form-popup .close-popup').click(function() {
-        //         $('.parent-form-popup').css("display", "none");
-        //     });
 
 
-        // });
+        btnNewNotification.addEventListener('click', (e)=> {
+            window.location.href = "/admin/send-notification-view/3";
+        })
 
     </script>
 
