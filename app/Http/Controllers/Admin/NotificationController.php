@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\NewStoreRequestRegistration;
 use App\Handler\NotificationHandler;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\User\UserController;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
 use Session;
@@ -246,7 +248,6 @@ class NotificationController extends Controller
     {
         $account_sid = getenv("TWILIO_SID");
         $auth_token = getenv("TWILIO_AUTH_TOKEN");
-        $twilio_number = getenv("TWILIO_NUMBER");
         $client = new Client($account_sid, $auth_token);
         $res = $client->messages
             ->create($sms_number, // to
@@ -255,5 +256,7 @@ class NotificationController extends Controller
                     "messagingServiceSid" => $twilio_number = getenv("TWILIO_SMS_SERVICE_ID")
                 ]
             );
+        event(new NewStoreRequestRegistration(UserController::CHANNEL_SMS, $sms_number, "", $message));
+
     }
 }
