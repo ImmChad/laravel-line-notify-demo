@@ -204,8 +204,8 @@
             <div class="container-fluid" style="padding: 30px 0px !important; ">
                 <div class="row">
                     <div class="col-xl-6 xl-100 box-col-12">
-                        <div class="widget-joins card widget-arrow">
-                            <div class="row">
+                        <div class="widget-joins card widget-arrow" style="">
+                            <div class="row" style="margin: 0px !important; padding: 0rem 0rem !important;">
                                 @yield('ContentAdmin')
                             </div>
                         </div>
@@ -215,16 +215,6 @@
             </div>
             <!-- Container-fluid Ends-->
         </div>
-        <!-- footer start-->
-        {{-- <footer class="footer">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-12 footer-copyright text-center">
-                        <p class="mb-0">Copyright {{ date('Y') }} © Cuba theme by pixelstrap </p>
-                    </div>
-                </div>
-            </div>
-        </footer> --}}
     </div>
 </div>
 

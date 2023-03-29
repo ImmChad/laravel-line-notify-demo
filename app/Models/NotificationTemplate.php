@@ -23,5 +23,6 @@ class NotificationTemplate extends Model
         'created_at'
     ];
     protected $primaryKey = 'id';
+    protected $keyType = 'string';
     protected $table = 'notification_template';
 }

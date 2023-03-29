@@ -33,6 +33,11 @@ class NotificationHandler
 
 
 
+
+
+
+
+
     /**
      * @return Application|Factory|View|RedirectResponse
      */
@@ -166,10 +171,12 @@ class NotificationHandler
     }
 
     /**
-     * @param $notificationType
+     * @param int $notificationType
+     * @param String|null $notificationSender
+     * @param String|null $notificationTemplate
      * @return View|Factory|RedirectResponse|Application
      */
-    public function showSendNotificationView($notificationType) :View|Factory|RedirectResponse|Application
+    public function showSendNotificationView(int $notificationType, String $notificationSender = null, String $notificationTemplate = null) : View|Factory|RedirectResponse|Application
     {
         if ($notificationType == 2) {
 
@@ -183,15 +190,38 @@ class NotificationHandler
         }
         else if ($notificationType == 3)
         {
-            $dataTemplate = $this->notificationRepository->getTemplate();
 
-            if (isset($_GET['messToast'])) {
+            if (isset($_GET['messToast']))
+            {
                 $messToast = $_GET['messToast'];
+                return view('Backend.send-notification-view-3', compact('messToast'));
+            }
+            else
+            {
 
-                return view('Backend.send-notification-view-3', compact('dataTemplate', 'messToast'));
+                if($notificationSender != null)
+                {
+                    $dataTemplate = $this->notificationRepository->getTemplateByTemplateType($notificationSender);
+                    $dataRegion = $this->notificationRepository->getRegion();
+                    $dataIndustry = $this->notificationRepository->getIndustry();
 
-            } else {
-                return view('Backend.send-notification-view-3', compact('dataTemplate'));
+
+
+                    if ($notificationTemplate != null)
+                    {
+                        $detailTemplate = $this->notificationRepository->getTemplateFromId($notificationTemplate)->first();
+                        return view('Backend.send-notification-view-3', compact('notificationSender', 'dataTemplate', 'detailTemplate', 'dataRegion', 'dataIndustry' ));
+                    }
+                    else
+                    {
+                        return view('Backend.send-notification-view-3', compact('notificationSender', 'dataTemplate', 'dataRegion', 'dataIndustry'));
+                    }
+                }
+                else
+                {
+                    return view('Backend.send-notification-view-3');
+                }
+
             }
 
         }
@@ -330,6 +360,15 @@ class NotificationHandler
         $data = $this->notificationRepository->getTemplateForSendMail($request->template_id);
 
         return $data[0];
+    }
+
+    /**
+     * @param int $regionId
+     * @return Collection
+     */
+    function getAreaFromRegionId(int $regionId) : Collection
+    {
+        return $this->notificationRepository->getAreaFromRegionId($regionId);
     }
 
 

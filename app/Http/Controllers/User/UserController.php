@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Events\NewStoreRequestRegistration;
-use App\Handler\UserHandler;
 use App\Services\LineService;
 
 use App\Http\Controllers\Controller;
@@ -42,7 +40,7 @@ class UserController extends Controller
     const CHANNEL_EMAIL = 2;
     const CHANNEL_SMS = 3;
 
-    public function __construct(private UserHandler $userHandler,LineService $lineService)
+    public function __construct(LineService $lineService)
     {
         $this->lineService = $lineService;
     }
@@ -103,6 +101,7 @@ class UserController extends Controller
         } else {
             return view('Frontend.signup-user');
         }
+
     }
 
     function viewUser()
@@ -386,16 +385,8 @@ class UserController extends Controller
 
     function sendMessForUser($userId, $displayName)
     {
-
-        // $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient('<channel access token>');
-        // $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => '<channel secret>']);
-        // $userIds = [$userId];
-        // $bot->multicast($userIds, '<message>');
-
-
-
-        // $responseUser = $bot->getProfile($userId);
-
+        $httpClient = new CurlHTTPClient(env('LINE_BOT_CHANNEL_TOKEN'));
+        $bot = new LINEBot($httpClient, ['channelSecret' => env('LINE_BOT_CHANNEL_SECRET')]);
 
         $userIds = $userId;
         $titleSubject = "Notification";
@@ -410,12 +401,9 @@ class UserController extends Controller
                 'scheduled_at' => null
             ]
         );
-//        $httpClient = new CurlHTTPClient(env('LINE_BOT_CHANNEL_TOKEN'));
-//        $bot = new LINEBot($httpClient, ['channelSecret' => env('LINE_BOT_CHANNEL_SECRET')]);
         $message = new TextMessageBuilder($textNotification);
-//        $bot->pushMessage($userIds, $message);
 
-        event(new NewStoreRequestRegistration(UserController::CHANNEL_LINE, $userIds, $titleSubject, $textNotification));
+        $bot->pushMessage($userIds, $message);
 
 
         return $message;
@@ -651,7 +639,7 @@ class UserController extends Controller
 
     }
 
-    public function paginate($items, $perPage = 5, $page = null, $options = [])
+    public function paginate($items, $perPage = 10, $page = null, $options = [])
     {
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
         $items = $items instanceof Collection ? $items : Collection::make($items);

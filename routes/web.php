@@ -67,9 +67,12 @@ Route::group(array('prefix' => '/admin','middleware'=>'checkAdminLogin'), functi
     Route::get('/notification/{id}/detail', [NotificationController::class, 'detailNotification']);
     Route::get('/notification/delete/{notificationId}', [NotificationController::class, 'deleteNotification']);
 
-    Route::get('/send-notification-view/{notification_type}', [NotificationController::class, 'showSendNotificationView'])->name('notification-list');
+    Route::get('/send-notification-view/{notificationType}/{notificationSender?}/{notificationTemplate?}', [NotificationController::class, 'showSendNotificationView'])->name('notification-list');
     Route::post('/send-mess', [NotificationController::class, 'sendMessForListUser']);
     Route::post('/get-template-for-send-mail', [NotificationController::class, 'getTemplateForSendMail'])->name('notification-list');
+
+    // get info area from region id
+    Route::post('/get-area-from-region-id', [NotificationController::class, 'getAreaFromRegionId']);
 
     Route::get('/update-notification-view/{notificationId}', [NotificationController::class, 'showContentUpdateNotificationToView'])->name('notification-list');
     Route::post('/update-mess', [NotificationController::class, 'sendUpdateForListUser']);
@@ -77,21 +80,18 @@ Route::group(array('prefix' => '/admin','middleware'=>'checkAdminLogin'), functi
     // link template list
     Route::get('/template-management', [NotificationController::class, 'showTemplateManagementView'])->name('template-management');
 
-    Route::get('/add-new-template-view', [NotificationController::class, 'showAddNewTemplateView'])->name('template-management.add_get');
+//    Route::get('/add-new-template-view', [NotificationController::class, 'showAddNewTemplateView'])->name('template-management.add_get');
     Route::post('/add-template', [NotificationController::class, 'reqAddNewTemplate']);
 
 
     Route::get('/update-template-view/{templateId}', [NotificationController::class, 'showUpdateTemplateView'])->name('template-management');
     Route::post('/update-template', [NotificationController::class, 'reqUpdateNewTemplate']);
 
-//    Route::get('/add-new-template-view', function ()
-//    {
-//        return view("Backend.template.tmp-add-new-template-view");
-//    })->name('template-management.add_get');
-//    Route::get('/send-notification-view/3', function ()
-//    {
-//        return view("Backend.tmp-send-notification-view-3");
-//    })->name('notification-list');
+    Route::get('/add-new-template-view', function ()
+    {
+        return view("Backend.template.tmp-add-new-template-view");
+    })->name('template-management.add_get');
+
 });
 
 

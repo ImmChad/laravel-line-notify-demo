@@ -4703,7 +4703,6 @@ strong~p {
 }
 
 .card {
-    margin-bottom: 30px;
     border: none;
     -webkit-transition: all 0.3s ease;
     transition: all 0.3s ease;

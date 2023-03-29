@@ -108,12 +108,14 @@ class NotificationController extends Controller
     }
 
     /**
-     * @param $notificationType
+     * @param int $notificationType
+     * @param String|null $notificationSender
+     * @param String|null $notificationTemplate
      * @return Application|Factory|View|RedirectResponse
      */
-    function showSendNotificationView($notificationType): View|Factory|RedirectResponse|Application
+    function showSendNotificationView(int $notificationType, String $notificationSender = null, String $notificationTemplate = null): View|Factory|RedirectResponse|Application
     {
-        return $this->notificationHandler->showSendNotificationView($notificationType);
+        return $this->notificationHandler->showSendNotificationView($notificationType, $notificationSender, $notificationTemplate);
     }
 
     /**
@@ -231,6 +233,24 @@ class NotificationController extends Controller
     {
         return $this->notificationHandler->getTemplateForSendMail($request);
     }
+
+    /**
+     * @param Request $request
+     * @return Collection
+     */
+    function getAreaFromRegionId(Request $request) : Collection
+    {
+        $request->validate([
+            'regionId' => 'max:10'
+        ]);
+        return $this->notificationHandler->getAreaFromRegionId($request->regionId);
+    }
+
+
+
+
+
+
 
 
 

@@ -1,27 +1,19 @@
 @extends('Backend.backend-view')
 @section('ContentAdmin')
     <style>
-        .dropdown-item
-        {
-            cursor: pointer;
-        }
-        .widget-joins:after
-        {
-            height: 0px;
-        }
-        .content-send-notification
-        {
+
+        .content-send-notification {
             padding: 20px;
         }
-        .section-select-type
-        {
+
+        .section-select-type {
             margin-left: 10px;
             margin-top: 10px;
             margin-bottom: 10px;
             width: max-content;
         }
-        #btn-back-page
-        {
+
+        #btn-back-page {
             position: absolute;
             right: 10px;
             top: 10px;
@@ -34,52 +26,45 @@
             background: rgba(115, 102, 255, 0.08);
             color: #7366ff;
         }
-        .section-select-type .dropdown
-        {
+
+        .section-select-type .dropdown {
             width: max-content;
-        }
-        .section-params
-        {
-            display: flex;
-            justify-content: space-between;
-        }
-        .part-select-params
-        {
-            margin: 10px 0px;
-            width: max-content;
-            max-width: 240px;
         }
 
-        .part-select-params .dropdown
-        {
+        .part-select-params {
+            margin: 10px 0px;
             width: max-content;
         }
-        .part-select-params .dropdown-toggle
-        {
+
+        .part-select-params .dropdown {
+            width: max-content;
+        }
+
+        .part-select-params .dropdown-toggle {
             width: 100%;
             margin-right: 20px;
             min-width: 180px;
         }
-        .section-template
-        {
+
+        .section-template {
 
             position: relative;
         }
-        .part-select-template
-        {
+
+        .part-select-template {
             background: white;
             position: absolute;
             right: 10px;
             top: 10px;
-            border-radius:10px ;
+            border-radius: 10px;
         }
-        .section-select-type .dropdown-toggle, .part-select-template .dropdown-toggle
-        {
+
+        .section-select-type .dropdown-toggle, .part-select-template .dropdown-toggle {
             width: 100%;
             margin-right: 20px;
         }
-        .part-preview-template .ipt-content-template
-        {
+
+        .part-preview-template .ipt-content-template {
             width: 100%;
             height: 100%;
             min-height: 300px;
@@ -88,142 +73,229 @@
             border-radius: .5rem;
             border: 3px solid var(--theme-deafult);
         }
-        .part-preview-template .ipt-content-template::-webkit-scrollbar
-        {
+
+        .part-preview-template .ipt-content-template::-webkit-scrollbar {
             display: none;
         }
-        .section-option-others
-        {
+
+        .section-option-others {
             margin: 10px 0px;
             display: flex;
+            flex-direction: column;
             align-items: center;
         }
-        .part-list-btn-template
-        {
-            flex: 1;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .btn-add-template
-        {
-            display: flex;
-            align-items: center;
-            width: max-content;
-            width: max-content;
-            height: max-content;
-        }
-        .part-list-btn-send
-        {
 
-            width: 50%;
-            display: flex;
-            flex-wrap: wrap;
-        }
-        .btn-opt-send
-        {
-            margin-right: 20px;
-            margin-bottom: 20px;
-            min-width: 180px;
-            width: 100%;
-        }
-        .section-option-others .col
-        {
+        .section-option-others .col {
             display: flex;
             flex-direction: column;
         }
+
+        .btn-tick-send {
+            border: 2px solid #51bb25;
+            color: black;
+        }
+
+        .btn-tick-send:hover {
+            border: 2px solid #51bb25 !important;
+            background: #51bb25 !important;
+            color: black;
+        }
+
+        .btn-send {
+            border: 2px solid var(--theme-deafult);
+            color: var(--theme-deafult);
+        }
+
+        .btn-send:hover {
+            background: var(--theme-deafult);
+            color: white;
+        }
     </style>
-    <div class="row" style="    --bs-gutter-x: 0rem !important; display: flex; justify-content: center; align-items: center;">
-        <div class="col-sm-12 col-lg-12 col-xl-12 col-md-12 box-col-12">
+
+
+    <div class="row"
+         style="display: flex; justify-content: center; align-items: center; padding: 0rem 0rem !important; margin: 0px !important;">
+        <div class="col" style="padding: 0px;">
             <div class="card height-equal">
                 <div class="content-send-notification">
                     <div id="btn-back-page">Back</div>
                     <div class="section-select-type">
-                        <select id="ipt-select-receiverType" class="form-select" aria-label="Default select example">
-                            <option value="0" >Please select type</option>
-                            <option value="1" >User</option>
-                            <option value="2" >Store</option>
+                        <select class="form-select notification-type-select" aria-label="Default select example">
+
+                            @if(isset($notificationSender))
+
+                                @if($notificationSender == "store")
+                                    <option value="0" uri="null">Please select type</option>
+                                    <option value="1" uri="user">User</option>
+                                    <option value="2" uri="store" selected>Store</option>
+                                @else
+                                    <option value="0" uri="null">Please select type</option>
+                                    <option value="1" uri="user" selected>User</option>
+                                    <option value="2" uri="store">Store</option>
+                                @endif
+
+                            @else
+                                <option value="0" uri="null" selected>Please select type</option>
+                                <option value="1" uri="user">User</option>
+                                <option value="2" uri="store">Store</option>
+                            @endif
+
                         </select>
                     </div>
-                        <div class="section-template">
-                            <div class="part-select-template">
-                                <select id="ipt-select-receiverType" class="form-select" aria-label="Default select example">
-                                    <option value="0" >Please select type</option>
-                                    <option value="1" >User</option>
-                                    <option value="2" >Store</option>
-                                </select>
-                            </div>
-                            <div class="part-preview-template">
-                                <div class="ipt-content-template" data-cke-editable="false" contenteditable="true" id="ipt-content-notification">before <button id="alo" contenteditable="false" >Alo</button> after
-                                </div>
-                            </div>
+                    <div class="section-template">
+                        <div class="part-select-template">
+                            <select class="form-select template-select" aria-label="Default select example">
+
+                                @if(isset($notificationSender))
+
+                                    @if(isset($detailTemplate))
+
+                                        <option templateId="null">Please select type</option>
+                                        @foreach($dataTemplate as $subDataTemplate)
+
+                                            @if($detailTemplate->id == $subDataTemplate->id)
+                                                <option notificationSender="{{ $notificationSender }}"
+                                                        templateId="{{ $subDataTemplate->id }}"
+                                                        templateName="{{ $subDataTemplate->template_name }}"
+                                                        selected>{{ $subDataTemplate->template_name }}</option>
+                                            @else
+                                                <option notificationSender="{{ $notificationSender }}"
+                                                        templateId="{{ $subDataTemplate->id }}"
+                                                        templateName="{{ $subDataTemplate->template_name }}">{{ $subDataTemplate->template_name }}</option>
+                                            @endif
+
+                                        @endforeach
+
+                                    @else
+
+                                        <option templateId="null">Please select type</option>
+                                        @foreach($dataTemplate as $subDataTemplate)
+                                            <option notificationSender="{{ $notificationSender }}"
+                                                    templateId="{{ $subDataTemplate->id }}"
+                                                    templateName="{{ $subDataTemplate->template_name }}">{{ $subDataTemplate->template_name }}</option>
+                                        @endforeach
+
+                                    @endif
+
+                                @else
+                                    <option value="0" uri="null" selected>No template</option>
+                                @endif
+
+                            </select>
                         </div>
-                        <div class="section-option-others">
-                            <div class="row">
-                                <div class="col">
-                                    <div class="part-select-params">
-                                        <select class="form-select" aria-label="Default select example">
-                                            <option selected>Please select region</option>
-                                            <option value="1">Kanto</option>
-                                            <option value="2">Kansai</option>
+                        <div class="part-preview-template">
+                            <div class="ipt-content-template" data-cke-editable="false" contenteditable="true"
+                                 id="ipt-content-notification">
+                                @if (isset($detailTemplate ) && $detailTemplate != null)
+                                    {{ $detailTemplate->template_title }} - {!! $detailTemplate->template_content !!}
+                                @else
+                                    Enter content, please!
+                                @endif
+                            </div>
 
-                                        </select>
-                                    </div>
-                                    <div class="part-list-btn-template">
-                                        <div class="btn btn-primary btn-add-template" id="btn-add-template">
-                                            Add Templates
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="part-select-params">
-                                        <select class="form-select" aria-label="Default select example">
-                                            <option selected>Please select Area</option>
-                                            <option value="1">One</option>
-                                            <option value="2">Two</option>
-                                            <option value="3">Three</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="part-select-params">
-                                        <select class="form-select" aria-label="Default select example">
-                                            <option selected>Please select industry</option>
-                                            <option value="1">One</option>
-                                            <option value="2">Two</option>
-                                        </select>
+                        </div>
 
-                                    </div>
-                                    <div id="btn-send-schedule" class="btn btn-primary btn-opt-send">
-                                        Send with schedule
-                                    </div>
-                                    <div id="btn-show-main-scheduled" class="btn btn-primary btn-opt-send">
+                    </div>
 
-                                        List  mail scheduled
-                                    </div>
+
+                    <div class="section-option-others">
+                        <div class="row" style="width: 100%;">
+                            <div class="col-md-3">
+                                <div class="part-select-params" style="width: 100%;">
+                                    <select class="form-select region-select" aria-label="Default select example">
+
+                                        @if(isset($notificationSender))
+                                            <option regionId="0" selected>Please select region</option>
+                                            @foreach($dataRegion as $subDataRegion)
+                                                <option
+                                                    regionId="{{ $subDataRegion->id }}">{{ $subDataRegion->region_name }}
+                                                    - {{ $subDataRegion->region_name_jp }}</option>
+                                            @endforeach
+                                        @else
+                                            <option regionId="0" selected>Null</option>
+                                        @endif
+
+
+                                    </select>
                                 </div>
-                                <div class="col">
-                                    <div class="part-select-params">
-                                        <select class="form-select" aria-label="Default select example">
-                                            <option selected>Send for</option>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="part-select-params " style="width: 100%;">
+                                    <select class="form-select area-select" aria-label="Default select example">
+                                        <option value="0" selected>Null</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="part-select-params industry-select" style="width: 100%;">
+                                    <select class="form-select" aria-label="Default select example">
+                                        @if(isset($notificationSender))
+                                            <option industryId="0" selected>Please select industry</option>
+                                            @foreach($dataIndustry as $subDataIndustry)
+                                                <option
+                                                    industryId="{{ $subDataIndustry->id }}">{{ $subDataIndustry->industry_name }}
+                                                    - {{ $subDataIndustry->industry_name_jp }}</option>
+                                            @endforeach
+                                        @else
+                                            <option industryId="0" selected>Null</option>
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="part-select-params" style="width: 100%;">
+                                    <select class="form-select" aria-label="Default select example"
+                                            style="width: 100%;">
+
+                                        @if(isset($notificationSender) && $notificationSender == "user")
+                                            <option value="0" selected>Send for</option>
+                                            <option value="1">All user</option>
+                                            <option value="2">User narrow down selection from area</option>
+                                        @elseif(isset($notificationSender) && $notificationSender == "store")
+                                            <option value="0" selected>Send for</option>
                                             <option value="1">All store</option>
-                                            <option value="2">Store narrow down selection drom area</option>
-                                        </select>
-                                    </div>
-                                    <div id="btn-send-now" class="btn btn-primary btn-opt-send">
+                                            <option value="2">Store narrow down selection from area</option>
+                                        @else
+                                            <option value="0" selected>Null</option>
+                                        @endif
 
-                                        Send now
-                                    </div>
-
-                                    <div id="btn-show-main-send" class="btn btn-primary btn-opt-send">
-
-                                        List mail send
-                                    </div>
+                                    </select>
                                 </div>
                             </div>
                         </div>
-
+                        <div class="row" style="width: 100%; margin-top: 15px;">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-3"></div>
+                            <div class="col-md-3">
+                                <div
+                                    class="form-check form-check-inline radio radio-dark btn btn-outline-primary btn-tick-send">
+                                    <input class="form-check-input radio-send-with-schedule" type="radio" name="radio1"
+                                           value="option1">
+                                    <label class="form-check-label mb-0" style="margin: 0;">Send with
+                                        schedule</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div
+                                    class="form-check form-check-inline radio radio-dark btn btn-outline-primary btn-tick-send">
+                                    <input class="form-check-input radio-send-now" type="radio" name="radio1"
+                                           value="option1" >
+                                    <label class="form-check-label mb-0" style="margin: 0;">Send
+                                        now</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="width: 100%; margin-top: 15px;">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-3"></div>
+                            <div class="col-md-3"></div>
+                            <div class="col-md-3">
+                                <button class="btn btn-outline-primary btn-send">
+                                    Send
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -233,16 +305,91 @@
     {{-- display calendar --}}
     {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script> --}}
 
-
-
-
 @endsection
 
 
 @section('script')
 
-    <script src="{{asset('assets/js/email-app.js')}}"></script>
     <script>
+        // choose type function
+        let notificationTypeSelect = document.querySelector('.notification-type-select');
+        notificationTypeSelect.addEventListener('change', function (ev) {
+            let uri = notificationTypeSelect.options[notificationTypeSelect.selectedIndex].getAttribute('uri');
+
+            if (uri != "null") {
+                window.location.href = "/admin/send-notification-view/3/" + uri + "/"
+            }
+
+        });
+
+        // choose template function
+        let templateSelect = document.querySelector('.template-select');
+        templateSelect.addEventListener('change', (e) => {
+            let templateId = templateSelect.options[templateSelect.selectedIndex].getAttribute('templateId');
+
+            if (templateId != 'null') {
+                let notificationSender = templateSelect.options[templateSelect.selectedIndex].getAttribute('notificationSender');
+                window.location.href = "/admin/send-notification-view/3/" + notificationSender + "/" + templateId;
+            }
+
+        })
+
+        // get list area from region function
+        let regionSelect = document.querySelector('.region-select');
+        regionSelect.addEventListener('change', () => {
+
+            let regionId = regionSelect.options[regionSelect.selectedIndex].getAttribute('regionId');
+
+            if (regionId != 0) {
+                console.log(regionId)
+                let form = new FormData()
+                form.append('regionId', regionId)
+
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    url: '{{URL::to("/admin/get-area-from-region-id/")}}',
+                    method: 'post',
+                    data: form,
+                    contentType: false,
+                    processData: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        chooseArea(data);
+                    },
+                    error: function () {
+                        displayToast('Can not add data!');
+                    }
+                });
+            }
+
+        })
+
+        function chooseArea(data) {
+            let areaSelect = document.querySelector('.area-select');
+            areaSelect.innerHTML = `
+                <option areaId="0">Please select area</option
+                ${data.map((el, index) => {
+                if (data.length != 0) {
+                    return `<option areaId="${el.id}">${el.area_name}</option>`
+                } else {
+                    return `<option areaId="0">No available</option>`
+                }
+            })
+                .join("")}
+            `
+        }
+
+        //
+
+
+
+
+
+
         {{--let dataTemplate = document.querySelector('#dataTemplate');--}}
         {{--dataTemplate.addEventListener('change', (e) => {--}}
         {{--    let template_id = e.currentTarget.options[e.currentTarget.selectedIndex].getAttribute('template_id');--}}
@@ -286,8 +433,8 @@
         {{--})--}}
 
 
-        let returnNotificationList = document.querySelector('#btn-back-page');
-        returnNotificationList.addEventListener('click', (e)=>{
+        let btnBackPage = document.querySelector('#btn-back-page');
+        btnBackPage.addEventListener('click', (e) => {
             window.location.href = "/admin/notification-list";
         });
 
