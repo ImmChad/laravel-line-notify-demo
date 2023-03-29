@@ -385,17 +385,8 @@ class UserController extends Controller
 
     function sendMessForUser($userId, $displayName)
     {
-
-        // $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient('<channel access token>');
-        // $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => '<channel secret>']);
-        // $userIds = [$userId];
-        // $bot->multicast($userIds, '<message>');
-
         $httpClient = new CurlHTTPClient(env('LINE_BOT_CHANNEL_TOKEN'));
         $bot = new LINEBot($httpClient, ['channelSecret' => env('LINE_BOT_CHANNEL_SECRET')]);
-
-        // $responseUser = $bot->getProfile($userId);
-
 
         $userIds = $userId;
         $titleSubject = "Notification";
@@ -648,7 +639,7 @@ class UserController extends Controller
 
     }
 
-    public function paginate($items, $perPage = 5, $page = null, $options = [])
+    public function paginate($items, $perPage = 10, $page = null, $options = [])
     {
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
         $items = $items instanceof Collection ? $items : Collection::make($items);

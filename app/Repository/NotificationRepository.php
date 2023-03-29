@@ -234,20 +234,8 @@ class NotificationRepository
      */
     public function getTemplateFromId(String $templateId): Collection
     {
-        return  NotificationTemplate::where(['id' => $templateId])
-            ->get(
-                array(
-                    'id',
-                    'template_name',
-                    'template_title',
-                    'template_content',
-                    'region_id',
-                    'area_id',
-                    'industry_id',
-                    'store_id',
-                    'created_at',
-                )
-            );
+        return NotificationTemplate::where(['id' => $templateId])
+            ->get();
     }
 
     /**
@@ -300,6 +288,54 @@ class NotificationRepository
             ->get()->toArray();
     }
 
+    /**
+     * @param String $notificationSender
+     * @return Collection
+     */
+    public function getTemplateByTemplateType(String $notificationSender) : Collection
+    {
+        return NotificationTemplate::where(['template_type' => $notificationSender])
+            ->get(
+                array(
+                    'id',
+                    'template_type',
+                    'template_name',
+                    'template_title',
+                    'template_content',
+                    'region_id',
+                    'area_id',
+                    'industry_id',
+                    'store_id',
+                    'created_at'
+                )
+            );
+    }
+
+    /**
+     * @param int $regionId
+     * @return Collection
+     */
+    public function getAreaFromRegionId(int $regionId) : Collection
+    {
+        return DB::table('static_area')
+            ->where('pref_cd', $regionId)
+            ->get(
+                array(
+                    'id',
+                    'area_cd',
+                    'area_name',
+                    'pref_cd',
+                    'created_at',
+                    'updated_at',
+                    'area_name_jp'
+                )
+            );
+    }
+
+
+
+
+
 
 
 
@@ -314,6 +350,7 @@ class NotificationRepository
             ->get(
                 array(
                     'id',
+                    'template_type',
                     'template_name',
                     'template_title',
                     'template_content',
@@ -335,7 +372,9 @@ class NotificationRepository
             ->get(
                 array(
                     'id',
-                    'region_name'
+                    'region_name',
+                    'region_cd',
+                    'region_name_jp'
                 )
             );
     }
@@ -345,15 +384,18 @@ class NotificationRepository
      */
     public function getArea() : Collection
     {
-        $data = DB::table('static_area')
+        return DB::table('static_area')
             ->get(
                 array(
                     'id',
-                    'area_name'
+                    'area_cd',
+                    'area_name',
+                    'pref_cd',
+                    'created_at',
+                    'updated_at',
+                    'area_name_jp'
                 )
             );
-
-        return $data;
     }
 
     /**
@@ -361,15 +403,14 @@ class NotificationRepository
      */
     public function getIndustry() : Collection
     {
-        $data = DB::table('static_industry')
+        return DB::table('static_industry')
             ->get(
                 array(
                     'id',
-                    'industry_name'
+                    'industry_name',
+                    'industry_name_jp'
                 )
             );
-
-        return $data;
     }
 
     /**
@@ -377,14 +418,12 @@ class NotificationRepository
      */
     public function getStore() : Collection
     {
-        $data = DB::table('static_store')
+        return DB::table('static_store')
             ->get(
                 array(
                     'id',
                     'store_name'
                 )
             );
-
-        return $data;
     }
 }
