@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('notification_draft', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('notification_for', 255);
             $table->string('notification_title', 255);
-            $table->string('notification_content', 255);
+            $table->string('notification_content');
+            $table->integer('area_id');
+            $table->integer('industry_id');
             $table->integer('sms_user');
             $table->integer('line_user');
             $table->integer('mail_user');

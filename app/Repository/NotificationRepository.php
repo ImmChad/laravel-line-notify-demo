@@ -256,16 +256,14 @@ class NotificationRepository
      */
     public function addNewTemplate(object $request) : int
     {
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
         return NotificationTemplate::insert([
-                'created_at' => now(),
                 'id' => Str::uuid()->toString(),
-                'template_name' => $request->template_name,
-                'template_title' => $request->template_title,
-                'template_content' => $request->template_content,
-                'region_id' => $request->region_id,
-                'area_id' => $request->area_id,
-                'industry_id' => $request->industry_id,
-                'store_id' => $request->store_id,
+                'template_type' => $request->templateType,
+                'template_name' => $request->templateTitle,
+                'template_title' => $request->templateTitle,
+                'template_content' => $request->templateContent,
+                'created_at' => date('Y/m/d H:i:s')
             ]);
     }
 
@@ -314,10 +312,6 @@ class NotificationRepository
                     'template_name',
                     'template_title',
                     'template_content',
-                    'region_id',
-                    'area_id',
-                    'industry_id',
-                    'store_id',
                     'created_at'
                 )
             );
@@ -344,13 +338,121 @@ class NotificationRepository
             );
     }
 
+    /**
+     * @param object $request
+     * @return Collection
+     */
+    public function getListUserRole2ById(object $request) : Collection
+    {
+        $areaId = $request->areaId;
+        $industryId = $request->industryId;
+        return DB::table(DB::raw("user, seeker_expect_location sel, seeker_expect_industry sei"))
+            ->select(DB::raw('user.id, user.email, user.phone_number_landline'))
+            ->where(function($query) use ($areaId, $industryId){
+                if(intval($areaId) > 0)
+                {
+                    $query->where('sel.area_id', '=', intval($areaId));
+                    $query->whereRaw("user.id = sel.user_id");
+                }
+                if(intval($industryId) > 0)
+                {
+                    $query->where('sei.industry_id', '=', intval($industryId));
+                    $query->whereRaw("user.id = sei.user_id");
+                }
+            })
+            ->where('user.role', '=', 2)
+            ->get();
+    }
+
+    /**
+     * @param object $request
+     * @return Collection
+     */
+    public function getListUserRole3ById(object $request) : Collection
+    {
+        $areaId = $request->areaId;
+        $industryId = $request->industryId;
+
+        return DB::table(DB::raw('user, store'))
+            ->select(DB::raw('user.id, store.mail_address, store.phone_number'))
+            ->where(function($query) use ($areaId, $industryId){
+                if(intval($areaId) > 0)
+                {
+                    $query->where('store.area_cd', '=', intval($areaId));
+                }
+                if(intval($industryId) > 0)
+                {
+                    $query->where('store.business_type_id', '=', intval($industryId));
+                }
+            })
+            ->whereRaw("user.id = store.user_id")
+            ->where('user.role', '=', 3)
+            ->get();
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getListUserAllRole2() : Collection
+    {
+        return DB::table('user')->where('role', '=', 2)->get();
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getListUserAllRole3() : Collection
+    {
+        return DB::table(DB::raw('user, store'))
+            ->select(DB::raw('user.id, store.mail_address, store.phone_number'))
+            ->where('role', '=', 3)
+            ->whereRaw("user.id = store.user_id")
+            ->get();
+    }
+
+    /**
+     * @param String $id
+     * @return Collection
+     */
+    public function getListUserLine(String $id) : Collection
+    {
+        return DB::table('notification_user_line')->where('user_id', $id)->get();
+    }
+
+
+    /**
+     * @param object $request
+     * @param int $totalUserLine
+     * @param int $totalUserMail
+     * @param int $totalUserSms
+     * @return int
+     */
+    public function saveNotificationDraft(object $request, int $totalUserLine, int $totalUserMail, int $totalUserSms) : int
+    {
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
+        return DB::table('notification_draft')->insertGetId([
+            'id' => Str::uuid()->toString(),
+            'notification_for' => $request->announceFor,
+            'notification_title' => $request->title,
+            'notification_content' => $request->message,
+            'area_id' => $request->areaId,
+            'industry_id' => $request->industryId,
+            'sms_user' => $totalUserSms,
+            'line_user' => $totalUserLine,
+            'mail_user' =>$totalUserMail,
+            'created_at' => date('Y/m/d H:i:s')
+        ]);
+    }
 
 
 
 
 
 
-
+    public function getNotificationDraft() : Collection
+    {
+        return DB::table('notification_draft')->get();
+    }
 
     /**
      * @return Collection
@@ -366,11 +468,6 @@ class NotificationRepository
                     'template_name',
                     'template_title',
                     'template_content',
-                    'template_type',
-                    'region_id',
-                    'area_id',
-                    'industry_id',
-                    'store_id',
                     'created_at',
                 )
             );
@@ -436,6 +533,34 @@ class NotificationRepository
                 array(
                     'id',
                     'store_name'
+                )
+            );
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getParamUser() : Collection
+    {
+        return DB::table('param_user')
+            ->get(
+                array(
+                    'id',
+                    'value'
+                )
+            );
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getParamStore() : Collection
+    {
+        return DB::table('param_store')
+            ->get(
+                array(
+                    'id',
+                    'value'
                 )
             );
     }
