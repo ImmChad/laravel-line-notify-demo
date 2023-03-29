@@ -55,6 +55,11 @@ Route::post('test/send-mess-twilio', [NotificationController::class, 'sendMessTw
 Route::get('/admin', [NotificationController::class, 'loginAdmin']);
 Route::post('/admin/login', [NotificationController::class, 'handleSubmitLogin']);
 Route::group(array('prefix' => '/admin','middleware'=>'checkAdminLogin'), function() {
+
+    Route::get("/notification-draft",function (){
+        return view("Backend.tmp-draft-notification-view");
+    });
+
     Route::get('/log-out', [NotificationController::class, 'reqLogout']);
 
     // link register line list
@@ -80,17 +85,13 @@ Route::group(array('prefix' => '/admin','middleware'=>'checkAdminLogin'), functi
     // link template list
     Route::get('/template-management', [NotificationController::class, 'showTemplateManagementView'])->name('template-management');
 
-//    Route::get('/add-new-template-view', [NotificationController::class, 'showAddNewTemplateView'])->name('template-management.add_get');
+    Route::get('/add-new-template-view', [NotificationController::class, 'showAddNewTemplateView'])->name('template-management.add_get');
     Route::post('/add-template', [NotificationController::class, 'reqAddNewTemplate']);
 
 
     Route::get('/update-template-view/{templateId}', [NotificationController::class, 'showUpdateTemplateView'])->name('template-management');
     Route::post('/update-template', [NotificationController::class, 'reqUpdateNewTemplate']);
 
-    Route::get('/add-new-template-view', function ()
-    {
-        return view("Backend.template.tmp-add-new-template-view");
-    })->name('template-management.add_get');
 
 });
 
