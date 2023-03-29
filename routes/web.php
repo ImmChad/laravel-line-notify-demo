@@ -55,6 +55,11 @@ Route::post('test/send-mess-twilio', [NotificationController::class, 'sendMessTw
 Route::get('/admin', [NotificationController::class, 'loginAdmin']);
 Route::post('/admin/login', [NotificationController::class, 'handleSubmitLogin']);
 Route::group(array('prefix' => '/admin','middleware'=>'checkAdminLogin'), function() {
+
+    Route::get("/notification-draft",function (){
+        return view("Backend.tmp-draft-notification-view");
+    });
+
     Route::get('/log-out', [NotificationController::class, 'reqLogout']);
 
     // link register line list
@@ -68,7 +73,7 @@ Route::group(array('prefix' => '/admin','middleware'=>'checkAdminLogin'), functi
     Route::get('/notification/delete/{notificationId}', [NotificationController::class, 'deleteNotification']);
 
     Route::get('/send-notification-view/{notificationType}/{notificationSender?}/{notificationTemplate?}', [NotificationController::class, 'showSendNotificationView'])->name('notification-list');
-    Route::post('/send-mess', [NotificationController::class, 'sendMessForListUser']);
+    Route::post('/send-mess', [NotificationController::class, 'saveNotificationDraft']);
     Route::post('/get-template-for-send-mail', [NotificationController::class, 'getTemplateForSendMail'])->name('notification-list');
 
     // get info area from region id
@@ -86,7 +91,6 @@ Route::group(array('prefix' => '/admin','middleware'=>'checkAdminLogin'), functi
 
     Route::get('/update-template-view/{templateId}', [NotificationController::class, 'showUpdateTemplateView'])->name('template-management');
     Route::post('/update-template', [NotificationController::class, 'reqUpdateNewTemplate']);
-
 
 
 });

@@ -178,58 +178,67 @@ class NotificationHandler
      */
     public function showSendNotificationView(int $notificationType, String $notificationSender = null, String $notificationTemplate = null) : View|Factory|RedirectResponse|Application
     {
-        if ($notificationType == 2) {
+        $checkNotificationDraft = $this->notificationRepository->getNotificationDraft();
 
-            if (isset($_GET['messToast'])) {
-                $messToast = $_GET['messToast'];
-                return view('Backend.send-notification-view-2', compact('messToast'));
-            } else {
-                return view('Backend.send-notification-view-2');
-            }
-
-        }
-        else if ($notificationType == 3)
+        if(count($checkNotificationDraft) > 0)
         {
-
-            if (isset($_GET['messToast']))
-            {
-                $messToast = $_GET['messToast'];
-                return view('Backend.send-notification-view-3', compact('messToast'));
-            }
-            else
-            {
-
-                if($notificationSender != null)
-                {
-                    $dataTemplate = $this->notificationRepository->getTemplateByTemplateType($notificationSender);
-                    $dataRegion = $this->notificationRepository->getRegion();
-                    $dataIndustry = $this->notificationRepository->getIndustry();
-
-
-
-                    if ($notificationTemplate != null)
-                    {
-                        $detailTemplate = $this->notificationRepository->getTemplateFromId($notificationTemplate)->first();
-                        return view('Backend.send-notification-view-3', compact('notificationSender', 'dataTemplate', 'detailTemplate', 'dataRegion', 'dataIndustry' ));
-                    }
-                    else
-                    {
-                        return view('Backend.send-notification-view-3', compact('notificationSender', 'dataTemplate', 'dataRegion', 'dataIndustry'));
-                    }
-                }
-                else
-                {
-                    return view('Backend.send-notification-view-3');
-                }
-
-            }
-
+            $dataDraft = $this->notificationRepository->getNotificationDraft()->first();
+            return view('Backend.draft-notification-view', compact('dataDraft'));
         }
         else
         {
-            return Redirect::to('/admin/notification-list');
-        }
+            if ($notificationType == 2) {
 
+                if (isset($_GET['messToast'])) {
+                    $messToast = $_GET['messToast'];
+                    return view('Backend.send-notification-view-2', compact('messToast'));
+                } else {
+                    return view('Backend.send-notification-view-2');
+                }
+
+            }
+            else if ($notificationType == 3)
+            {
+
+                if (isset($_GET['messToast']))
+                {
+                    $messToast = $_GET['messToast'];
+                    return view('Backend.send-notification-view-3', compact('messToast'));
+                }
+                else
+                {
+
+                    if($notificationSender != null)
+                    {
+                        $dataTemplate = $this->notificationRepository->getTemplateByTemplateType($notificationSender);
+                        $dataRegion = $this->notificationRepository->getRegion();
+                        $dataIndustry = $this->notificationRepository->getIndustry();
+
+
+
+                        if ($notificationTemplate != null)
+                        {
+                            $detailTemplate = $this->notificationRepository->getTemplateFromId($notificationTemplate)->first();
+                            return view('Backend.send-notification-view-3', compact('notificationSender', 'dataTemplate', 'detailTemplate', 'dataRegion', 'dataIndustry' ));
+                        }
+                        else
+                        {
+                            return view('Backend.send-notification-view-3', compact('notificationSender', 'dataTemplate', 'dataRegion', 'dataIndustry'));
+                        }
+                    }
+                    else
+                    {
+                        return view('Backend.send-notification-view-3');
+                    }
+
+                }
+
+            }
+            else
+            {
+                return Redirect::to('/admin/notification-list');
+            }
+        }
     }
 
     /**
@@ -247,6 +256,93 @@ class NotificationHandler
         }
 
         return $newNotificationId;
+    }
+
+    /**
+     * @param object $request
+     * @return int
+     */
+    public function saveNotificationDraft(object $request) : int
+    {
+        if($request->announceFor == "user")
+        {
+            if(intval($request->announceTypeFor) == 1)
+            {
+                $listSeeker = $this->notificationRepository->getListUserAllRole2();
+            }
+            else
+            {
+                if(intval($request->areaId) == 0 && intval($request->industryId) == 0)
+                {
+                    $listSeeker = $this->notificationRepository->getListUserAllRole2();
+                }
+                else
+                {
+                    $listSeeker = $this->notificationRepository->getListUserRole2ById($request);
+                }
+            }
+
+            $totalUserLine = 0;
+            $totalUserMail = 0;
+            $totalUserSms = 0;
+            foreach ($listSeeker as $subListSeeker)
+            {
+                if(count($this->notificationRepository->getListUserLine($subListSeeker->id)) > 0)
+                {
+                    $totalUserLine += 1;
+                }
+                else if($subListSeeker->email != null)
+                {
+                    $totalUserMail += 1;
+                }
+                else if($subListSeeker->phone_number_landline != null)
+                {
+                    $totalUserSms += 1;
+                }
+            }
+
+        }
+        else
+        {
+            if($request->announceTypeFor == 1)
+            {
+                $listStore = $this->notificationRepository->getListUserAllRole3();
+            }
+            else
+            {
+                if(intval($request->areaId) == 0 && intval($request->industryId) == 0)
+                {
+                    $listStore = $this->notificationRepository->getListUserAllRole3();
+                }
+                else
+                {
+                    $listStore = $this->notificationRepository->getListUserRole3ById($request);
+                }
+
+
+            }
+            $totalUserLine = 0;
+            $totalUserMail = 0;
+            $totalUserSms = 0;
+            foreach ($listStore as $subListStore)
+            {
+                if(count($this->notificationRepository->getListUserLine($subListStore->id)) > 0)
+                {
+                    $totalUserLine += 1;
+                }
+                else if($subListStore->mail_address != null)
+                {
+                    $totalUserMail += 1;
+                }
+                else if($subListStore->phone_number != null)
+                {
+                    $totalUserSms += 1;
+                }
+            }
+
+        }
+        return $this->notificationRepository->saveNotificationDraft($request, $totalUserLine, $totalUserMail, $totalUserSms);
+
     }
 
     /**
@@ -379,6 +475,7 @@ class NotificationHandler
     {
         return $this->notificationRepository->getAreaFromRegionId($regionId);
     }
+
 
 
 

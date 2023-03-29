@@ -12,13 +12,17 @@ class NotificationDraft extends Model
      */
     protected $fillable = [
         'id',
+        'notification_for',
         'notification_title',
         'notification_content',
+        'area_id',
+        'industry_id',
         'sms_user',
         'line_user',
         'mail_user',
         'created_at'
     ];
     protected $primaryKey = 'id';
+    protected $keyType = 'string';
     protected $table = 'notification_draft';
 }

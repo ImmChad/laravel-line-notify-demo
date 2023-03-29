@@ -135,6 +135,19 @@ class NotificationController extends Controller
     }
 
     /**
+     * @param Request $request
+     * @return int
+     */
+    function saveNotificationDraft(Request $request): int
+    {
+        $request->validate([
+            'title' => 'required|max:255',
+            'message' => 'required',
+        ]);
+        return $this->notificationHandler->saveNotificationDraft($request);
+    }
+
+    /**
      * @param $notificationId
      * @return Application|Factory|View|RedirectResponse
      */

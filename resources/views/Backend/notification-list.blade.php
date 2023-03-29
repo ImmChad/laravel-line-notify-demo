@@ -44,20 +44,14 @@
                         </div>
                     </form>
                     <div class="media-body text-end" style="display: flex; justify-content: flex-end;">
-                        <div class="btn-group">
-                            <button
-                                class="btn dropdown-toggle btn-outline-primary ms-2 btn-new-notification"
-                                style="display: flex; justify-content: center; align-items: center;"
-                                data-toggle="dropdown"
-                                >
-                                <i data-feather="send"></i>New Notification
-                            </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="/admin/send-notification-view/2">Total Everyone</a>
-                                <a class="dropdown-item" href="/admin/send-notification-view/3/">Only Email</a>
-                            </div>
-                            </div>
-                        </div>
+                        <button
+                            class="btn btn-outline-primary ms-2 btn-new-notification"
+                            style="display: flex; justify-content: center; align-items: center;"
+                            data-toggle="dropdown"
+                        >
+                            <i data-feather="send"></i>New Notification
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 40px;">
