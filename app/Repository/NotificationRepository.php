@@ -256,16 +256,14 @@ class NotificationRepository
      */
     public function addNewTemplate(object $request) : int
     {
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
         return NotificationTemplate::insert([
-                'created_at' => now(),
                 'id' => Str::uuid()->toString(),
-                'template_name' => $request->template_name,
-                'template_title' => $request->template_title,
-                'template_content' => $request->template_content,
-                'region_id' => $request->region_id,
-                'area_id' => $request->area_id,
-                'industry_id' => $request->industry_id,
-                'store_id' => $request->store_id,
+                'template_type' => $request->templateType,
+                'template_name' => $request->templateTitle,
+                'template_title' => $request->templateTitle,
+                'template_content' => $request->templateContent,
+                'created_at' => date('Y/m/d H:i:s')
             ]);
     }
 
@@ -314,10 +312,6 @@ class NotificationRepository
                     'template_name',
                     'template_title',
                     'template_content',
-                    'region_id',
-                    'area_id',
-                    'industry_id',
-                    'store_id',
                     'created_at'
                 )
             );
@@ -366,11 +360,6 @@ class NotificationRepository
                     'template_name',
                     'template_title',
                     'template_content',
-                    'template_type',
-                    'region_id',
-                    'area_id',
-                    'industry_id',
-                    'store_id',
                     'created_at',
                 )
             );
@@ -436,6 +425,34 @@ class NotificationRepository
                 array(
                     'id',
                     'store_name'
+                )
+            );
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getParamUser() : Collection
+    {
+        return DB::table('param_user')
+            ->get(
+                array(
+                    'id',
+                    'value'
+                )
+            );
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getParamStore() : Collection
+    {
+        return DB::table('param_store')
+            ->get(
+                array(
+                    'id',
+                    'value'
                 )
             );
     }

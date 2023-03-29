@@ -302,16 +302,25 @@ class NotificationHandler
     }
 
     /**
+     * @param String $templateType
      * @return Application|Factory|View
      */
-    function showAddNewTemplateView() : Application|Factory|View
+    function showAddNewTemplateView(String $templateType) : Application|Factory|View
     {
-        $dataRegion = $this->notificationRepository->getRegion();
-        $dataArea = $this->notificationRepository->getArea();
-        $dataIndustry = $this->notificationRepository->getIndustry();
-        $dataStore = $this->notificationRepository->getStore();
-
-        return view('Backend.template.add-new-template-view', compact('dataRegion', 'dataArea', 'dataIndustry', 'dataStore'));
+        if($templateType == "user")
+        {
+            $listParam = $this->notificationRepository->getParamUser();
+            return view('Backend.template.add-new-template-view', compact('listParam'));
+        }
+        elseif ($templateType == "store")
+        {
+            $listParam = $this->notificationRepository->getParamStore();
+            return view('Backend.template.add-new-template-view', compact('listParam'));
+        }
+        else
+        {
+            return view('Backend.template.add-new-template-view');
+        }
     }
 
     /**

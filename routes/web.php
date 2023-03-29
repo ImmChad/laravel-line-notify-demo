@@ -80,17 +80,14 @@ Route::group(array('prefix' => '/admin','middleware'=>'checkAdminLogin'), functi
     // link template list
     Route::get('/template-management', [NotificationController::class, 'showTemplateManagementView'])->name('template-management');
 
-//    Route::get('/add-new-template-view', [NotificationController::class, 'showAddNewTemplateView'])->name('template-management.add_get');
+    Route::get('/add-new-template-view', [NotificationController::class, 'showAddNewTemplateView'])->name('template-management.add_get');
     Route::post('/add-template', [NotificationController::class, 'reqAddNewTemplate']);
 
 
     Route::get('/update-template-view/{templateId}', [NotificationController::class, 'showUpdateTemplateView'])->name('template-management');
     Route::post('/update-template', [NotificationController::class, 'reqUpdateNewTemplate']);
 
-    Route::get('/add-new-template-view', function ()
-    {
-        return view("Backend.template.tmp-add-new-template-view");
-    })->name('template-management.add_get');
+
 
 });
 
