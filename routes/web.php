@@ -91,7 +91,7 @@ Route::group(array('prefix' => '/admin','middleware'=>'checkAdminLogin'), functi
 
     Route::get('/update-template-view/{templateId}', [NotificationController::class, 'showUpdateTemplateView'])->name('template-management');
     Route::post('/update-template', [NotificationController::class, 'reqUpdateNewTemplate']);
-
+    
 
 });
 
