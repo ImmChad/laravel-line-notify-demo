@@ -10,6 +10,8 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
 use Session;
 use stdClass;
+use Twilio\Exceptions\ConfigurationException;
+use Twilio\Exceptions\TwilioException;
 use Twilio\Rest\Client;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Pagination\Paginator;
@@ -133,6 +135,19 @@ class NotificationController extends Controller
     }
 
     /**
+     * @param Request $request
+     * @return int
+     */
+    function saveNotificationDraft(Request $request): int
+    {
+        $request->validate([
+            'title' => 'required|max:255',
+            'message' => 'required',
+        ]);
+        return $this->notificationHandler->saveNotificationDraft($request);
+    }
+
+    /**
      * @param $notificationId
      * @return Application|Factory|View|RedirectResponse
      */
@@ -164,7 +179,7 @@ class NotificationController extends Controller
     }
 
     /**
-     * @param int $notification_id
+     * @param int $notificationId
      * @return RedirectResponse
      */
     function deleteNotification(int $notificationId) : RedirectResponse
@@ -185,11 +200,16 @@ class NotificationController extends Controller
      */
     function showAddNewTemplateView() : Application|Factory|View
     {
-        return $this->notificationHandler->showAddNewTemplateView();
+        if(!isset($_GET['templateType'])) {
+            $templateType = "";
+        } else {
+            $templateType = $_GET['templateType'];
+        }
+        return $this->notificationHandler->showAddNewTemplateView($templateType);
     }
 
     /**
-     * @param $template_id
+     * @param $templateId
      * @return Application|Factory|View
      */
     function showUpdateTemplateView($templateId) : Application|Factory|View
@@ -204,9 +224,8 @@ class NotificationController extends Controller
     function reqAddNewTemplate(Request $request) : array
     {
         $request->validate([
-            'template_name' => 'required|max:255',
-            'template_title' => 'required|max:255',
-            'template_content' => 'required|max:500'
+            'templateTitle' => 'required|max:255',
+            'templateContent' => 'required|max:500'
         ]);
         return $this->notificationHandler->reqAddNewTemplate($request);
     }
@@ -257,6 +276,7 @@ class NotificationController extends Controller
 
 
     // FIX HERRE
+
     /**
      * @param $sms_number
      * @param $message

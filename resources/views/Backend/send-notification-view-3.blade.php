@@ -110,6 +110,16 @@
             background: var(--theme-deafult);
             color: white;
         }
+
+        .ipt-text-notification {
+            width: 100%;
+            height: 100%;
+            border-radius: 0.5rem;
+            border: 3px solid var(--theme-deafult);
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
     </style>
 
 
@@ -142,6 +152,9 @@
 
                         </select>
                     </div>
+
+                    <input placeholder="Please Notification title" required="" minlength="5" maxlength="20" class="ipt-text-notification" id="ipt-title-notification" value="{{ isset($detailTemplate)? $detailTemplate->template_title : '' }}">
+
                     <div class="section-template">
                         <div class="part-select-template">
                             <select class="form-select template-select" aria-label="Default select example">
@@ -187,7 +200,7 @@
                             <div class="ipt-content-template" data-cke-editable="false" contenteditable="true"
                                  id="ipt-content-notification">
                                 @if (isset($detailTemplate ) && $detailTemplate != null)
-                                    {{ $detailTemplate->template_title }} - {!! $detailTemplate->template_content !!}
+                                    {!! $detailTemplate->template_content !!}
                                 @else
                                     Enter content, please!
                                 @endif
@@ -222,13 +235,13 @@
                             <div class="col-md-3">
                                 <div class="part-select-params " style="width: 100%;">
                                     <select class="form-select area-select" aria-label="Default select example">
-                                        <option value="0" selected>Null</option>
+                                        <option areaId="0" selected>Null</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="part-select-params industry-select" style="width: 100%;">
-                                    <select class="form-select" aria-label="Default select example">
+                                <div class="part-select-params " style="width: 100%;">
+                                    <select class="form-select industry-select" aria-label="Default select example">
                                         @if(isset($notificationSender))
                                             <option industryId="0" selected>Please select industry</option>
                                             @foreach($dataIndustry as $subDataIndustry)
@@ -244,7 +257,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="part-select-params" style="width: 100%;">
-                                    <select class="form-select" aria-label="Default select example"
+                                    <select class="form-select send-for-select" aria-label="Default select example"
                                             style="width: 100%;">
 
                                         @if(isset($notificationSender) && $notificationSender == "user")
@@ -307,7 +320,7 @@
 
 
     {{-- display calendar --}}
-{{--     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>--}}
+    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>--}}
 
 @endsection
 
@@ -393,7 +406,7 @@
         function chooseArea(data) {
             let areaSelect = document.querySelector('.area-select');
             areaSelect.innerHTML = `
-                <option areaId="0">Please select area</option
+                <option areaId="0">Please select area</option>
                 ${data.map((el, index) => {
                 if (data.length != 0) {
                     return `<option areaId="${el.id}">${el.area_name}</option>`
@@ -411,209 +424,177 @@
             window.location.href = "/admin/notification-list";
         });
 
-        //
+        // send Notification
+        let btnSend = document.querySelector('.btn-send')
 
 
+        btnSend.addEventListener('click', () => {
+
+            let notificationTypeSelect = document.querySelector('.notification-type-select');
+            let sendForSelect = document.querySelector('.send-for-select')
 
 
+            let announceFor = notificationTypeSelect.options[notificationTypeSelect.selectedIndex].getAttribute('uri')
+            let announceTitle = document.querySelector('#ipt-title-notification').value
+            let announceContent = document.querySelector('#ipt-content-notification').innerHTML
 
-
-        {{--let dataTemplate = document.querySelector('#dataTemplate');--}}
-        {{--dataTemplate.addEventListener('change', (e) => {--}}
-        {{--    let template_id = e.currentTarget.options[e.currentTarget.selectedIndex].getAttribute('template_id');--}}
-        {{--    let template_name = e.currentTarget.options[e.currentTarget.selectedIndex].getAttribute('template_name');--}}
-
-
-        {{--    if(template_id != 0) {--}}
-        {{--        var form  = new FormData();--}}
-        {{--        form.append('template_id', template_id);--}}
-
-
-        {{--        $.ajaxSetup({--}}
-        {{--            headers: {--}}
-        {{--                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')--}}
-        {{--            }--}}
-        {{--        });--}}
-        {{--        $.ajax({--}}
-        {{--            url: '{{URL::to("/admin/get-template-for-send-mail")}}',--}}
-        {{--            method: 'post',--}}
-        {{--            data: form,--}}
-        {{--            contentType: false,--}}
-        {{--            processData: false,--}}
-        {{--            dataType: 'json',--}}
-        {{--            success: function(data) {--}}
-
-
-        {{--                var announce_content = CKEDITOR.instances['announce_content'];--}}
-        {{--                let newDiv = `${data.template_content}`;--}}
-        {{--                announce_content.insertHtml(newDiv);--}}
-
-        {{--                document.querySelector('#announce_title').value = data.template_title;--}}
-
-        {{--            },--}}
-        {{--            error: function() {--}}
-        {{--                displayToast('Can not add data!');--}}
-        {{--            }--}}
-        {{--        });--}}
-        {{--    } else {--}}
-
-        {{--    }--}}
-        {{--})--}}
-
-
-
-
-
-        // let btnSendIt = document.querySelector('.btn-send-it');
-        // btnSendIt.addEventListener('click', (e)=> {
-        //     e.preventDefault();
-        //
-        //
-        //     $('.parent-form-popup').css("display", "flex");
-        //     $('.parent-form-popup .title-popup').text("Do you want to schedule to send it? If not, it will send now.");
-        //
-        //
-        //     let newHtml = `
-        //     <input class="form-control digits" id="example-datetime-local-input" type="datetime-local"  data-bs-original-title="" title="">
-        //     <button class="btn btn-info send-notification" notification_type="3" style="margin-top: 1rem;">SEND IT</button>
-        //     `;
-        //
-        //
-        //     // document.querySelector('.parent-form-popup .faq-form').insertAdjacentHTML('beforeend', newHtml);
-        //     document.querySelector('.parent-form-popup .faq-form').innerHTML = newHtml;
-        //
-        //
-        //     let sendNotification = document.querySelector('.send-notification');
-        //     sendNotification.addEventListener('click', (e) => {
-        //         var editorData = CKEDITOR.instances.announce_content.getData();
-        //         let notification_type = e.currentTarget.getAttribute('notification_type');
-        //         sendNotificationOnService(notification_type, editorData);
-        //     });
-        //
-        //
-        //     $('.parent-form-popup .close-popup').click(function() {
-        //         $('.parent-form-popup').css("display", "none");
-        //     });
-        //
-        //
-        //     $('#created_at').each(function () {
-        //         $(this).datetimepicker();
-        //     });
-        //
-        //
-        // });
-
-            let sendNotification = document.querySelector('.send-notification');
-            sendNotification.addEventListener('click', (e) => {
-                var editorData = CKEDITOR.instances.announce_content.getData();
-                let notification_type = e.currentTarget.getAttribute('notification_type');
-                sendNotificationOnService(notification_type, editorData);
-            });
-
-        function sendNotificationOnService(notification_type, editorData) {
-            const now = new Date();
-            const formattedDate = new Intl.DateTimeFormat('en-US', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false,
-            }).format(new Date(now));
-
-            const [month, day, year, ...time] = formattedDate.split(/[\s/:]/);
-            const newFormattedDate = `${year}/${month}/${day} ${time.join(":")}`;
-            let newDate = newFormattedDate.replace(',', "");
-
-
+            let announceTypeFor = sendForSelect.options[sendForSelect.selectedIndex].getAttribute('value')
             let created_at = $('#example-datetime-local-input').val();
-            let announce_content = editorData;
-            let announce_title = $('#announce_title').val();
-            // let span = document.createElement('span')
-            // span.innerHTML = announce_content
-            // let lengthText = span.textContent.length;
-            let [dateChoose, timeChoose] = newDate.split(' ');
-            let [hourChoose, minuteChoose, secondChoose] = timeChoose.split(':');
-            let newHour = hourChoose.replace('24', '00');
-
-
-            newDate = dateChoose + " " + newHour + ":" + minuteChoose + ":" + secondChoose;
-
-
             let diffInSeconds = "";
 
 
-            if(created_at.trim() != "") {
-                const date1 = new Date(newDate);
-                const date2 = new Date(created_at);
-                diffInSeconds = (date2 - date1) / 1000;
-                console.log(newDate);
-                console.log(created_at);
-                console.log(diffInSeconds);
-            } else {
-                created_at = 0;
-                diffInSeconds = 0;
+            if(announceFor == "null")
+            {
+                displayToast('Please select type')
             }
-            if(diffInSeconds < 0) {
-                displayToast("Can't enter this date in the past to set the timer!")
-            } else {
-                if(announce_title.trim() != "" && announce_content.trim() != "") {
-                    // console.log(created_at + " " + announce_title + " " + announce_content);
+            else if(announceTitle.trim() == "")
+            {
+                displayToast('Please enter full announce title')
+            }
+            else if(announceContent.trim() == "")
+            {
+                displayToast('Please enter full announce content')
+            }
+            else
+            {
 
+                let getSchedule =  document.querySelector('.radio-send-with-schedule:checked')
+                if(getSchedule != null)
+                {
+                    const now = new Date();
+                    const formattedDate = new Intl.DateTimeFormat('en-US', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false,
+                    }).format(new Date(now));
 
-                    console.log(notification_type);
-                    console.log(announce_title);
-                    console.log(announce_content);
-                    console.log(created_at);
-                    console.log(diffInSeconds);
+                    const [month, day, year, ...time] = formattedDate.split(/[\s/:]/);
+                    const newFormattedDate = `${year}/${month}/${day} ${time.join(":")}`;
+                    let newDate = newFormattedDate.replace(',', "");
 
-                    var form  = new FormData();
-                    form.append('message', announce_content);
-                    form.append('title', announce_title);
-                    form.append('delayTime', diffInSeconds);
-                    form.append('scheduled_at', created_at);
-                    form.append('type_notification', notification_type);
+                    let [dateChoose, timeChoose] = newDate.split(' ');
+                    let [hourChoose, minuteChoose, secondChoose] = timeChoose.split(':');
+                    let newHour = hourChoose.replace('24', '00');
 
+                    newDate = dateChoose + " " + newHour + ":" + minuteChoose + ":" + secondChoose;
 
-                    $.ajaxSetup({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        }
-                    });
-                    $.ajax({
-                        url: '{{URL::to("/admin/send-mess")}}',
-                        method: 'post',
-                        data: form,
-                        contentType: false,
-                        processData: false,
-                        dataType: 'json',
-                        success: function(data) {
+                    if(created_at.trim() != "") {
+                        const date1 = new Date(newDate);
+                        const date2 = new Date(created_at);
+                        diffInSeconds = (date2 - date1) / 1000;
+                    } else {
+                        diffInSeconds = 0;
+                    }
 
-                            window.location.href = "/admin/send-notification-view/3?messToast=Send Success!";
-
-                        },
-                        error: function() {
-                            displayToast('Can not add data!');
-                        }
-                    });
-                } else {
-                    displayToast("Please, Enter full!");
                 }
+                else
+                {
+                    diffInSeconds = 0;
+                }
+
+                if(diffInSeconds < 0)
+                {
+                    displayToast("Can't enter this date in the past to set the timer!")
+                }
+                else {
+                    if(announceTypeFor == 1)
+                    {
+                        let areaId = "0"
+                        let industryId = "0"
+
+                        var form  = new FormData();
+                        form.append('message', announceContent);
+                        form.append('title', announceTitle);
+                        form.append('announceFor', announceFor);
+                        form.append('areaId', areaId);
+                        form.append('industryId', industryId);
+                        form.append('delayTime', diffInSeconds);
+                        form.append('announceTypeFor', announceTypeFor);
+                        form.append('type_notification', "2");
+
+
+                        $.ajaxSetup({
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            }
+                        });
+                        $.ajax({
+                            url: '{{URL::to("/admin/send-mess")}}',
+                            method: 'post',
+                            data: form,
+                            contentType: false,
+                            processData: false,
+                            dataType: 'json',
+                            success: function (data) {
+
+                                window.location.href = "/admin/send-notification-view/3?messToast=Send Success!";
+
+                            },
+                            error: function () {
+                                displayToast('Can not add data!');
+                            }
+                        })
+                    }
+                    else if (announceTypeFor == 2)
+                    {
+                        let areaSelect = document.querySelector('.area-select')
+                        let industrySelect = document.querySelector('.industry-select')
+
+                        let areaId = areaSelect.options[areaSelect.selectedIndex].getAttribute('areaid')
+                        let industryId = industrySelect.options[industrySelect.selectedIndex].getAttribute('industryid')
+
+
+                        var form  = new FormData();
+                        form.append('message', announceContent);
+                        form.append('title', announceTitle);
+                        form.append('announceFor', announceFor);
+                        form.append('areaId', areaId);
+                        form.append('industryId', industryId);
+                        form.append('delayTime', diffInSeconds);
+                        form.append('announceTypeFor', announceTypeFor);
+                        form.append('type_notification', "2");
+
+
+                        $.ajaxSetup({
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            }
+                        });
+                        $.ajax({
+                            url: '{{URL::to("/admin/send-mess")}}',
+                            method: 'post',
+                            data: form,
+                            contentType: false,
+                            processData: false,
+                            dataType: 'json',
+                            success: function (data) {
+
+                               window.location.href = "/admin/send-notification-view/3?messToast=Send Success!";
+
+                            },
+                            error: function () {
+                                displayToast('Can not add data!');
+                            }
+                        })
+
+
+
+                    }
+                    else {
+                        displayToast('Please select send for')
+                    }
+                }
+
             }
-        }
+
+        })
+
     </script>
-    <script>
-        // const dropdowns = document.querySelectorAll(".dropdown");
-        // dropdowns.forEach(dropdown=>{
-        //     const dropdownItems = dropdown.querySelectorAll(".dropdown-item");
-        //     dropdownItems.forEach(dropdownItems=>{
-        //         dropdownItems.addEventListener("click",(event)=>{
-        //             dropdown.textContent = dropdownItems.textContent
-        //         })
-        //     })
-        // })
-    </script>
+
 @endsection
 
 

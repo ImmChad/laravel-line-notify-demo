@@ -13,14 +13,10 @@ return new class extends Migration
     {
         Schema::create('notification_template', function (Blueprint $table) {
             $table->char('id', 36);
-            $table->string('template_type', 10)->nullable();
+            $table->string('template_type', 10);
             $table->string('template_name', 255);
             $table->string('template_title', 255);
             $table->text('template_content');
-            $table->integer('region_id')->nullable();
-            $table->integer('area_id')->nullable();
-            $table->integer('industry_id')->nullable();
-            $table->integer('store_id')->nullable();
             $table->dateTime('created_at');
         });
     }

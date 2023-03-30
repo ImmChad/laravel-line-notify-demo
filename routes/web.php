@@ -73,7 +73,7 @@ Route::group(array('prefix' => '/admin','middleware'=>'checkAdminLogin'), functi
     Route::get('/notification/delete/{notificationId}', [NotificationController::class, 'deleteNotification']);
 
     Route::get('/send-notification-view/{notificationType}/{notificationSender?}/{notificationTemplate?}', [NotificationController::class, 'showSendNotificationView'])->name('notification-list');
-    Route::post('/send-mess', [NotificationController::class, 'sendMessForListUser']);
+    Route::post('/send-mess', [NotificationController::class, 'saveNotificationDraft']);
     Route::post('/get-template-for-send-mail', [NotificationController::class, 'getTemplateForSendMail'])->name('notification-list');
 
     // get info area from region id

@@ -1,23 +1,18 @@
 @extends('Backend.backend-view')
 @section('ContentAdmin')
     <style>
-        .widget-joins:after
-        {
-            height: 0px;
-        }
-        .content-send-notification
-        {
+        .content-send-notification {
             position: relative;
             padding: 20px;
         }
-        .section-select-type
-        {
+
+        .section-select-type {
             margin-left: 10px;
             margin-top: 10px;
             margin-bottom: 10px;
         }
-        #btn-back-page
-        {
+
+        #btn-back-page {
             position: absolute;
             right: 10px;
             top: 10px;
@@ -31,81 +26,81 @@
             color: #7366ff;
 
         }
-        .section-select-type select
-        {
+
+        .section-select-type select {
             width: max-content;
         }
-        .section-params
-        {
+
+        .section-params {
             position: relative;
             display: flex;
             justify-content: start;
         }
-        .part-select-params .dropdown
-        {
+
+        .part-select-params .dropdown {
             width: max-content;
         }
-        .part-select-params .dropdown-toggle
-        {
+
+        .part-select-params .dropdown-toggle {
             width: 100%;
             margin-right: 20px;
             min-width: 180px;
         }
-        .section-template
-        {
+
+        .section-template {
 
             position: relative;
         }
-        .section-select-type .dropdown-toggle
-        {
+
+        .section-select-type .dropdown-toggle {
             width: 100%;
             margin-right: 20px;
         }
-        .part-input-text-template
-        {
+
+        .part-input-text-template {
             width: 100%;
             height: 100%;
             padding: 30px;
         }
-        .field-ipt-text
-        {
+
+        .field-ipt-text {
             margin-bottom: 10px;
         }
-        .ipt-text-notification
-        {
+
+        .ipt-text-notification {
             width: 100%;
 
         }
-        .field-ipt-text .ipt-text-notification
-        {
+
+        .field-ipt-text .ipt-text-notification {
             width: 100%;
             height: 100%;
             border-radius: 0.5rem;
             border: 3px solid var(--theme-deafult);
             padding: 10px;
         }
-        .field-content-notification #ipt-content-notification
-        {
+
+        .field-content-notification #ipt-content-notification {
             padding: 30px;
             min-height: 300px;
             resize: none;
             caret-color: var(--theme-deafult)
         }
-        .section-option-btn
-        {
+
+        .section-option-btn {
             margin: 10px 0px;
             display: flex;
             align-items: center;
             justify-content: end;
         }
-        .btn-opt-add-template
-        {
+
+        .btn-opt-add-template {
             margin-right: 20px;
             margin-bottom: 20px;
             min-width: 180px;
         }
-        #btn-new-param
-        {
+
+        #btn-new-param {
             position: absolute;
             right: 0;
             bottom: 0;
@@ -116,32 +111,33 @@
             color: #7366ff;
             display: flex;
         }
-        .name-param
-        {
+
+        .name-param {
             padding: 5px 10px;
             background: var(--theme-deafult);
             color: white;
             cursor: pointer;
         }
-        .param-added
-        {
+
+        .param-added {
             padding: 5px 10px;
-            background: var(--theme-deafult);
-            color: white;
+            background: rgba(115, 102, 255, 0.75);
+            color: #000000;
             cursor: pointer;
             margin: 0px 2px;
-            box-shadow: 0px 0px 6px 0px grey;
+            border-radius: 0.5rem;
+            border: 0px solid;
             position: relative;
         }
-        .param-added .icon-remove
-        {
+
+        .param-added .icon-remove {
             position: absolute;
             right: -8px;
             top: -8px;
             cursor: pointer;
-            border-radius: 50%;
-            color: var(--theme-deafult);
-            border: 1px solid;
+            border-radius: 0.5rem;
+            color: rgba(115, 102, 255, 0.75);
+            border: 1px solid rgba(115, 102, 255, 0.75);;
             display: flex;
             background: white;
             width: 20px;
@@ -156,10 +152,11 @@
             -ms-user-select: none; /* IE 10 and IE 11 */
             user-select: none; /* Standard syntax */
         }
-        .name-param + .name-param
-        {
+
+        .name-param + .name-param {
             margin-left: 10px;
         }
+
         [placeholder]:empty::before {
             content: attr(placeholder);
             color: #555;
@@ -169,19 +166,29 @@
             content: "";
         }
     </style>
-    <div class="row" style="display: flex; justify-content: center; align-items: center;">
-        <div class="col-sm-12 col-lg-12 col-xl-12 col-md-12 box-col-12">
-            <div class="card height-equal">
-                <div class="content-send-notification">
-                    <div id="btn-back-page">Back</div>
-                    <div class="section-select-type">
-                        <select class="form-select" aria-label="Default select example">
-                            <option selected>Please select type</option>
-                            <option value="1">User</option>
-                            <option value="2">Store</option>
-                        </select>
-                    </div>
-                    <div class="section-template">
+
+    <div class="row"
+         style="display: flex; justify-content: center; align-items: center; padding: 0rem 0rem !important; margin: 0px !important;">
+    <div class="col-sm-12 col-lg-12 col-xl-12 col-md-12 box-col-12">
+        <div class="card height-equal">
+            <div class="content-send-notification">
+                <div id="btn-back-page">Back</div>
+                <div class="section-select-type ">
+                    <select class="form-select send-type-select" aria-label="Default select example">
+                        @if(isset($listParam))
+                            <option value="0">Please select type</option>
+                            <option value="user" {{ $_REQUEST['templateType'] == 'user' ? 'selected' : '' }}>User</option>
+                            <option value="store" {{ $_REQUEST['templateType'] == 'store' ? 'selected' : '' }}>Store</option>
+                        @else
+                            <option value="0" selected>Please select type</option>
+                            <option value="user" >User</option>
+                            <option value="store">Store</option>
+                        @endif
+
+                    </select>
+                </div>
+                <div class="section-template">
+                    <div class="part-input-text-template">
                         <div class="part-input-text-template">
                             <div class="field-ipt-text field-title-notification">
                                 <input
@@ -206,17 +213,17 @@
 
                     </div>
                     <div class="section-params">
-                        <div class="name-param">region_nm</div>
-                        <div class="name-param">shop_id</div>
-                        <div class="name-param">shop_nm</div>
-                        <div class="name-param">area_nm</div>
-                        <div class="name-param">area_id</div>
+
+                        @if(isset($listParam))
+                            @foreach($listParam as $subListParam)
+                                <div class="name-param">{{ $subListParam->value }}</div>
+                            @endforeach
+                        @else
+                            <div>Please choose send for user or store.</div>
+                        @endif
 
                     </div>
                     <div class="section-option-btn">
-                        <div id="btn-delete-new-template" class="btn btn-light btn-opt-add-template">
-                            Delete
-                        </div>
                         <div id="btn-save-new-template" class="btn btn-primary btn-opt-add-template">
                             Save
                         </div>
@@ -225,13 +232,6 @@
             </div>
         </div>
     </div>
-
-
-    {{-- display calendar --}}
-    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script> --}}
-
-
-
 
 @endsection
 
@@ -245,13 +245,13 @@
                 sel = window.getSelection();
                 if (sel.rangeCount) {
                     range = sel.getRangeAt(0);
-                    if (range.commonAncestorContainer.parentNode == editableDiv||range.commonAncestorContainer == editableDiv) {
+                    if (range.commonAncestorContainer.parentNode == editableDiv || range.commonAncestorContainer == editableDiv) {
                         caretPos = range.endOffset;
                     }
                 }
             } else if (document.selection && document.selection.createRange) {
                 range = document.selection.createRange();
-                if (range.commonAncestorContainer.parentNode == editableDiv||range.commonAncestorContainer == editableDiv) {
+                if (range.commonAncestorContainer.parentNode == editableDiv || range.commonAncestorContainer == editableDiv) {
                     var tempEl = document.createElement("span");
                     editableDiv.insertBefore(tempEl, editableDiv.firstChild);
                     var tempRange = range.duplicate();
@@ -263,45 +263,102 @@
             return caretPos;
         }
 
+        const nameParams = document.querySelectorAll(".name-param")
+        const edt = document.querySelector("#ipt-content-notification")
+        let startPos = 0;
+        edt.addEventListener('blur', event => {
+            for (var i = 0; i < getSelection().rangeCount; i++) {
+                console.log(getSelection().getRangeAt(i))
+            }
+            startPos = getCaretPosition(event.currentTarget);
+            console.log(startPos)
+        })
 
-            const nameParams = document.querySelectorAll(".name-param")
-            const edt = document.querySelector("#ipt-content-notification")
-            let startPos = 0;
-            edt.addEventListener('blur', event=>{
-                for(var i = 0 ;i < getSelection().rangeCount; i++)
-                {
-                    console.log(getSelection().getRangeAt(i))
-                }
-                startPos = getCaretPosition(event.currentTarget);
-                console.log(startPos)
-            })
+        nameParams.forEach(nameParam => {
+            nameParam.addEventListener("click", event => {
+                // edt.focus();
+                // edt.setSelectionRange(startPos, startPos);
+                const range = window.getSelection().getRangeAt(0);
+                const btn = document.createElement('button');
+                const icRemove = document.createElement('i')
+                icRemove.classList.add("icon-remove")
+                icRemove.textContent = "-"
 
-
-
-            nameParams.forEach(nameParam=>{
-                nameParam.addEventListener("click",event => {
-                    // edt.focus();
-                    // edt.setSelectionRange(startPos, startPos);
-                    const range = window.getSelection().getRangeAt(0);
-                    const btn = document.createElement('button');
-                    const icRemove = document.createElement('i')
-                    icRemove.classList.add("icon-remove")
-                    icRemove.textContent = "-"
-
-                    btn.classList.add("param-added")
-                    btn.textContent = event.currentTarget.textContent;
-                    btn.contentEditable = false
-                    btn.appendChild(icRemove);
-                    edt.innerHTML = edt.innerHTML.trim().replace("\n") + btn.outerHTML
-                    let btnRemoves =  edt.querySelectorAll(".param-added .icon-remove")
-                    btnRemoves.forEach(btnRemove => {
-                        btnRemove.addEventListener("click", event=>{
-                            event.currentTarget.closest(".param-added").remove()
-                        })
+                btn.classList.add("param-added")
+                btn.textContent = event.currentTarget.textContent;
+                btn.contentEditable = false
+                btn.appendChild(icRemove);
+                edt.innerHTML = edt.innerHTML.trim().replace("\n") + btn.outerHTML
+                let btnRemoves = edt.querySelectorAll(".param-added .icon-remove")
+                btnRemoves.forEach(btnRemove => {
+                    btnRemove.addEventListener("click", event => {
+                        event.currentTarget.closest(".param-added").remove()
                     })
-
                 })
+
             })
+        })
+
+        // navigation send type for add template
+        let sendTypeSelect = document.querySelector('.send-type-select')
+        sendTypeSelect.addEventListener('change', () => {
+            let templateType = sendTypeSelect.options[sendTypeSelect.selectedIndex].getAttribute('value')
+            if(templateType != 0)
+            {
+                window.location.href = '/admin/add-new-template-view?templateType=' + templateType;
+            }
+        })
+
+        let btnSaveNewTemplate = document.querySelector('#btn-save-new-template')
+        btnSaveNewTemplate.addEventListener('click', (e) => {
+
+            let templateType = sendTypeSelect.options[sendTypeSelect.selectedIndex].getAttribute('value')
+            let templateTitle = document.querySelector('#ipt-title-notification').value
+            let templateContent = document.querySelector('#ipt-content-notification').innerHTML
+
+            if(templateType == 0)
+            {
+                displayToast('Please select type')
+            }
+            else if(templateTitle.trim() == "")
+            {
+                displayToast('Please enter full template title')
+            }
+            else if(templateContent.trim() == "")
+            {
+                displayToast('Please enter full template content')
+            } else
+            {
+                let form = new FormData()
+                form.append('templateType', templateType)
+                form.append('templateTitle', templateTitle)
+                form.append('templateContent', templateContent)
+
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    url: '{{URL::to("/admin/add-template")}}',
+                    method: 'post',
+                    data: form,
+                    contentType: false,
+                    processData: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        document.querySelector('#ipt-title-notification').value = ""
+                        document.querySelector('#ipt-content-notification').innerHTML = ""
+                        displayToast('Success!')
+                    },
+                    error: function () {
+                        displayToast('Can not add data!');
+                    }
+                });
+            }
+
+        })
+
     </script>
 
     <script>
@@ -350,7 +407,7 @@
 
 
         let returnNotificationList = document.querySelector('#btn-back-page');
-        returnNotificationList.addEventListener('click', (e)=>{
+        returnNotificationList.addEventListener('click', (e) => {
             window.location.href = "/admin/template-management";
         });
 
@@ -495,9 +552,6 @@
 
 
         {{--}--}}
-
-
-
 
 
     </script>
