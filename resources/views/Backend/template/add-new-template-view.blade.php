@@ -194,8 +194,8 @@
                                 <input
                                     placeholder="Please input title"
                                     required
-                                    minlength="5"
-                                    maxlength="20"
+                                    minlength="10"
+                                    maxlength="225"
                                     class="ipt-text-notification"
                                     id="ipt-title-notification">
                             </div>
@@ -315,6 +315,8 @@
             let templateType = sendTypeSelect.options[sendTypeSelect.selectedIndex].getAttribute('value')
             let templateTitle = document.querySelector('#ipt-title-notification').value
             let templateContent = document.querySelector('#ipt-content-notification').innerHTML
+
+
 
             if(templateType == 0)
             {

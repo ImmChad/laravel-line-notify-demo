@@ -119,7 +119,6 @@
             padding: 10px;
             margin-bottom: 10px;
         }
-
         .param-added {
             padding: 5px 10px;
             background: rgba(115, 102, 255, 0.75);
@@ -186,7 +185,7 @@
                         </select>
                     </div>
 
-                    <input placeholder="Please Notification title" required=""minlength="10" maxlength="255" class="ipt-text-notification" id="ipt-title-notification" value="{{ isset($detailTemplate)? $detailTemplate->template_title : '' }}">
+                    <input placeholder="Please Notification title" required="" minlength="10" maxlength="255" class="ipt-text-notification" id="ipt-title-notification" value="{{ isset($detailTemplate)? $detailTemplate->template_title : '' }}">
 
                     <div class="section-template">
                         <div class="part-select-template">
@@ -378,6 +377,7 @@
             }
         })
     </script>
+
     <script>
         // remove param in input content
         const edt = document.querySelector("#ipt-content-notification")
@@ -395,7 +395,7 @@
             let uri = notificationTypeSelect.options[notificationTypeSelect.selectedIndex].getAttribute('uri');
 
             if (uri != "null") {
-                window.location.href = "/admin/send-notification-view/3/" + uri + "/"
+                window.location.href = "/admin/update-notification-draft/{{$dataDraft->id}}/" + uri + "/"
             }
 
         });
@@ -407,7 +407,7 @@
 
             if (templateId != 'null') {
                 let notificationSender = templateSelect.options[templateSelect.selectedIndex].getAttribute('notificationSender');
-                window.location.href = "/admin/send-notification-view/3/" + notificationSender + "/" + templateId;
+                window.location.href = "/admin/update-notification-draft/{{$dataDraft->id}}/" + notificationSender + "/" + templateId;
             }
 
         })
@@ -559,6 +559,7 @@
                         form.append('delayTime', diffInSeconds);
                         form.append('announceTypeFor', announceTypeFor);
                         form.append('type_notification', "2");
+                        form.append('notification_draft_id', '{{$dataDraft->id}}');
 
 
                         $.ajaxSetup({
@@ -567,7 +568,7 @@
                             }
                         });
                         $.ajax({
-                            url: '{{URL::to("/admin/send-mess")}}',
+                            url: '{{URL::to("/admin/update-notification-draft")}}',
                             method: 'post',
                             data: form,
                             contentType: false,
@@ -601,6 +602,7 @@
                         form.append('delayTime', diffInSeconds);
                         form.append('announceTypeFor', announceTypeFor);
                         form.append('type_notification', "2");
+                        form.append('notification_draft_id', '{{$dataDraft->id}}');
 
 
                         $.ajaxSetup({
@@ -609,7 +611,7 @@
                             }
                         });
                         $.ajax({
-                            url: '{{URL::to("/admin/send-mess")}}',
+                            url: '{{URL::to("/admin/update-notification-draft")}}',
                             method: 'post',
                             data: form,
                             contentType: false,

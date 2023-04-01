@@ -10,9 +10,14 @@ use App\Models\NotificationTemplate;
 use App\Models\NotificationType;
 use App\Models\NotificationUserInfo;
 use App\Models\NotificationUserSettings;
+use App\Services\NotificationService;
+use Illuminate\Http\Request;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use JetBrains\PhpStorm\NoReturn;
 use stdClass;
 use function Webmozart\Assert\Tests\StaticAnalysis\object;
 
@@ -99,12 +104,35 @@ class NotificationRepository
    }
 
     /**
-     * @param String $createdAt
-     * @return Collection
+     * @param int $id
+     * @return Collection|array
      */
-    public function getUsersCreatedBeforeNotificationCurrent(String $createdAt) : Collection
+    public function getUsersCreatedBeforeNotificationCurrent(int $id) : Collection | array
     {
-        return NotificationUserSettings::where('created_at', '<=', $createdAt)->get();
+        $dataNotification = self::getDataNotificationWithCreatedAt($id);
+        $dataNotificationDraft = self::getNotificationDraftWithID($dataNotification->notification_draft_id);
+        if($dataNotificationDraft->notification_for == "user")
+        {
+            return self::getAllUserIdSeekerWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id, $dataNotificationDraft->created_at);
+
+        }
+    else if($dataNotificationDraft->notification_for == "store")
+        {
+            return self::getAllUserIdStoreWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id, $dataNotificationDraft->created_at);
+        }
+    else
+    {
+        return  [];
+    }
+    }
+
+    /**
+     * @param int $id
+     * @return stdClass
+     */
+    public function getDataNotificationWithCreatedAt(int $id) : stdClass
+    {
+        return DB::table("notification")->where("id", $id)->first();
     }
 
     /**
@@ -147,22 +175,11 @@ class NotificationRepository
      * @param object $request
      * @return mixed
      */
-    public function insertDataNotification(object $request): int
+    public function insertDataNotification(array $attribute): int
     {
         date_default_timezone_set('Asia/Ho_Chi_Minh');
-        $isScheduled = $request->delayTime > 0;
-        $isSent = !$isScheduled;
-        $scheduledAt = $isScheduled ? now()->addSeconds(intval($request->delayTime)) : null;
 
-        return Notification::insertGetId([
-            'type' => $request->type_notification,
-            'announce_title' => $request->title,
-            'announce_content' => $request->message,
-            'is_sent' => $isSent,
-            'is_scheduled' => $isScheduled,
-            'created_at' => date('Y/m/d H:i:s'),
-            'scheduled_at' => $scheduledAt,
-        ]);
+        return Notification::insertGetId($attribute);
     }
 
     /**
@@ -276,14 +293,9 @@ class NotificationRepository
         return NotificationTemplate::where('id', $request->id)
             ->update([
                 'created_at' => now(),
-                'id' => Str::uuid()->toString(),
-                'template_name' => $request->template_name,
-                'template_title' => $request->template_title,
-                'template_content' => $request->template_content,
-                'region_id' => $request->region_id,
-                'area_id' => $request->area_id,
-                'industry_id' => $request->industry_id,
-                'store_id' => $request->store_id,
+                'template_name' => $request->templateTitle,
+                'template_title' => $request->templateTitle,
+                'template_content' => $request->templateContent,
             ]);
     }
 
@@ -321,10 +333,46 @@ class NotificationRepository
      * @param int $regionId
      * @return Collection
      */
-    public function getAreaFromRegionId(int $regionId) : Collection
+    public function getRegionCdFromRegionId(int $regionId) : Collection
+    {
+        return DB::table('static_region')
+            ->where('id', $regionId)
+            ->get(
+                array(
+                    'region_cd'
+                )
+            );
+    }
+
+    /**
+     * @param int $regionId
+     * @return Collection
+     */
+    public function getPrefFromRegionCd(int $regionCd) : Collection
+    {
+        return DB::table('static_pref')
+            ->where('region_cd', $regionCd)
+            ->get(
+                array(
+                    'id',
+                    'region_cd',
+                    'pref_name',
+                    'created_at',
+                    'update_at',
+                    'pref_cd',
+                    'pref_name_latin'
+                )
+            );
+    }
+
+    /**
+     * @param int $prefId
+     * @return Collection
+     */
+    public function getAreaFromRegionId(int $prefId) : Collection
     {
         return DB::table('static_area')
-            ->where('pref_cd', $regionId)
+            ->where('pref_cd', $prefId)
             ->get(
                 array(
                     'id',
@@ -419,7 +467,10 @@ class NotificationRepository
         return DB::table('notification_user_line')->where('user_id', $id)->get();
     }
 
-
+    public function getAllUserIdUserLine(): Builder
+    {
+        return DB::table('notification_user_line')->select("user_id");
+    }
     /**
      * @param object $request
      * @param int $totalUserLine
@@ -430,6 +481,24 @@ class NotificationRepository
     public function saveNotificationDraft(object $request, int $totalUserLine, int $totalUserMail, int $totalUserSms) : int
     {
         date_default_timezone_set('Asia/Ho_Chi_Minh');
+        $isScheduled = $request->delayTime > 0;
+        $scheduledAt = $isScheduled ? now()->addSeconds(intval($request->delayTime)) : null;
+        $now = date('Y/m/d H:i:s');
+        $totalUserSms = 0;
+        $totalUserLine = 0;
+        $totalUserMail = 0;
+        if($request->announceFor == "user")
+        {
+            $totalUserSms = count($this->getSeekerOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($request->areaId,$request->industryId,$now));
+            $totalUserMail = count($this->getSeekerNotLineHasMailWithAreaIDIndustryIDCreatedAt($request->areaId,$request->industryId,$now));
+            $totalUserLine = count($this->getSeekerHasLineWithAreaIDIndustryIDCreatedAt($request->areaId,$request->industryId,$now));
+        }
+        else if($request->announceFor == "store")
+        {
+            $totalUserSms = count($this->getStoreOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($request->areaId,$request->industryId,$now));
+            $totalUserMail = count($this->getStoreNotLineHasMailWithAreaIDIndustryIDCreatedAt($request->areaId,$request->industryId,$now));
+            $totalUserLine = count($this->getStoreHasLineWithAreaIDIndustryIDCreatedAt($request->areaId,$request->industryId,$now));
+        }
         return DB::table('notification_draft')->insertGetId([
             'id' => Str::uuid()->toString(),
             'notification_for' => $request->announceFor,
@@ -440,20 +509,389 @@ class NotificationRepository
             'sms_user' => $totalUserSms,
             'line_user' => $totalUserLine,
             'mail_user' =>$totalUserMail,
-            'created_at' => date('Y/m/d H:i:s')
+            'created_at' => $now,
+            'scheduled_at' => $scheduledAt,
         ]);
     }
 
+    public function updateNotificationDraft(object $request, int $totalUserLine, int $totalUserMail, int $totalUserSms) : int
+    {
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
+        $isScheduled = $request->delayTime > 0;
+        $scheduledAt = $isScheduled ? now()->addSeconds(intval($request->delayTime)) : null;
+        $totalUserSms = 0;
+        $totalUserLine = 0;
+        $totalUserMail = 0;
+        $now = date('Y/m/d H:i:s');
+        if($request->announceFor == "user")
+        {
+            $totalUserSms = count($this->getSeekerOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($request->areaId,$request->industryId,$now));
+            $totalUserMail = count($this->getSeekerNotLineHasMailWithAreaIDIndustryIDCreatedAt($request->areaId,$request->industryId,$now));
+            $totalUserLine = count($this->getSeekerHasLineWithAreaIDIndustryIDCreatedAt($request->areaId,$request->industryId,$now));
+        }
+        else if($request->announceFor == "store")
+        {
+            $totalUserSms = count($this->getStoreOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($request->areaId,$request->industryId,$now));
+            $totalUserMail = count($this->getStoreNotLineHasMailWithAreaIDIndustryIDCreatedAt($request->areaId,$request->industryId,$now));
+            $totalUserLine = count($this->getStoreHasLineWithAreaIDIndustryIDCreatedAt($request->areaId,$request->industryId,$now));
+        }
 
+        return DB::table('notification_draft')
+        ->where('id', $request->notification_draft_id)
+        ->update([
+            'notification_for' => $request->announceFor,
+            'notification_title' => $request->title,
+            'notification_content' => $request->message,
+            'area_id' => $request->areaId,
+            'industry_id' => $request->industryId,
+            'sms_user' => $totalUserSms,
+            'line_user' => $totalUserLine,
+            'mail_user' =>$totalUserMail,
+            'updated_at' => $now,
+            'scheduled_at' => $scheduledAt,
+        ]);
+    }
 
-
-
+    public function removeNotificationDraft(Request $request) : int
+    {
+        return DB::table('notification_draft')->where(["id"=>$request->notification_draft_id])->update(["is_processed"=>1]);
+    }
 
     public function getNotificationDraft() : Collection
     {
         return DB::table('notification_draft')->get();
     }
+    public function getNotificationDraftForSend() : Collection
+    {
+        return DB::table('notification_draft')->get();
+    }
+    public function getNotificationDraftForSummaryView() :stdClass|null
+    {
+        $dataDraft = DB::table('notification_draft')->where(['is_processed'=>0])->orderBy('created_at','DESC')->get()->first();
+        if(isset($dataDraft))
+        {
+            if($dataDraft->notification_for == "user")
+            {
+                $dataDraft->lineUsers = self::getSeekerHasLineWithAreaIDIndustryIDCreatedAt($dataDraft->area_id, $dataDraft->industry_id, $dataDraft->created_at);
+                $dataDraft->emailUsers = self::getSeekerNotLineHasMailWithAreaIDIndustryIDCreatedAt($dataDraft->area_id, $dataDraft->industry_id, $dataDraft->created_at);
+                $dataDraft->smsUsers = self::getSeekerOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($dataDraft->area_id, $dataDraft->industry_id, $dataDraft->created_at);
+            }
+            else if($dataDraft->notification_for == "store")
+            {
+                $dataDraft->lineUsers = self::getStoreHasLineWithAreaIDIndustryIDCreatedAt($dataDraft->area_id, $dataDraft->industry_id, $dataDraft->created_at);
+                $dataDraft->emailUsers = self::getStoreNotLineHasMailWithAreaIDIndustryIDCreatedAt($dataDraft->area_id, $dataDraft->industry_id, $dataDraft->created_at);
+                $dataDraft->smsUsers = self::getStoreOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($dataDraft->area_id, $dataDraft->industry_id, $dataDraft->created_at);
+            }
+//            dd($dataDraft);
+        }
 
+
+        return $dataDraft;
+    }
+
+    public function getNotificationDraftWithID($notificationDraftId)  :stdClass|null
+    {
+        return DB::table('notification_draft')->where(["id"=>$notificationDraftId])->orderBy('created_at','DESC')->get()->first();
+    }
+    public function getAllUserIdSeekerWithAreaIDIndustryIDCreatedAt(int $areaId, int $industryId, String $created_at)
+    {
+        $nameTableSeekerLocation = ($areaId > 0?', seeker_expect_location sel':'');
+        $nameTableSeekerIndustry = ($industryId > 0?', seeker_expect_industry sei':'');
+        return DB::table(DB::raw("user {$nameTableSeekerLocation} {$nameTableSeekerIndustry}"))
+            ->select(DB::raw('user.id'))
+            ->where(function($query) use ($areaId, $industryId){
+                if($areaId > 0)
+                {
+                    $query->where('sel.area_id', '=', $areaId);
+                    $query->whereRaw("user.id = sel.user_id");
+                }
+                if($industryId > 0)
+                {
+                    $query->where('sei.industry_id', '=', $industryId);
+                    $query->whereRaw("user.id = sei.user_id");
+                }
+            })
+            ->where('user.role', '=', 2)
+            ->where('user.created_at', '<=', $created_at)
+            ->distinct()
+            ->get();
+    }
+
+    public function getAllUserIdStoreWithAreaIDIndustryIDCreatedAt(int $areaId, int $industryId, String $created_at)
+    {
+
+        return DB::table(DB::raw("store, user"))
+            ->select(DB::raw('user.id, store.id as store_id'))
+            ->where(function($query) use ($areaId, $industryId){
+                if($areaId > 0)
+                {
+                    $query->where('store.area_cd', '=', $areaId);
+                }
+                if($industryId > 0)
+                {
+                    $query->where('store.business_type_id', '=', $industryId);
+                }
+            })
+            ->where('user.created_at', '<=', $created_at)
+            ->where('role', '=', 3)
+            ->whereRaw("user.id = store.user_id")
+            ->distinct()
+            ->get();
+
+
+    }
+
+    public function getStoreHasLineWithAreaIDIndustryIDCreatedAt(int $areaId, int $industryId, String $created_at): Collection
+    {
+        $allUserLine = self::getAllUserIdUserLine()   ;
+        DB::enableQueryLog();
+        $stores =
+            DB::table(DB::raw('user, store'))
+                ->select(DB::raw('store.id, store.store_name, store.phone_number, store.mail_address'))
+                ->where(function($query) use ($areaId, $industryId){
+                    if($areaId > 0)
+                    {
+                        $query->where('store.area_cd', '=', $areaId);
+                    }
+                    if($industryId > 0)
+                    {
+                        $query->where('store.business_type_id', '=', $industryId);
+                    }
+                })
+                ->where('user.created_at', '<=', $created_at)
+                ->where('role', '=', 3)
+                ->whereIn('user.id',$allUserLine)
+                ->whereRaw("user.id = store.user_id")
+                ->distinct()
+                ->get();
+//        dd(\DB::getQueryLog());
+        return $stores->map(function ($store)
+        {
+
+            $store->lineId = self::getLineIdWithUserId($store->id);
+            $notification = new NotificationService($this);
+            return $store;
+        });
+    }
+    public function getLineIdWithUserId(String $userId)
+    {
+            $dataLine = DB::table("notification_user_line")->where("user_id",$userId)->get("line_id")->first();
+            if(isset($dataLine))
+            {
+                return $dataLine->line_id;
+            }
+            return null;
+
+    }
+    public function getStoreNotLineHasMailWithAreaIDIndustryIDCreatedAt(int $areaId, int $industryId, String $created_at): Collection
+    {
+        $allUserLine = self::getAllUserIdUserLine()   ;
+        $stores =
+            DB::table(DB::raw('user, store'))
+                ->select(DB::raw('store.id, store.store_name, store.phone_number, store.mail_address'))
+                ->where(function($query) use ($areaId, $industryId){
+                    if($areaId > 0)
+                    {
+                        $query->where('store.area_cd', '=', intval($areaId));
+                    }
+                    if($industryId > 0)
+                    {
+                        $query->where('store.business_type_id', '=', intval($industryId));
+                    }
+                })
+                ->whereNotNull('store.mail_address')
+                ->whereRaw("LENGTH(TRIM(store.mail_address)) > 0")
+                ->where('user.created_at', '<=', $created_at)
+                ->where('role', '=', 3)
+                ->whereRaw("user.id = store.user_id")
+                ->whereNotIn('user.id',$allUserLine)
+                ->distinct()
+                ->get();
+        return $stores->map(function ($store) use ($industryId, $areaId) {
+            $store->emailDecrypted = Crypt::decryptString($store->mail_address);
+
+            return $store;
+        });
+    }
+
+    public function getStoreOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt(int $areaId, int $industryId, String $created_at): Collection
+    {
+        $allUserLine = self::getAllUserIdUserLine()   ;
+        $stores =
+            DB::table(DB::raw('user, store'))
+                ->select(DB::raw('store.id, store.store_name, store.phone_number, store.mail_address'))
+                ->where(function($query) use ($areaId, $industryId){
+                    if($areaId > 0)
+                    {
+                        $query->where('store.area_cd', '=', intval($areaId));
+                    }
+                    if($industryId > 0)
+                    {
+                        $query->where('store.business_type_id', '=', intval($industryId));
+                    }
+                })
+                ->whereNull("store.mail_address")
+                ->whereNotNull('store.phone_number')
+                ->whereRaw("LENGTH(TRIM(store.phone_number)) > 0")
+                ->where('user.created_at', '<=', $created_at)
+                ->where('role', '=', 3)
+                ->whereRaw("user.id = store.user_id")
+                ->whereNotIn('user.id',$allUserLine)
+                ->distinct()
+                ->get();
+        return $stores->map(function ($store)
+        {
+            $store->phoneNumberDecrypted = Crypt::decryptString($store->phone_number);
+//            $store->phoneNumberDecrypted = Crypt::decryptString($store->phone_number);
+            return $store;
+        });
+    }
+    public function getSeekerWithUserId(String $userId)
+    {
+        return DB::table('seeker')->where(['user_id'=>$userId])->get()->first();
+    }
+
+    /**
+     * @param int $areaId
+     * @param int $industryId
+     * @param String $created_at
+     * @return Collection
+     */
+    public function getSeekerHasLineWithAreaIDIndustryIDCreatedAt(int $areaId, int $industryId, String $created_at): Collection
+    {
+        $allUserLine = self::getAllUserIdUserLine()   ;
+        $nameTableSeekerLocation = ($areaId > 0?', seeker_expect_location sel':'');
+        $nameTableSeekerIndustry = ($industryId>0?', seeker_expect_industry sei':'');
+        $seekers = DB::table(DB::raw("user {$nameTableSeekerLocation} {$nameTableSeekerIndustry}"))
+        ->select(DB::raw('user.id, user.email, user.phone_number_landline'))
+        ->where(function($query) use ($areaId, $industryId){
+            if($areaId > 0)
+            {
+                $query->where('sel.area_id', '=', $areaId);
+                $query->whereRaw("user.id = sel.user_id");
+            }
+            if($industryId > 0)
+            {
+                $query->where('sei.industry_id', '=', $industryId);
+                $query->whereRaw("user.id = sei.user_id");
+            }
+        })
+        ->where('user.role', '=', 2)
+        ->whereIn('user.id',$allUserLine)
+        ->where('user.created_at', '<=', $created_at)
+        ->distinct()
+        ->get();
+        return $seekers->map(function ($seeker)
+        {
+            $seeker->lineId = self::getLineIdWithUserId($seeker->id);
+            $dataSeeker = self::getSeekerWithUserId($seeker->id);
+            if(isset($dataSeeker))
+            {
+                $seeker->nickname = $dataSeeker->nickname;
+                $seeker->realname = $dataSeeker !== null ?Crypt::decryptString($dataSeeker->realname):null;
+            }
+            else
+            {
+                $seeker->nickname = "";
+            }
+
+
+
+            return $seeker;
+        });
+    }
+
+
+    public function getSeekerNotLineHasMailWithAreaIDIndustryIDCreatedAt(int $areaId, int $industryId, String $created_at)
+    {
+        $allUserLine = self::getAllUserIdUserLine()   ;
+        $nameTableSeekerLocation = ($areaId > 0?', seeker_expect_location sel':'');
+        $nameTableSeekerIndustry = ($industryId>0?', seeker_expect_industry sei':'');
+        $seekers = DB::table(DB::raw("user {$nameTableSeekerLocation} {$nameTableSeekerIndustry}"))
+            ->select(DB::raw('user.id, user.email, user.phone_number_landline'))
+            ->where(function($query) use ($areaId, $industryId){
+                if($areaId > 0)
+                {
+                    $query->where('sel.area_id', '=', $areaId);
+                    $query->whereRaw("user.id = sel.user_id");
+                }
+                if($industryId > 0)
+                {
+                    $query->where('sei.industry_id', '=', $industryId);
+                    $query->whereRaw("user.id = sei.user_id");
+                }
+            })
+            ->whereNotNull('user.email')
+            ->whereRaw("LENGTH(TRIM(user.email)) > 0")
+            ->where('user.role', '=', 2)
+            ->where('user.created_at', '<=', $created_at)
+            ->whereNotIn('user.id',$allUserLine)
+            ->distinct()
+            ->get();
+        return $seekers->map(function ($seeker)
+        {
+            $dataSeeker = self::getSeekerWithUserId($seeker->id);
+            if(isset($dataSeeker))
+            {
+                $seeker->nickname = $dataSeeker->nickname;
+                $seeker->realname = $dataSeeker !== null ?Crypt::decryptString($dataSeeker->realname):null;
+            }
+            else
+            {
+                $seeker->nickname = "";
+            }
+            $seeker->emailDecrypted = Crypt::decryptString($seeker->email);
+//            $notificationSv = new NotificationService(($this));
+//
+//            $notificationSv->loadParamNotificationUser("{prefecture_nm}", $seeker->id);
+
+            return $seeker;
+        });
+    }
+
+    public function getSeekerOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt(int $areaId, $industryId, String $created_at)
+    {
+        $allUserLine = self::getAllUserIdUserLine()   ;
+        $nameTableSeekerLocation = ($areaId > 0?', seeker_expect_location sel':'');
+        $nameTableSeekerIndustry = ($industryId>0?', seeker_expect_industry sei':'');
+        $seekers = DB::table(DB::raw("user {$nameTableSeekerLocation} {$nameTableSeekerIndustry}"))
+            ->select(DB::raw('user.id, user.email, user.phone_number_landline'))
+            ->where(function($query) use ($areaId, $industryId){
+                if($areaId > 0)
+                {
+                    $query->where('sel.area_id', '=', $areaId);
+                    $query->whereRaw("user.id = sel.user_id");
+                }
+                if($industryId > 0)
+                {
+                    $query->where('sei.industry_id', '=', $industryId);
+                    $query->whereRaw("user.id = sei.user_id");
+                }
+            })
+            ->whereNull('user.email')
+            ->whereNotNull("user.phone_number_landline")
+            ->whereRaw("LENGTH(TRIM(user.phone_number_landline)) > 0")
+            ->where('user.role', '=', 2)
+            ->where('user.created_at', '<=', $created_at)
+            ->whereNotIn('user.id',$allUserLine)
+            ->distinct()
+            ->get();
+        return $seekers->map(function ($seeker)
+        {
+            $dataSeeker = self::getSeekerWithUserId($seeker->id);
+            if(isset($dataSeeker))
+            {
+                $seeker->nickname = $dataSeeker->nickname;
+                $seeker->realname = $dataSeeker !== null ?Crypt::decryptString($dataSeeker->realname):null;
+            }
+            else
+            {
+                $seeker->nickname = "";
+            }
+            $seeker->phoneNumberDecrypted = Crypt::decryptString($seeker->phone_number_landline);
+            return $seeker;
+        });
+    }
     /**
      * @return Collection
      */
@@ -563,5 +1001,18 @@ class NotificationRepository
                     'value'
                 )
             );
+    }
+
+    /**
+     * @param String $notificationId
+     * @return int
+     */
+    public function cancelNotificationDraft(String $notificationId): int
+    {
+        return DB::statement("DELETE FROM notification_draft WHERE id = '{$notificationId}' ");
+    }
+    public function getFirstStoreWithUserID(String $userId)
+    {
+        return DB::table('store')->where("user_id",$userId)->first();
     }
 }

@@ -36,7 +36,10 @@ class SendItemLine implements ShouldQueue
         $subUserLine = $this->subUserLine;
         $httpClient = new CurlHTTPClient(env('LINE_BOT_CHANNEL_TOKEN'));
         $bot = new LINEBot($httpClient, ['channelSecret' => env('LINE_BOT_CHANNEL_SECRET')]);
-        $message = new TextMessageBuilder($param);
-        $bot->pushMessage($subUserLine->address, $message); 
+        if(isset($subUserLine))
+        {
+            $message = new TextMessageBuilder($param);
+            $bot->pushMessage($subUserLine, $message);
+        }
     }
 }

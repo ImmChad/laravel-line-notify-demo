@@ -165,7 +165,28 @@
             font-style: italic;
             color: #a927f9;
         }
+        .form-popup
+        {
+            width: max-content;
+        }
+        .faq-body{
+            max-height: 70vh;
+            overflow: auto;
+        }
+        .param-added {
+            padding: 5px 10px;
+            background: rgba(115, 102, 255, 0.75);
+            color: #000000;
+            cursor: pointer;
+            margin: 0px 2px;
+            border-radius: 0.5rem;
+            border: 0px solid;
+            position: relative;
+        }
 
+        .param-added .icon-remove {
+            display: none;
+        }
     </style>
 
 
@@ -184,89 +205,354 @@
                             <thead class="thead-dark">
                             </thead>
                             <tbody>
-                                <tr class="template-box" draft_id="{{ $dataDraft->id }}">
-                                    <th scope="row">Notification ID</th>
-                                    <td>{{ $dataDraft->id }}</td>
-                                </tr>
-                                <tr class="template-box">
-                                    <th scope="row">Notification For</th>
-                                    <td>{{ $dataDraft->notification_for }}</td>
-                                </tr>
-                                <tr class="template-box">
-                                    <th scope="row">Notification Title</th>
-                                    <td>{{ $dataDraft->notification_title }}</td>
-                                </tr>
-                                <tr class="template-box">
-                                    <th scope="row">Line user List will see</th>
-                                    <td>{{ $dataDraft->line_user }}</td>
-                                </tr>
-                                <tr class="template-box">
-                                    <th scope="row">Mail user List will see</th>
-                                    <td>{{ $dataDraft->mail_user }}</td>
-                                </tr>
-                                <tr class="template-box">
-                                    <th scope="row">SMS User List will see</th>
-                                    <td>{{ $dataDraft->sms_user }}</td>
-                                </tr>
-                                <tr class="template-box">
-                                    <th scope="row">Created at</th>
-                                    <td>{{ $dataDraft->created_at }}</td>
-                                </tr>
+                            <tr class="template-box">
+                                <th scope="row">Notification For</th>
+                                <td>{{ $dataDraft->notification_for }}</td>
+                            </tr>
+                            <tr class="template-box">
+                                <th scope="row">Notification Title</th>
+                                <td>{{ $dataDraft->notification_title }}</td>
+                            </tr>
+                            <tr id="tr-user-line" class="template-box">
+                                <th scope="row">Line user List will see</th>
+                                <td>{{ $dataDraft->line_user }}</td>
+                            </tr>
+                            <tr id="tr-user-email" class="template-box">
+                                <th scope="row">Mail user List will see</th>
+                                <td>{{ $dataDraft->mail_user }}</td>
+                            </tr>
+                            <tr id="tr-user-sms" class="template-box">
+                                <th scope="row">SMS User List will see</th>
+                                <td>{{ $dataDraft->sms_user }}</td>
+                            </tr>
+                            <tr class="template-box">
+                                <th scope="row">Created at</th>
+                                <td>{{ $dataDraft->created_at }}</td>
+                            </tr>
+                            <tr class="template-box">
+                                <th scope="row">Scheduled at</th>
+                                <td>{{ $dataDraft->scheduled_at??"Send Now" }}</td>
+                            </tr>
                             </tbody>
                         </table>
                         <div class="section-list-btn">
-                            <button type="button" class="btn btn-light">Cancel</button>
-                            <button type="button" class="btn btn-info">Edit</button>
-                            <button type="button" class="btn btn-primary">Send</button>
+                            <button type="button" class="btn btn-light" id="btn-cancel-notification-case-draft" draft_id="{{ $dataDraft->id }}" >Cancel</button>
+                            <button type="button" class="btn btn-info" id="btn-edit-notification-case-draft" draft_id="{{ $dataDraft->id }}">Edit</button>
+                            <button type="button" class="btn btn-primary" id="btn-send-notification-case-draft" draft_id="{{ $dataDraft->id }}">Send</button>
                         </div>
                     </div>
 
                     <div class="col-2 section-preview-notification">
-                        <style>
-                            @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400);
+                            <style>
+                                @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400);
 
-                            .container {
-                                width: 400px;
-                                padding: 10px;
-                            }
+                                .container {
+                                    width: 400px;
+                                    padding: 10px;
+                                }
 
-                            .message-blue {
-                                position: relative;
-                                padding: 10px;
-                                background-color: #A8DDFD;
-                                width: 100%;
-                                height: max-content;
-                                text-align: left;
-                                font: 400 0.9em 'Open Sans', sans-serif;
-                                border: 1px solid #97C6E3;
-                                border-radius: 0px 20px 20px 20px;
-                            }
+                                .message-blue {
+                                    position: relative;
+                                    padding: 10px;
+                                    background-color: #A8DDFD;
+                                    width: 100%;
+                                    height: max-content;
+                                    text-align: left;
+                                    font: 400 0.9em 'Open Sans', sans-serif;
+                                    border: 1px solid #97C6E3;
+                                    border-radius: 0px 20px 20px 20px;
+                                }
 
-                            .message-content {
-                                padding: 0;
-                                margin: 0;
-                            }
+                                .message-content {
+                                    padding: 0;
+                                    margin: 0;
+                                }
 
+                            </style>
+                            <div class="container">
+                                <div class="message-blue">
+                                    <p id="preview-mess-content-notification" class="message-content">{!! $dataDraft->notification_content !!}</p>
 
-
-                        </style>
-                        <div class="container">
-                            <div class="message-blue">
-                                <p class="message-content">{!! $dataDraft->notification_content !!}</p>
-
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
+    @if($dataDraft->notification_for == "user")
+        <div class="data-line-table" style="display: none;">
+            @if(count($dataDraft->lineUsers) > 0)
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Nickname </th>
+                        <th scope="col">Real name</th>
+                        <th scope="col">Line ID</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($dataDraft->lineUsers as $sublistUser)
+                        <tr data-id-register=''>
+                            <td>{{ $sublistUser->nickname }}</td>
+                            <td>{{ $sublistUser->realname }}</td>
+                            <td>{{ $sublistUser->lineId }}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            @else
+                <h6>No Line user</h6>
+            @endif
+        </div>
 
+        <div class="data-email-table" style="display: none;">
+            @if(count($dataDraft->emailUsers) > 0)
+                <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Nickname </th>
+                    <th scope="col">Real name</th>
+                    <th scope="col">Email address</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($dataDraft->emailUsers as $sublistUser)
+                    <tr data-id-register=''>
+                        <td>{{ $sublistUser->nickname }}</td>
+                        <td>{{ $sublistUser->realname }}</td>
+                        <td>{{ $sublistUser->emailDecrypted }}</td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+            @else
+                <h6>No Email user</h6>
+            @endif
+        </div>
+
+        <div class="data-sms-table" style="display: none;">
+            @if(count($dataDraft->smsUsers) > 0)
+                <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Nickname </th>
+                    <th scope="col">Real name</th>
+                    <th scope="col">Phone Number</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($dataDraft->smsUsers as $sublistUser)
+                    <tr data-id-register=''>
+                        <td>{{ $sublistUser->nickname }}</td>
+                        <td>{{ $sublistUser->realname }}</td>
+                        <td>{{ $sublistUser->phoneNumberDecrypted }}</td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+            @else
+                <h6>No SMS user</h6>
+            @endif
+        </div>
+    @elseif($dataDraft->notification_for == "store")
+        <div class="data-line-table" style="display: none;">
+            @if(count($dataDraft->lineUsers) > 0)
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Store name</th>
+                        <th scope="col">Line ID</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($dataDraft->lineUsers as $sublistUser)
+                        <tr data-id-register=''>
+                            <td>{{ $sublistUser->store_name }}</td>
+                            <td>{{ $sublistUser->lineId }}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            @else
+                <h6>No Line user</h6>
+            @endif
+        </div>
+
+        <div class="data-email-table" style="display: none;">
+            @if(count($dataDraft->emailUsers) > 0)
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Store name</th>
+                        <th scope="col">Email address</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($dataDraft->emailUsers as $sublistUser)
+                        <tr data-id-register=''>
+                            <td>{{ $sublistUser->store_name }}</td>
+                            <td>{{ $sublistUser->emailDecrypted }}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            @else
+                <h6>No Email user</h6>
+            @endif
+        </div>
+
+        <div class="data-sms-table" style="display: none;">
+            @if(count($dataDraft->smsUsers) > 0)
+                <table class="table">
+                    <thead>
+                        <tr>
+
+                            <th scope="col">Real name</th>
+                            <th scope="col">Phone Number</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($dataDraft->smsUsers as $sublistUser)
+                        <tr data-id-register=''>
+                            <td>{{ $sublistUser->store_name }}</td>
+                            <td>{{ $sublistUser->phoneNumberDecrypted }}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            @else
+                <h6>No SMS user</h6>
+            @endif
+        </div>
+    @endif
 @endsection
 
 
 @section('script')
+
+            <script>
+
+                function convertHTMLToContentNotification(htmlTagContent)
+                {
+                    htmlTagContent = htmlTagContent.cloneNode(true)
+                    const paramAddedS =  htmlTagContent.querySelectorAll(".param-added");
+                    paramAddedS.forEach(paramAdded=>{
+                        paramAdded.querySelector(".icon-remove").remove()
+                        paramAdded.outerHTML = `{${paramAdded.textContent}}`
+                    })
+                    return htmlTagContent.textContent
+
+                }
+                const btnSend = document.querySelector("#btn-send-notification-case-draft");
+                btnSend.addEventListener("click", event =>{
+                    var form = new FormData()
+                    form.append("notificationContent", convertHTMLToContentNotification(document.querySelector("#preview-mess-content-notification")))
+                    form.append("notification_draft_id",event.currentTarget.getAttribute("draft_id"))
+
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                    $.ajax({
+                        url: '{{URL::to("/admin/send-notification")}}',
+                        method: 'post',
+                        data:form,
+                        contentType: false,
+                        processData: false,
+                        dataType: 'json',
+                        success: function (data) {
+
+                            window.location.href = "/admin/notification-list?messToast=Send Success!";
+
+                        },
+                        error: function () {
+                            displayToast('Can not add data!');
+                        }
+                    })
+                })
+
+                const btnCancel = document.querySelector("#btn-cancel-notification-case-draft");
+                btnCancel.addEventListener("click", event =>{
+                    var form = new FormData()
+                    form.append("notification_draft_id",event.currentTarget.getAttribute("draft_id"))
+
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                    $.ajax({
+                        url: '{{URL::to("/admin/cancel-notification-draft")}}',
+                        method: 'post',
+                        data:form,
+                        contentType: false,
+                        processData: false,
+                        dataType: 'json',
+                        success: function (data) {
+
+                            window.location.href = "/admin/notification-list?messToast=Send Success!";
+
+                        },
+                        error: function () {
+                            displayToast('Can not add data!');
+                        }
+                    })
+                })
+
+                const btnEdit = document.querySelector("#btn-edit-notification-case-draft");
+                btnEdit.addEventListener("click", event =>{
+                    location.href = `/admin/update-notification-draft/${btnEdit.getAttribute("draft_id")}/{{$dataDraft->notification_for}}`
+                })
+
+            </script>
+
+            <script>
+                let parentFormPopup = document.querySelector(".parent-form-popup")
+                let closePopup = parentFormPopup.querySelector(".close-popup")
+                closePopup.addEventListener("click", eventClose =>{
+                    let tmpParent = eventClose.currentTarget.closest(".parent-form-popup")
+                    tmpParent.style.display = "none"
+                    tmpParent.querySelector(".faq-form").innerHTML=``
+                })
+                let trUserSms = document.querySelector("#tr-user-sms")
+                trUserSms.addEventListener("click", event => {
+                    let dataSmsTable = document.querySelector(".data-sms-table").cloneNode(true);
+                    dataSmsTable.style.display = "block"
+                    parentFormPopup.querySelector(".title-popup").textContent = "SMS user List"
+                    parentFormPopup.querySelector(".faq-form").appendChild(dataSmsTable)
+                    parentFormPopup.style.display = "block"
+                })
+
+                let trUserLine = document.querySelector("#tr-user-line")
+                trUserLine.addEventListener("click", event => {
+                    let dataLineTable = document.querySelector(".data-line-table").cloneNode(true);
+                    dataLineTable.style.display = "block"
+                    parentFormPopup.querySelector(".title-popup").textContent = "Line user List"
+                    parentFormPopup.querySelector(".faq-form").appendChild(dataLineTable)
+                    parentFormPopup.style.display = "block"
+                })
+                let trUserEmail = document.querySelector("#tr-user-email")
+                trUserEmail.addEventListener("click", event => {
+                    let dataEmailTable = document.querySelector(".data-email-table").cloneNode(true);
+                    dataEmailTable.style.display = "block"
+                    parentFormPopup.querySelector(".title-popup").textContent = "Email user List"
+                    parentFormPopup.querySelector(".faq-form").appendChild(dataEmailTable)
+                    parentFormPopup.style.display = "block"
+                })
+
+
+{{--                @if(isset($dataDraft))--}}
+{{--                    loadDataLineUserCount({{$dataDraft}})--}}
+{{--                    loadDataMailUserCount({{$dataDraft}})--}}
+{{--                    loadDataSMSUserCount({{$dataDraft}})--}}
+{{--                @endif--}}
+
+
+
+            </script>
 
 @endsection
 
