@@ -127,10 +127,6 @@ class NotificationController extends Controller
      */
     function sendMessForListUser(Request $request): int
     {
-        $request->validate([
-            'title' => 'required|max:255',
-            'message' => 'required|max:500',
-        ]);
         return $this->notificationHandler->sendMessForListUser($request);
     }
 
@@ -164,7 +160,7 @@ class NotificationController extends Controller
     {
         $request->validate([
             'title' => 'required|max:255',
-            'message' => 'required|max:500',
+            'message' => 'required',
         ]);
         return $this->notificationHandler->sendUpdateForListUser($request);
     }
@@ -225,7 +221,7 @@ class NotificationController extends Controller
     {
         $request->validate([
             'templateTitle' => 'required|max:255',
-            'templateContent' => 'required|max:500'
+            'templateContent' => 'required'
         ]);
         return $this->notificationHandler->reqAddNewTemplate($request);
     }
@@ -237,9 +233,8 @@ class NotificationController extends Controller
     public function reqUpdateNewTemplate(Request $request) : array
     {
         $request->validate([
-            'template_name' => 'required|max:255',
-            'template_title' => 'required|max:255',
-            'template_content' => 'required|max:500'
+            'templateTitle' => 'required|max:255',
+            'templateContent' => 'required'
         ]);
         return $this->notificationHandler->reqUpdateNewTemplate($request);
     }
@@ -255,14 +250,33 @@ class NotificationController extends Controller
 
     /**
      * @param Request $request
-     * @return Collection
+     * @return Collection|array
      */
-    function getAreaFromRegionId(Request $request) : Collection
+    function getAreaFromRegionId(Request $request) : Collection|array
     {
         $request->validate([
             'regionId' => 'max:10'
         ]);
         return $this->notificationHandler->getAreaFromRegionId($request->regionId);
+    }
+
+    /**
+     * @param Request $request
+     * @return int
+     */
+    function cancelNotificationDraft(Request $request): int
+    {
+        return $this->notificationHandler->cancelNotificationDraft($request);
+    }
+    function renderUpdateNotificationDraft(String $notificationDraftId, String $notificationSender = null, String $notificationTemplate = null)
+    {
+        return $this->notificationHandler->renderUpdateNotificationDraft($notificationDraftId, $notificationSender, $notificationTemplate);
+    }
+
+    function updateNotificationDraft(Request $request)
+    {
+
+        return $this->notificationHandler->updateNotificationDraft($request);
     }
 
 
@@ -286,16 +300,17 @@ class NotificationController extends Controller
      */
     static public function sendMessTwilio($sms_number, $message)
     {
-        $account_sid = getenv("TWILIO_SID");
-        $auth_token = getenv("TWILIO_AUTH_TOKEN");
-        $client = new Client($account_sid, $auth_token);
-        $res = $client->messages
-            ->create($sms_number, // to
-                [
-                    "body" => $message,
-                    "messagingServiceSid" => $twilio_number = getenv("TWILIO_SMS_SERVICE_ID")
-                ]
-            );
+
+//        $account_sid = getenv("TWILIO_SID");
+//        $auth_token = getenv("TWILIO_AUTH_TOKEN");
+//        $client = new Client($account_sid, $auth_token);
+//        $res = $client->messages
+//            ->create($sms_number, // to
+//                [
+//                    "body" => $message,
+//                    "messagingServiceSid" => $twilio_number = getenv("TWILIO_SMS_SERVICE_ID")
+//                ]
+//            );
         event(new NewStoreRequestRegistration(UserController::CHANNEL_SMS, $sms_number, "", $message));
 
     }

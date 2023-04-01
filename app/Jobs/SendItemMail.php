@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Jobs;
+
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -13,21 +14,21 @@ use stdClass;
 
 class SendItemMail implements ShouldQueue
 {
-    use Batchable,Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * Create a new job instance.
      */
-    protected $textNotification ;
-    protected $titleSubject ;
-    protected $email ;
+    protected $textNotification;
+    protected $titleSubject;
+    protected $email;
 
-    public function __construct($email,$textNotification,$titleSubject)
+    public function __construct($email, $textNotification, $titleSubject)
     {
         $this->onQueue('item_email');
-        $this->email= $email;
-        $this->textNotification= $textNotification;
-        $this->titleSubject= $titleSubject;
+        $this->email = $email;
+        $this->textNotification = $textNotification;
+        $this->titleSubject = $titleSubject;
 
     }
 
@@ -36,16 +37,20 @@ class SendItemMail implements ShouldQueue
      */
     public function handle(): void
     {
-        $textNotification= $this->textNotification;
-        $titleSubject= $this->titleSubject;
-        $email= $this->email;
-                Mail::send([],[], function ($message) use ($email,$titleSubject,$textNotification) {
-                    $message->from(env('MAIL_FROM_ADDRESS'), 'Notification Web');
-                    $message->to($email);
-                    $message->subject($titleSubject);
-                    $message->html($textNotification);
-        });
+        $textNotification = $this->textNotification;
+        $titleSubject = $this->titleSubject;
+        $email = $this->email;
+        if(isset($email))
+        {
+            Mail::send([], [], function ($message) use ($email, $titleSubject, $textNotification) {
+                $message->from(env('MAIL_FROM_ADDRESS'), 'Notification Web');
+                $message->to("dunglm.21it@vku.udn.vn");
+                $message->subject($titleSubject);
+                $message->html($textNotification);
+            });
+        }
     }
+
     public function failed(Throwable $exception): void
     {
         // echo 'fail :(';
@@ -55,5 +60,5 @@ class SendItemMail implements ShouldQueue
     // {
     //     return now()->addSeconds(5);
     // }
-    
+
 }

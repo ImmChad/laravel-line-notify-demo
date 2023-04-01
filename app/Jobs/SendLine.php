@@ -5,6 +5,7 @@ namespace App\Jobs;
 
 use App\Handler\NotificationHandler;
 use App\Repository\NotificationRepository;
+use App\Services\NotificationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -34,12 +35,6 @@ class SendLine implements ShouldQueue
      */
     public function handle(): void
     {
-        $notificationRepository = new NotificationRepository();
-        $handler = new NotificationHandler($notificationRepository);
-        $userLine = $handler->listUser(UserController::CHANNEL_LINE);
-
-//        $userLine = NotificationHandler::listUser(UserController::CHANNEL_LINE);
-
         $data_notification = DB::table('notification')->where([
             'id'=>$this->notification_id
         ])
@@ -48,12 +43,35 @@ class SendLine implements ShouldQueue
 
         if(isset($data_notification))
         {
-            $mess = "{$data_notification->announce_title} - {$data_notification->announce_content}";
+            $notificationRepository = new NotificationRepository();
+            $dataNotificationDraft = $notificationRepository->getNotificationDraftWithID($data_notification->notification_draft_id);
+            $userLine = [];
+            if($dataNotificationDraft->notification_for == "user")
+            {
+                $userLine = $notificationRepository->getSeekerHasLineWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id,$dataNotificationDraft->created_at);
+            }
+            else if ($dataNotificationDraft->notification_for == "store")
+            {
+                $userLine = $notificationRepository->getStoreHasLineWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id,$dataNotificationDraft->created_at);
+            }
+            $notificationService = new NotificationService($notificationRepository);
+
             foreach($userLine as $subUserLine) {
-                SendItemLine::dispatch($mess,$subUserLine);
+                $content = "";
+                if($dataNotificationDraft->notification_for == "user")
+                {
+                    $content = $notificationService->loadParamNotificationUser($data_notification->announce_content,$subUserLine->id);
+                }
+            else if ($dataNotificationDraft->notification_for == "store")
+                {
+                    $content = $notificationService->loadParamNotificationStore($data_notification->announce_content,$subUserLine->id) ;
+                }
+
+                $mess = "{$data_notification->announce_title} - {$content}";
+                SendItemLine::dispatch($mess,$subUserLine->lineId);
             }
 
-            $data_notification = DB::table('notification')->where([
+            DB::table('notification')->where([
                 'id'=>$this->notification_id
             ])
             ->where('deleted_at','=',null)

@@ -6,9 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Cuba admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+          content="Cuba admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
     <meta name="keywords"
-        content="admin template, Cuba admin template, dashboard template, flat admin template, responsive admin template, web app">
+          content="admin template, Cuba admin template, dashboard template, flat admin template, responsive admin template, web app">
     <meta name="author" content="pixelstrap">
     <!-- Set Icon Logo -->
     <link rel="icon" href="{{ asset('Image/logo.png') }}" type="image/x-icon">
@@ -19,9 +19,9 @@
     <title>User Notification</title>
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css?family=Rubik:400,400i,500,500i,700,700i&amp;display=swap"
-        rel="stylesheet">
+          rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900&amp;display=swap"
-        rel="stylesheet">
+          rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/font-awesome.css') }}">
     <!-- ico-font-->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/icofont.css') }}">
@@ -51,227 +51,228 @@
 </head>
 
 <body>
-    <style>
-        .page-wrapper .page-header .header-wrapper {
-            padding: 0.2rem 1rem;
-        }
-        .nav-menus path, .nav-menus a{
-            color:black;
-        }
-        /* .nav-menus:hover path, .nav-menus a:hover{
-            color:var(--theme-deafult)!important;
-        } */
-        .nav-menus a.active path, .nav-menus a.active{
-            color:var(--theme-deafult)!important;
-        
-        }
-        .nav-menus a.marked
-        {
-            position: relative;
-        }
-        .nav-menus a.marked::after
-        {
-            position: absolute;
-            content: "";
-            width: 10px;
-            height: 10px;
-            background: var(--theme-deafult);
-            border-radius: 50%;
-            right: 0;
-        }
-    </style>
-    <!-- tap on top starts-->
-    <div class="tap-top"><i data-feather="chevrons-up"></i></div>
-    <!-- tap on tap ends-->
-    <!-- page-wrapper Start-->
-    <div class="page-wrapper compact-wrapper modern-type" id="pageWrapper">
-        <!-- Page Header Start-->
-        <div class="page-header">
-            <div class="header-wrapper row m-0">
-                <form class="form-inline search-full col" action="#" method="get">
-                    <div class="form-group w-100">
-                        <div class="Typeahead Typeahead--twitterUsers">
-                            <div class="u-posRelative">
-                                <input class="demo-input Typeahead-input form-control-plaintext w-100" type="text"
-                                    placeholder="Search Cuba .." name="q" title="" autofocus>
-                                <div class="spinner-border Typeahead-spinner" role="status">
-                                    <span class="sr-only">Loading...</span></div>
-                                <i class="close-search" data-feather="x"></i>
-                            </div>
-                            <div class="Typeahead-menu"></div>
+<style>
+    .page-wrapper .page-header .header-wrapper {
+        padding: 0.2rem 1rem;
+    }
+
+    .nav-menus path, .nav-menus a {
+        color: black;
+    }
+
+    /* .nav-menus:hover path, .nav-menus a:hover{
+        color:var(--theme-deafult)!important;
+    } */
+    .nav-menus a.active path, .nav-menus a.active {
+        color: var(--theme-deafult) !important;
+
+    }
+
+    .nav-menus a.marked {
+        position: relative;
+    }
+
+    .nav-menus a.marked::after {
+        position: absolute;
+        content: "";
+        width: 10px;
+        height: 10px;
+        background: var(--theme-deafult);
+        border-radius: 50%;
+        right: 0;
+    }
+</style>
+<!-- tap on top starts-->
+<div class="tap-top"><i data-feather="chevrons-up"></i></div>
+<!-- tap on tap ends-->
+<!-- page-wrapper Start-->
+<div class="page-wrapper compact-wrapper modern-type" id="pageWrapper">
+    <!-- Page Header Start-->
+    <div class="page-header">
+        <div class="header-wrapper row m-0">
+            <form class="form-inline search-full col" action="#" method="get">
+                <div class="form-group w-100">
+                    <div class="Typeahead Typeahead--twitterUsers">
+                        <div class="u-posRelative">
+                            <input class="demo-input Typeahead-input form-control-plaintext w-100" type="text"
+                                   placeholder="Search Cuba .." name="q" title="" autofocus>
+                            <div class="spinner-border Typeahead-spinner" role="status">
+                                <span class="sr-only">Loading...</span></div>
+                            <i class="close-search" data-feather="x"></i>
                         </div>
-                    </div>
-                </form>
-                <div class="header-logo-wrapper col-auto p-0">
-                    {{-- <div class="logo-wrapper"><a href="{{ route('index') }}"><img class="img-fluid" src="{{asset('assets/images/logo/logo.png')}}" alt=""></a></div> --}}
-                    <div class="logo-wrapper"><a href="#"><img class="img-fluid" style="width: 40px; height: 40px; object-fit: cover;"
-                                src="{{ asset('Image/logo.png') }}" alt="" ></a>
+                        <div class="Typeahead-menu"></div>
                     </div>
                 </div>
-                <div class="left-header col horizontal-wrapper ps-0">
-                    <ul class="horizontal-menu">
-                        <li class="mega-menu outside">
-                            <a class="nav-link" href="#"><span>Girl Meee</span></a>
-                           
-                        </li>
-                    </ul>
+            </form>
+            <div class="header-logo-wrapper col-auto p-0">
+                {{-- <div class="logo-wrapper"><a href="{{ route('index') }}"><img class="img-fluid" src="{{asset('assets/images/logo/logo.png')}}" alt=""></a></div> --}}
+                <div class="logo-wrapper"><a href="#"><img class="img-fluid"
+                                                           style="width: 40px; height: 40px; object-fit: cover;"
+                                                           src="{{ asset('Image/logo.png') }}" alt=""></a>
                 </div>
-                <div class="nav-right col-8 pull-right right-header p-0">
-                    <ul class="nav-menus">
-                        <li class="language-nav">
-                            <a style="" class="sidebar-link sidebar-title link-nav link-iframe-notification active" target="iframe-notification-user" href="/user/view-user">
-                                <i data-feather="home"> </i>
-                            </a>
-                        </li>
-                         <li class="language-nav">
-                            <a style="" class="sidebar-link sidebar-title link-nav link-iframe-notification {{$announceCount > 0?'marked':''}}" target="iframe-notification-user" href="/user/notify/list">
-                                <i data-feather="bell"> </i>
-                            </a>
-                        </li>
-                        <li class="language-nav">
-                            <a class="sidebar-link sidebar-title link-nav link-iframe-notification" target="iframe-notification-user" href="/user/setting-notification">
-                                <i data-feather="settings"> </i>
-                            </a>
-                        </li>
-                        
-                        <li>
-                            <a href="/logout-user">
-                                <i data-feather="log-in"> </i>
-                            </a>
-                        </li>
-                        
-                    </ul>
-                </div>
-                <script class="result-template" type="text/x-handlebars-template">
-                    <div class="ProfileCard u-cf">                        
-                    <div class="ProfileCard-avatar"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-airplay m-0"><path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path><polygon points="12 15 17 21 7 21 12 15"></polygon></svg></div>
+            </div>
+            <div class="left-header col horizontal-wrapper ps-0">
+                <ul class="horizontal-menu">
+                    <li class="mega-menu outside">
+                        <a class="nav-link" href="#"><span>Girl Meee</span></a>
+
+                    </li>
+                </ul>
+            </div>
+            <div class="nav-right col-8 pull-right right-header p-0">
+                <ul class="nav-menus">
+                    <li class="language-nav">
+                        <a style="" class="sidebar-link sidebar-title link-nav link-iframe-notification {{ Route::currentRouteName()=='setting-notification-user' ? '' : 'active' }}"
+                           target="iframe-notification-user" href="/user/view-user">
+                            <i data-feather="home"> </i>
+                        </a>
+                    </li>
+                    <li class="language-nav">
+                        <a style=""
+                           class="sidebar-link sidebar-title link-nav link-iframe-notification {{$announceCount > 0?'marked':''}}"
+                           href="/user/notify/list">
+                            <i data-feather="bell"> </i>
+                        </a>
+                    </li>
+                    <li class="language-nav">
+                        <a class="sidebar-link sidebar-title link-nav link-iframe-notification {{ Route::currentRouteName()=='setting-notification-user' ? 'active' : '' }}"
+                           target="iframe-notification-user" href="/user/setting-notification">
+                            <i data-feather="settings"> </i>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/logout-user">
+                            <i data-feather="log-in"> </i>
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+            <script class="result-template" type="text/x-handlebars-template">
+                <div class="ProfileCard u-cf">
+                    <div class="ProfileCard-avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                             class="feather feather-airplay m-0">
+                            <path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path>
+                            <polygon points="12 15 17 21 7 21 12 15"></polygon>
+                        </svg>
+                    </div>
                     <div class="ProfileCard-details">
-                    <div class="ProfileCard-realName">@{{name}}</div>
-                    </div>
-                    </div>
-                </script>
-                <script class="empty-template" type="text/x-handlebars-template"><div class="EmptyMessage">Your search turned up 0 results. This most likely means the backend is down, yikes!</div></script>
-            </div>
-        </div>
-        <!-- Page Header Ends -->
-        <!-- Page Body Start-->
-        <div class="page-body-wrapper">
-            <div class="page-body" style="margin:10px;margin-top:80px">
-                <!-- Container-fluid starts-->
-                <div class="container-fluid" style="padding: 30px 0px !important; ">
-                    <div class="row">
-                        <div class="col-xl-6 xl-100 box-col-12">
-                            <div class="">
-                                <div class="row">
-                                    <iframe
-                                        style="    
-                                        height: 480px;
-                                        border-radius: 20px;
-                                        box-shadow: 0 0 21px 0 rgba(89, 102, 122, 0.1)"
-
-                                        class="col-sm-12" 
-                                        name="iframe-notification-user" 
-                                        src="/user/view-user" frameborder="0">
-                                    </iframe>
-                                </div>
-                            </div>
-                        </div>
-                        
+                        <div class="ProfileCard-realName">@{{name}}</div>
                     </div>
                 </div>
-                <!-- Container-fluid Ends-->
-            </div>
-            <!-- footer start-->
-            {{-- <footer class="footer">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-12 footer-copyright text-center">
-                            <p class="mb-0">Copyright {{ date('Y') }} © Cuba theme by pixelstrap </p>
-                        </div>
-                    </div>
+            </script>
+            <script class="empty-template" type="text/x-handlebars-template">
+                <div class="EmptyMessage">Your search turned up 0 results. This most likely means the backend is down,
+                    yikes!
+                </div></script>
+        </div>
+    </div>
+    <!-- Page Header Ends -->
+    <!-- Page Body Start-->
+    <div class="page-body-wrapper">
+        <div class="page-body" style="margin:10px;margin-top:80px">
+            <div class="row">
+                <div class="col-xl-6 xl-100 box-col-12">
+                    @yield("content")
                 </div>
-            </footer> --}}
+            </div>
+
         </div>
     </div>
-
-    <div class="toast">
-        <div class="toast-content">
-            {{-- <i class="fa-solid fa-circle-info"></i> --}}
-            <i class="fa fa-info check" aria-hidden="true"></i>
-            {{-- <i class="fa-solid fa-circle-info"></i> --}}
-
-
-            <div class="message">
-                <span class="text text-1">Notification !!!</span>
-                <span class="text text-2">Your changes has been saved</span>
+    <!-- Container-fluid Ends-->
+</div>
+<!-- footer start-->
+{{-- <footer class="footer">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 footer-copyright text-center">
+                <p class="mb-0">Copyright {{ date('Y') }} © Cuba theme by pixelstrap </p>
             </div>
         </div>
-        {{-- <i class="fa-solid fa-xmark close"></i> --}}
-        <i class="fa fa-times close" aria-hidden="true" style="font-size: 20px;"></i>
-        <div class="progress"></div>
     </div>
-    <!-- latest jquery-->
-    <script src="{{ asset('assets/js/jquery-3.5.1.min.js') }}"></script>
-    {{-- <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js'></script> --}}
+</footer> --}}
+</div>
+</div>
 
-    <!-- Bootstrap js-->
-    <script src="{{ asset('assets/js/bootstrap/bootstrap.bundle.min.js') }}"></script>
-    <!-- feather icon js-->
-    <script src="{{ asset('assets/js/icons/feather-icon/feather.min.js') }}"></script>
-    <script src="{{ asset('assets/js/icons/feather-icon/feather-icon.js') }}"></script>
-    <!-- scrollbar js-->
-    <script src="{{ asset('assets/js/scrollbar/simplebar.js') }}"></script>
-    <script src="{{ asset('assets/js/scrollbar/custom.js') }}"></script>
-    <!-- Sidebar jquery-->
-    <script src="{{ asset('assets/js/config.js') }}"></script>
-    <!-- Plugins JS start-->
-    <script src="{{ asset('assets/js/sidebar-menu.js') }}"></script>
-
-   
+<div class="toast">
+    <div class="toast-content">
+        {{-- <i class="fa-solid fa-circle-info"></i> --}}
+        <i class="fa fa-info check" aria-hidden="true"></i>
+        {{-- <i class="fa-solid fa-circle-info"></i> --}}
 
 
-    <!-- Plugins JS Ends-->
-    <!-- Theme js-->
-    <script src="{{ asset('assets/js/script.js') }}"></script>
-    <script src="{{ asset('assets/js/theme-customizer/customizer.js') }}"></script>
-    <!-- Plugin used-->
-    <script type="text/javascript">
-        localStorage.clear();
-        $(".page-wrapper").attr("class", "page-wrapper compact-wrapper modern-type");
-        localStorage.setItem('page-wrapper', 'compact-wrapper modern-type');
+        <div class="message">
+            <span class="text text-1">Notification !!!</span>
+            <span class="text text-2">Your changes has been saved</span>
+        </div>
+    </div>
+    {{-- <i class="fa-solid fa-xmark close"></i> --}}
+    <i class="fa fa-times close" aria-hidden="true" style="font-size: 20px;"></i>
+    <div class="progress"></div>
+</div>
+<!-- latest jquery-->
+<script src="{{ asset('assets/js/jquery-3.5.1.min.js') }}"></script>
+{{-- <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js'></script> --}}
 
-        @if(isset($messToast))
-            displayToast('{{ $messToast }}');
-        @endif
+<!-- Bootstrap js-->
+<script src="{{ asset('assets/js/bootstrap/bootstrap.bundle.min.js') }}"></script>
+<!-- feather icon js-->
+<script src="{{ asset('assets/js/icons/feather-icon/feather.min.js') }}"></script>
+<script src="{{ asset('assets/js/icons/feather-icon/feather-icon.js') }}"></script>
+<!-- scrollbar js-->
+<script src="{{ asset('assets/js/scrollbar/simplebar.js') }}"></script>
+<script src="{{ asset('assets/js/scrollbar/custom.js') }}"></script>
+<!-- Sidebar jquery-->
+<script src="{{ asset('assets/js/config.js') }}"></script>
+<!-- Plugins JS start-->
+<script src="{{ asset('assets/js/sidebar-menu.js') }}"></script>
 
-        function displayToast(mess) {
-            document.querySelector('.toast .text.text-2').textContent = mess;
-            document.querySelector('.toast').classList.add('active');
-            document.querySelector('.progress').classList.add('active');
+
+<!-- Plugins JS Ends-->
+<!-- Theme js-->
+<script src="{{ asset('assets/js/script.js') }}"></script>
+<script src="{{ asset('assets/js/theme-customizer/customizer.js') }}"></script>
+<!-- Plugin used-->
+<script type="text/javascript">
+    localStorage.clear();
+    $(".page-wrapper").attr("class", "page-wrapper compact-wrapper modern-type");
+    localStorage.setItem('page-wrapper', 'compact-wrapper modern-type');
+
+    @if(isset($messToast))
+    displayToast('{{ $messToast }}');
+    @endif
+
+    function displayToast(mess) {
+        document.querySelector('.toast .text.text-2').textContent = mess;
+        document.querySelector('.toast').classList.add('active');
+        document.querySelector('.progress').classList.add('active');
 
 
-            let time = setTimeout(() => {
-                document.querySelector('.toast').classList.remove("active");
+        let time = setTimeout(() => {
+            document.querySelector('.toast').classList.remove("active");
+            document.querySelector('.progress').classList.remove("active");
+        }, 5000); //1s = 1000 milliseconds
+
+        document.querySelector(".toast .close").addEventListener("click", () => {
+            document.querySelector('.toast').classList.remove("active");
+
+            setTimeout(() => {
                 document.querySelector('.progress').classList.remove("active");
-            }, 5000); //1s = 1000 milliseconds
+            }, 300);
 
-            document.querySelector(".toast .close").addEventListener("click", () => {
-                document.querySelector('.toast').classList.remove("active");
-                
-                setTimeout(() => {
-                    document.querySelector('.progress').classList.remove("active");
-                }, 300);
-
-                clearTimeout(time);
-            });
-        }
-    </script>
+            clearTimeout(time);
+        });
+    }
+</script>
 <script>
     console.log(document.querySelector('body').toDataURL());
     var links = document.querySelectorAll(".link-iframe-notification");
-    links.forEach(link=>{
-        link.addEventListener('click',(event)=>{
-            links.forEach(link=>{
+    links.forEach(link => {
+        link.addEventListener('click', (event) => {
+            links.forEach(link => {
                 link.classList.remove("active")
             })
             console.log("Click");
@@ -279,9 +280,9 @@
         })
     })
 </script>
-    {{-- <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js'></script> --}}
+{{-- <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js'></script> --}}
 
-    @yield('script')
+@yield('script')
 </body>
 
 </html>

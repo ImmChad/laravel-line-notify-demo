@@ -1,20 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
-        integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-    <!-- Set Icon Logo -->
-    <link rel="icon" href="{{ asset('Image/logo.png') }}">
-    <title>VIEW</title>
-
-
+@extends('Frontend.home-user')
+@section('content')
     <style>
         /* @import 'root.css'; */
         :root {
@@ -270,40 +255,6 @@
         }
     </style>
 
-
-    <!-- Google font-->
-    <link href="https://fonts.googleapis.com/css?family=Rubik:400,400i,500,500i,700,700i&amp;display=swap"
-        rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900&amp;display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/font-awesome.css') }}">
-    <!-- ico-font-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/icofont.css') }}">
-    <!-- Themify icon-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/themify.css') }}">
-    <!-- Flag icon-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/flag-icon.css') }}">
-    <!-- Feather icon-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/feather-icon.css') }}">
-    <!-- Plugins css start-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/scrollbar.css') }}">
-
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/date-picker.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/owlcarousel.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/prism.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/whether-icon.css') }}">
-    <!-- Plugins css Ends-->
-    <!-- Bootstrap css-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/bootstrap.css') }}">
-    <!-- App css-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/toast.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
-    <link id="color" rel="stylesheet" href="{{ asset('assets/css/color-1.css') }}" media="screen">
-    <!-- Responsive css-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/responsive.css') }}">
-</head>
-
-<body>
     <div style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: flex-start;">
         <div class="card mb-0" style="width: 100%;">
             <div class="card-header d-flex">
@@ -320,26 +271,26 @@
                                     @if (isset($dataUser['pictureUrl']))
                                     <img class="img-100 img-fluid m-r-20 rounded-circle update_img_0"
                                             src="{{ $dataUser['pictureUrl'] }}" alt="">
-                                        
+
                                     @else
                                     <img class="img-100 img-fluid m-r-20 rounded-circle update_img_0"
                                             src="https://store.kidbright.info/upload/cover-image/1544265083-nDP3ez.png" alt="">
-                
+
                                     @endif
-                                        
+
                                         <div class="media-body mt-0">
-                                            <h5><span class="first_name_0">{{ $dataUser['displayName'] }}</span></h5>                                           
+                                            <h5><span class="first_name_0">{{ $dataUser['email'] }}</span></h5>
                                         </div>
                                     </div>
                                     <div class="email-general">
                                         <h6 class="mb-3">General</h6>
                                         <ul>
-                                            <li>Name <span class="font-primary first_name_0">{{ $dataUser['displayName'] }}</span></li>
-                                            <li>User ID<span class="font-primary mobile_num_0">{{ $dataUser['userId'] }}</span>
+                                            <li>Email <span class="font-primary first_name_0">{{ $dataUser['email'] }}</span></li>
+                                            <li>User ID<span class="font-primary mobile_num_0">{{ $dataUser['id'] }}</span>
                                             </li>
                                             <li>Address Notification
                                                 <span class="font-primary email_add_0">
-                                                    {{ $dataUser['address'] }}
+                                                    {{ $dataUser['phone_number_landline'] }}
                                                 </span>
                                             </li>
                                         </ul>
@@ -356,7 +307,7 @@
             <i class="fa-solid fa-bell"></i>
             @if ($announceCount > 0)
                 <span class="symbol-unseen" data-is-seen='false'></span>
-            @endif 
+            @endif
         </div>
         <div class="exit-pop-up-ads">
             <i class="fa-solid fa-right-from-bracket"></i>
@@ -383,6 +334,4 @@
             window.location.href = "/user/notify/list";
         });
     </script>
-</body>
-
-</html>
+    @endsection

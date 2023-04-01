@@ -15,14 +15,14 @@ class checkUserLogin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $data_admin = Session::get('inforUser');
-        if($data_admin)
+        $inforUser = Session::get('inforUser');
+        if($inforUser)
         {
             return $next($request);
         }
         else
         {
-            return redirect('');
+            return redirect('/login');
         }
         return $next($request);
     }

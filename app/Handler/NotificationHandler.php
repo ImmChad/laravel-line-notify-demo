@@ -4,8 +4,11 @@ namespace App\Handler;
 
 use App\Events\NewEmailMagazineEvent;
 use App\Events\NewNotificationFromAdminEvent;
+use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\User\UserController;
 use App\Models\User;
 use App\Repository\NotificationRepository;
+use Illuminate\Http\Request;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -31,17 +34,10 @@ class NotificationHandler
     }
 
 
-
-
-
-
-
-
-
     /**
      * @return Application|Factory|View|RedirectResponse
      */
-    public function loginAdmin() : Application|Factory|View|RedirectResponse
+    public function loginAdmin(): Application|Factory|View|RedirectResponse
     {
         $adminData = Session::get('data_admin');
 
@@ -56,7 +52,7 @@ class NotificationHandler
      * @param array $request
      * @return string[]|true[]
      */
-    public function handleSubmitLogin(array $request) : array
+    public function handleSubmitLogin(array $request): array
     {
         $dataAdmin = $this->notificationRepository->handleSubmitLogin($request);
 
@@ -72,7 +68,7 @@ class NotificationHandler
     /**
      * @return RedirectResponse
      */
-    public function reqLogout() : RedirectResponse
+    public function reqLogout(): RedirectResponse
     {
         Session::forget('data_admin');
         return Redirect::to('/admin');
@@ -84,12 +80,12 @@ class NotificationHandler
      */
     public function showContentUpdateNotificationToView(int $notificationId): View|Factory|RedirectResponse|Application
     {
-        $returnData =  $this->notificationRepository->getContentUpdateNotificationToView($notificationId);
+        $returnData = $this->notificationRepository->getContentUpdateNotificationToView($notificationId);
         $dataNotification = $returnData[0];
 
-        if($returnData[0]->type == 2) {
+        if ($returnData[0]->type == 2) {
             return view('Backend.update-notification-view-2', compact('dataNotification'));
-        } else if($returnData[0]->type == 3) {
+        } else if ($returnData[0]->type == 3) {
             $dataTemplate = $this->notificationRepository->getTemplate();
             return view('Backend.update-notification-view-3', compact('dataNotification', 'dataTemplate'));
         } else {
@@ -101,9 +97,9 @@ class NotificationHandler
     /**
      * @return array
      */
-    public function getRegisterLineList() : array
+    public function getRegisterLineList(): array
     {
-        $data =  $this->notificationRepository->listConnectLine();
+        $data = $this->notificationRepository->listConnectLine();
         $List = [];
 
         foreach ($data as $subData) {
@@ -119,7 +115,7 @@ class NotificationHandler
      * @param object $request
      * @return Collection
      */
-    public function searchNotification(object $request) : Collection
+    public function searchNotification(object $request): Collection
     {
         $textSearch = $request['txt-search-notification'];
 
@@ -127,19 +123,17 @@ class NotificationHandler
 
         $matchedNotifications = $this->notificationRepository->getNotificationBySearch($textSearch);
 
-        foreach ($matchedNotifications as $key => $notification)
-        {
+        foreach ($matchedNotifications as $key => $notification) {
             $typeNotification = $this->notificationRepository->getNotificationTypeById($notification->type)->first();
             $matchedNotifications[$key]->name_type = $typeNotification->type;
 
-            if ($matchedNotifications[$key]->type == 2)
-            {
-                $countPerson = $this->notificationRepository->getUsersCreatedBeforeNotificationCurrent($matchedNotifications[$key]->created_at);
+            if ($matchedNotifications[$key]->type == 2) {
+                $countPerson = $this->notificationRepository->getUsersCreatedBeforeNotificationCurrent($matchedNotifications[$key]->id);
 
                 $countRead = 0;
                 foreach ($countPerson as $each_person) {
-                    $checkRead = $this->notificationRepository->getNotificationRead($each_person->user_id, $notification->id);
-
+                    $checkRead = $this->notificationRepository->getNotificationRead($each_person->id, $notification->id);
+//                    dump($checkRead);
                     if (count($checkRead) > 0)
                         $countRead += 1;
                 }
@@ -147,22 +141,6 @@ class NotificationHandler
                 $matchedNotifications[$key]->read_user = $countRead;
                 $matchedNotifications[$key]->total_user = count($countPerson);
 
-            }
-            else if ($matchedNotifications[$key]->type == 3)
-            {
-
-                $countPerson = $this->notificationRepository->getUsersCreatedBeforeNotificationEmailCurrent($matchedNotifications[$key]->created_at);
-
-                $countRead = 0;
-                foreach ($countPerson as $key_2 => $each_person) {
-                    $checkRead = $this->notificationRepository->getNotificationRead($each_person->user_id, $notification->id);
-
-                    if (count($checkRead) > 0)
-                        $countRead += 1;
-                }
-
-                $matchedNotifications[$key]->read_user = $countRead;
-                $matchedNotifications[$key]->total_user = count($countPerson);
             }
 
         }
@@ -176,17 +154,14 @@ class NotificationHandler
      * @param String|null $notificationTemplate
      * @return View|Factory|RedirectResponse|Application
      */
-    public function showSendNotificationView(int $notificationType, String $notificationSender = null, String $notificationTemplate = null) : View|Factory|RedirectResponse|Application
+    public function showSendNotificationView(int $notificationType, string $notificationSender = null, string $notificationTemplate = null): View|Factory|RedirectResponse|Application
     {
-        $checkNotificationDraft = $this->notificationRepository->getNotificationDraft();
+        $checkNotificationDraft = $this->notificationRepository->getNotificationDraftForSummaryView();
 
-        if(count($checkNotificationDraft) > 0)
-        {
-            $dataDraft = $this->notificationRepository->getNotificationDraft()->first();
+        if (isset($checkNotificationDraft)) {
+            $dataDraft = $this->notificationRepository->getNotificationDraftForSummaryView();
             return view('Backend.draft-notification-view', compact('dataDraft'));
-        }
-        else
-        {
+        } else {
             if ($notificationType == 2) {
 
                 if (isset($_GET['messToast'])) {
@@ -196,46 +171,32 @@ class NotificationHandler
                     return view('Backend.send-notification-view-2');
                 }
 
-            }
-            else if ($notificationType == 3)
-            {
+            } else if ($notificationType == 3) {
 
-                if (isset($_GET['messToast']))
-                {
+                if (isset($_GET['messToast'])) {
                     $messToast = $_GET['messToast'];
                     return view('Backend.send-notification-view-3', compact('messToast'));
-                }
-                else
-                {
+                } else {
 
-                    if($notificationSender != null)
-                    {
+                    if ($notificationSender != null) {
                         $dataTemplate = $this->notificationRepository->getTemplateByTemplateType($notificationSender);
                         $dataRegion = $this->notificationRepository->getRegion();
                         $dataIndustry = $this->notificationRepository->getIndustry();
 
 
-
-                        if ($notificationTemplate != null)
-                        {
+                        if ($notificationTemplate != null) {
                             $detailTemplate = $this->notificationRepository->getTemplateFromId($notificationTemplate)->first();
-                            return view('Backend.send-notification-view-3', compact('notificationSender', 'dataTemplate', 'detailTemplate', 'dataRegion', 'dataIndustry' ));
-                        }
-                        else
-                        {
+                            return view('Backend.send-notification-view-3', compact('notificationSender', 'dataTemplate', 'detailTemplate', 'dataRegion', 'dataIndustry'));
+                        } else {
                             return view('Backend.send-notification-view-3', compact('notificationSender', 'dataTemplate', 'dataRegion', 'dataIndustry'));
                         }
-                    }
-                    else
-                    {
+                    } else {
                         return view('Backend.send-notification-view-3');
                     }
 
                 }
 
-            }
-            else
-            {
+            } else {
                 return Redirect::to('/admin/notification-list');
             }
         }
@@ -245,13 +206,22 @@ class NotificationHandler
      * @param object $request
      * @return mixed
      */
-    public function sendMessForListUser(object $request) : int
+    public function sendMessForListUser(Request $request): int
     {
-        $newNotificationId = $this->notificationRepository->insertDataNotification($request);
-
-        if (intval($request->type_notification) === self::NOTIFICATION_EMAIL_MAGAZINE) {
-            event((new NewEmailMagazineEvent($newNotificationId)));
-        } else if (intval($request->type_notification) === self::NOTIFICATION_FROM_ADMIN) {
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
+        $dataNotificationDraft = $this->notificationRepository->getNotificationDraftWithID($request->notification_draft_id);
+        $newNotificationId = $this->notificationRepository->insertDataNotification([
+            'type' => NotificationHandler::NOTIFICATION_FROM_ADMIN,
+            'announce_title' => $dataNotificationDraft->notification_title,
+            'announce_content' => $request->notificationContent,
+            'is_sent' => !isset($dataNotificationDraft->scheduled_at),
+            'is_scheduled' => isset($dataNotificationDraft->scheduled_at),
+            'created_at' => date('Y/m/d H:i:s'),
+            'scheduled_at' => $dataNotificationDraft->scheduled_at,
+            'notification_draft_id' => $request->notification_draft_id
+        ]);
+        $resultRemove = $this->notificationRepository->removeNotificationDraft($request);
+        if ($resultRemove) {
             event((new NewNotificationFromAdminEvent($newNotificationId)));
         }
 
@@ -262,22 +232,15 @@ class NotificationHandler
      * @param object $request
      * @return int
      */
-    public function saveNotificationDraft(object $request) : int
+    public function saveNotificationDraft(object $request): int
     {
-        if($request->announceFor == "user")
-        {
-            if(intval($request->announceTypeFor) == 1)
-            {
+        if ($request->announceFor == "user") {
+            if (intval($request->announceTypeFor) == 1) {
                 $listSeeker = $this->notificationRepository->getListUserAllRole2();
-            }
-            else
-            {
-                if(intval($request->areaId) == 0 && intval($request->industryId) == 0)
-                {
+            } else {
+                if (intval($request->areaId) == 0 && intval($request->industryId) == 0) {
                     $listSeeker = $this->notificationRepository->getListUserAllRole2();
-                }
-                else
-                {
+                } else {
                     $listSeeker = $this->notificationRepository->getListUserRole2ById($request);
                 }
             }
@@ -285,37 +248,23 @@ class NotificationHandler
             $totalUserLine = 0;
             $totalUserMail = 0;
             $totalUserSms = 0;
-            foreach ($listSeeker as $subListSeeker)
-            {
-                if(count($this->notificationRepository->getListUserLine($subListSeeker->id)) > 0)
-                {
+            foreach ($listSeeker as $subListSeeker) {
+                if (count($this->notificationRepository->getListUserLine($subListSeeker->id)) > 0) {
                     $totalUserLine += 1;
-                }
-                else if($subListSeeker->email != null)
-                {
+                } else if ($subListSeeker->email != null) {
                     $totalUserMail += 1;
-                }
-                else if($subListSeeker->phone_number_landline != null)
-                {
+                } else if ($subListSeeker->phone_number_landline != null) {
                     $totalUserSms += 1;
                 }
             }
 
-        }
-        else
-        {
-            if($request->announceTypeFor == 1)
-            {
+        } else {
+            if ($request->announceTypeFor == 1) {
                 $listStore = $this->notificationRepository->getListUserAllRole3();
-            }
-            else
-            {
-                if(intval($request->areaId) == 0 && intval($request->industryId) == 0)
-                {
+            } else {
+                if (intval($request->areaId) == 0 && intval($request->industryId) == 0) {
                     $listStore = $this->notificationRepository->getListUserAllRole3();
-                }
-                else
-                {
+                } else {
                     $listStore = $this->notificationRepository->getListUserRole3ById($request);
                 }
 
@@ -324,18 +273,12 @@ class NotificationHandler
             $totalUserLine = 0;
             $totalUserMail = 0;
             $totalUserSms = 0;
-            foreach ($listStore as $subListStore)
-            {
-                if(count($this->notificationRepository->getListUserLine($subListStore->id)) > 0)
-                {
+            foreach ($listStore as $subListStore) {
+                if (count($this->notificationRepository->getListUserLine($subListStore->id)) > 0) {
                     $totalUserLine += 1;
-                }
-                else if($subListStore->mail_address != null)
-                {
+                } else if ($subListStore->mail_address != null) {
                     $totalUserMail += 1;
-                }
-                else if($subListStore->phone_number != null)
-                {
+                } else if ($subListStore->phone_number != null) {
                     $totalUserSms += 1;
                 }
             }
@@ -358,7 +301,7 @@ class NotificationHandler
      * @param int $id
      * @return Application|Factory|View|RedirectResponse
      */
-    function detailNotification(int $id) : Application|Factory|View|RedirectResponse
+    function detailNotification(int $id): Application|Factory|View|RedirectResponse
     {
         $dataAdmin = Session::get('data_admin');
 
@@ -382,7 +325,7 @@ class NotificationHandler
      * @param int $notificationId
      * @return RedirectResponse
      */
-    function deleteNotification(int $notificationId) : RedirectResponse
+    function deleteNotification(int $notificationId): RedirectResponse
     {
         $this->notificationRepository->deleteNotification($notificationId);
         return Redirect::to('/admin/notification-list');
@@ -391,7 +334,7 @@ class NotificationHandler
     /**
      * @return Application|Factory|View
      */
-    function showTemplateManagementView() :Application|Factory|View
+    function showTemplateManagementView(): Application|Factory|View
     {
         $dataTemplate = $this->notificationRepository->getTemplate();
         return view('Backend.template.template-management', compact('dataTemplate'));
@@ -401,20 +344,15 @@ class NotificationHandler
      * @param String $templateType
      * @return Application|Factory|View
      */
-    function showAddNewTemplateView(String $templateType) : Application|Factory|View
+    function showAddNewTemplateView(string $templateType): Application|Factory|View
     {
-        if($templateType == "user")
-        {
+        if ($templateType == "user") {
             $listParam = $this->notificationRepository->getParamUser();
             return view('Backend.template.add-new-template-view', compact('listParam'));
-        }
-        elseif ($templateType == "store")
-        {
+        } elseif ($templateType == "store") {
             $listParam = $this->notificationRepository->getParamStore();
             return view('Backend.template.add-new-template-view', compact('listParam'));
-        }
-        else
-        {
+        } else {
             return view('Backend.template.add-new-template-view');
         }
     }
@@ -423,24 +361,36 @@ class NotificationHandler
      * @param String $templateId
      * @return Application|Factory|View
      */
-    function showUpdateTemplateView(String $templateId) : Application|Factory|View
+    function showUpdateTemplateView(string $templateId): Application|Factory|View
     {
         $data = $this->notificationRepository->getTemplateFromId($templateId);
         $dataTemplate = $data[0];
-
-        $dataRegion = $this->notificationRepository->getRegion();
-        $dataArea = $this->notificationRepository->getArea();
-        $dataIndustry = $this->notificationRepository->getIndustry();
-        $dataStore = $this->notificationRepository->getStore();
-
-        return view('Backend.template.update-template-view', compact('dataTemplate', 'dataRegion', 'dataArea', 'dataIndustry', 'dataStore'));
+        $dataTemplate = $dataTemplate->toArray();
+        $listParam = [];
+        if(isset($_REQUEST['templateType']))
+        {
+            if ($_REQUEST['templateType'] == "user") {
+                $listParam = $this->notificationRepository->getParamUser();
+            } elseif ($_REQUEST['templateType'] == "store") {
+                $listParam = $this->notificationRepository->getParamStore();
+            }
+        }
+        else
+        {
+            if ($dataTemplate['template_type'] == "user") {
+                $listParam = $this->notificationRepository->getParamUser();
+            } elseif ($dataTemplate['template_type'] == "store") {
+                $listParam = $this->notificationRepository->getParamStore();
+            }
+        }
+        return view('Backend.template.update-template-view', compact('dataTemplate', 'listParam'));
     }
 
     /**
      * @param object $request
      * @return array
      */
-    function reqAddNewTemplate(object $request) : array
+    function reqAddNewTemplate(object $request): array
     {
         $result = $this->notificationRepository->addNewTemplate($request);
         return ['result' => $result];
@@ -450,7 +400,7 @@ class NotificationHandler
      * @param object $request
      * @return array
      */
-    function reqUpdateNewTemplate(object $request) : array
+    function reqUpdateNewTemplate(object $request): array
     {
         $result = $this->notificationRepository->updateTemplate($request);
         return ['result' => $result];
@@ -460,7 +410,7 @@ class NotificationHandler
      * @param object $request
      * @return Collection|stdClass|array
      */
-    function getTemplateForSendMail(object $request) : Collection|stdClass|array
+    function getTemplateForSendMail(object $request): Collection|stdClass|array
     {
         $data = $this->notificationRepository->getTemplateForSendMail($request->template_id);
 
@@ -469,21 +419,21 @@ class NotificationHandler
 
     /**
      * @param int $regionId
-     * @return Collection
+     * @return Collection|array
      */
-    function getAreaFromRegionId(int $regionId) : Collection
+    function getAreaFromRegionId(int $regionId): Collection|array
     {
-        return $this->notificationRepository->getAreaFromRegionId($regionId);
+        $regionCd = $this->notificationRepository->getRegionCdFromRegionId($regionId);
+        $listPrefId = $this->notificationRepository->getPrefFromRegionCd($regionCd[0]->region_cd);
+        $listArea = [];
+        foreach ($listPrefId as $subListPrefId) {
+            $listArea[count($listArea)] = $this->notificationRepository->getAreaFromRegionId($subListPrefId->id);
+        }
+
+//        dump($listArea);
+
+        return $listArea[0];
     }
-
-
-
-
-
-
-
-
-
 
     /**
      * @param int $status
@@ -503,5 +453,106 @@ class NotificationHandler
         }
         return $List;
     }
+
+    /**
+     * @param Request $request
+     * @return int
+     */
+    public function cancelNotificationDraft(Request $request): int
+    {
+        return $this->notificationRepository->cancelNotificationDraft($request->notification_draft_id);
+    }
+
+    public function renderUpdateNotificationDraft(string $notificationDraftId, string $notificationSender = null, string $notificationTemplate = null)
+    {
+        $dataDraft = $this->notificationRepository->getNotificationDraftWithID($notificationDraftId);
+        $detailTemplate = new stdClass();
+        $detailTemplate->id = null;
+        $detailTemplate->template_title = $dataDraft->notification_title;
+        $detailTemplate->template_content = $dataDraft->notification_content;
+        if (isset($dataDraft)) {
+
+            if ($notificationSender != null) {
+                $dataTemplate = $this->notificationRepository->getTemplateByTemplateType($notificationSender);
+                $dataRegion = $this->notificationRepository->getRegion();
+                $dataIndustry = $this->notificationRepository->getIndustry();
+
+                if ($notificationTemplate != null) {
+                    $detailTemplate = $this->notificationRepository->getTemplateFromId($notificationTemplate)->first();
+                    return view('Backend.update-notification-draft', compact('dataDraft', 'notificationSender', 'dataTemplate', 'detailTemplate', 'dataRegion', 'dataIndustry'));
+                } else {
+
+                    return view('Backend.update-notification-draft', compact('dataDraft', 'notificationSender', 'dataTemplate', 'detailTemplate', 'dataRegion', 'dataIndustry'));
+                }
+            } else {
+                return view('Backend.update-notification-draft', compact('dataDraft', 'notificationSender', 'detailTemplate'));
+            }
+        } else {
+            return Redirect::to('/admin/notification-list');
+
+        }
+
+    }
+
+    public function updateNotificationDraft(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|max:255',
+            'message' => 'required',
+        ]);
+
+        if ($request->announceFor == "user") {
+            if (intval($request->announceTypeFor) == 1) {
+                $listSeeker = $this->notificationRepository->getListUserAllRole2();
+            } else {
+                if (intval($request->areaId) == 0 && intval($request->industryId) == 0) {
+                    $listSeeker = $this->notificationRepository->getListUserAllRole2();
+                } else {
+                    $listSeeker = $this->notificationRepository->getListUserRole2ById($request);
+                }
+            }
+
+            $totalUserLine = 0;
+            $totalUserMail = 0;
+            $totalUserSms = 0;
+            foreach ($listSeeker as $subListSeeker) {
+                if (count($this->notificationRepository->getListUserLine($subListSeeker->id)) > 0) {
+                    $totalUserLine += 1;
+                } else if ($subListSeeker->email != null) {
+                    $totalUserMail += 1;
+                } else if ($subListSeeker->phone_number_landline != null) {
+                    $totalUserSms += 1;
+                }
+            }
+
+        } else {
+            if ($request->announceTypeFor == 1) {
+                $listStore = $this->notificationRepository->getListUserAllRole3();
+            } else {
+                if (intval($request->areaId) == 0 && intval($request->industryId) == 0) {
+                    $listStore = $this->notificationRepository->getListUserAllRole3();
+                } else {
+                    $listStore = $this->notificationRepository->getListUserRole3ById($request);
+                }
+
+
+            }
+            $totalUserLine = 0;
+            $totalUserMail = 0;
+            $totalUserSms = 0;
+            foreach ($listStore as $subListStore) {
+                if (count($this->notificationRepository->getListUserLine($subListStore->id)) > 0) {
+                    $totalUserLine += 1;
+                } else if ($subListStore->mail_address != null) {
+                    $totalUserMail += 1;
+                } else if ($subListStore->phone_number != null) {
+                    $totalUserSms += 1;
+                }
+            }
+
+        }
+        return $this->notificationRepository->updateNotificationDraft($request, $totalUserLine, $totalUserMail, $totalUserSms);
+    }
+
 
 }

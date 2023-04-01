@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Handler\NotificationHandler;
 use App\Repository\NotificationRepository;
+use App\Services\NotificationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -41,11 +42,6 @@ class SendSMS implements ShouldQueue
         $auth_token = getenv("TWILIO_AUTH_TOKEN");
         $client = new Client($account_sid, $auth_token);
 
-        $notificationRepository = new NotificationRepository();
-        $handler = new NotificationHandler($notificationRepository);
-        $userSMS = $handler->listUser(UserController::CHANNEL_SMS);
-//        $userSMS = NotificationHandler::listUser(UserController::CHANNEL_SMS);
-
         $data_notification = DB::table('notification')->where([
             'id'=>$this->notification_id
         ])
@@ -54,10 +50,30 @@ class SendSMS implements ShouldQueue
 
         if(isset($data_notification))
         {
-            $mess = "{$data_notification->announce_title} - {$data_notification->announce_content}";
-            foreach($userSMS as $subUserSMS) {
-                SendItemSMS::dispatch($client,$mess,$subUserSMS);
+            $notificationRepository = new NotificationRepository();
+            $dataNotificationDraft = $notificationRepository->getNotificationDraftWithID($data_notification->notification_draft_id);
+            $userSMS = [];
+            if($dataNotificationDraft->notification_for == "user")
+            {
+                $userSMS = $notificationRepository->getSeekerOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id,$dataNotificationDraft->created_at);
             }
+            else if ($dataNotificationDraft->notification_for == "store")
+            {
+                $userSMS = $notificationRepository->getStoreOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id,$dataNotificationDraft->created_at);
+            }
+            $notificationService = new NotificationService($notificationRepository);
+
+            foreach($userSMS as $subUserSMS) {
+                $content = $notificationService->loadParamNotificationStore($data_notification->announce_content,$subUserSMS->id) ;
+                $mess = "{$data_notification->announce_title} - {$content}";
+                $notificationService = new NotificationService($notificationRepository);
+                SendItemSMS::dispatch($client,$mess,$subUserSMS->phoneNumberDecrypted);
+            }
+            DB::table('notification')->where([
+                'id'=>$this->notification_id
+            ])
+                ->where('deleted_at','=',null)
+                ->update(['is_sent'=>1]);
         }
 
     }
