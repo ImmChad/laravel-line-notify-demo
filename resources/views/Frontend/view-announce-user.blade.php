@@ -160,7 +160,7 @@
                                             </td>
                                             <td class="announce_name_row" style="vertical-align: middle;">
                                                 <div><a class="btn-detail-notification"
-                                                        href="/user/notification/{{$subDataList->id}}/detail">View</a>
+                                                        href="/user/notification/{{$subDataList->id}}/detail{{isset($_REQUEST['page'])?"?page={$_REQUEST['page']}":""}}">View</a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -178,7 +178,7 @@
                                             </td>
                                             <td class="announce_name_row" style="vertical-align: middle;">
                                                 <div><a class="btn-detail-notification"
-                                                        href="/user/notification/{{$subDataList->id}}/detail">View</a>
+                                                        href="/user/notification/{{$subDataList->id}}/detail{{isset($_REQUEST['page'])?"?page={$_REQUEST['page']}":""}}">View</a>
                                                 </div>
                                             </td>
                                         </tr>

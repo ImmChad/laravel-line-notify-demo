@@ -38,31 +38,21 @@ class NotificationRepository
         ])->get();
     }
 
-    /**
-     * @param int $notificationId
-     * @return Collection|stdClass
-     */
-    public function getDraftIdByNotificationId(int $notificationId) : Collection|stdClass
-    {
-        return DB::table('notification')->where('id', $notificationId)->get()->first();
-    }
 
     /**
-     * @param String $notificationDraftId
+     * @param int $notificationId
+     *
      * @return Collection
      */
-    public function getContentUpdateNotificationToView(String $notificationDraftId): Collection
+    public function getContentUpdateNotificationToView(int $notificationId): Collection
     {
-        return DB::table('notification_draft')->where('id', $notificationDraftId)
+        return Notification::where('id', $notificationId)
             ->get(
                 array(
                     'id',
-                    'notification_for',
-                    'notification_title',
-                    'notification_content',
-                    'area_id',
-                    'industry_id',
-                    'is_processed'
+                    'type',
+                    'announce_title',
+                    'announce_content',
                 )
             );
     }
@@ -254,21 +244,6 @@ class NotificationRepository
             ->update([
                 'announce_title' => $request->title,
                 'announce_content' => $request->message
-            ]);
-    }
-
-    /**
-     * @param object $request
-     * @return int
-     */
-    function updateDraftNotificaton(object $request): int
-    {
-        return DB::table('notification_draft')->where('id', $request->getDraftId)
-            ->update([
-                'notification_title' => $request->title,
-                'notification_content' => $request->message,
-                'area_id' => $request->areaId,
-                'industry_id' => $request->industryId
             ]);
     }
 
