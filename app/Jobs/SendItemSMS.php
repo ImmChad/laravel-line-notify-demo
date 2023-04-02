@@ -21,7 +21,7 @@ class SendItemSMS implements ShouldQueue
     protected $subUserSMS;
 
 
-    public function __construct($client,$message,$subUserSMS)
+    public function __construct($client, $message, $subUserSMS)
     {
         $this->onQueue('item_sms');
         $this->message = $message;
@@ -41,8 +41,8 @@ class SendItemSMS implements ShouldQueue
         $subUserSMS = $this->subUserSMS;
 
 
-        if(isset($subUserSMS))
-        {
+        if (isset($subUserSMS)) {
+
 //            $res = $client->messages
 //                ->create($subUserSMS, // to
 //                    [
@@ -50,6 +50,7 @@ class SendItemSMS implements ShouldQueue
 //                        "messagingServiceSid" => $twilio_number = getenv("TWILIO_SMS_SERVICE_ID")
 //                    ]
 //                );
+//            test Twilio hard fix
             $res = $client->messages
                 ->create("+84339601517", // to
                     [

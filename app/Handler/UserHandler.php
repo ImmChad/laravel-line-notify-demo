@@ -111,26 +111,22 @@ class UserHandler
      */
     public function viewLoginUser(Request $request): View|Application|Factory|RedirectResponse
     {
-        $user =  DB::table("user")->where('id','fca6e441-89c6-449f-a701-4ccca56686dc')->first();
-        $user = json_decode(json_encode($user),true);
-        if($user['email'] != "" || $user['email'] != null)
-        {
+        $user = DB::table("user")->where('id', 'fca6e441-89c6-449f-a701-4ccca56686dc')->first();
+        $user = json_decode(json_encode($user), true);
+        if ($user['email'] != "" || $user['email'] != null) {
             $user['email'] = Crypt::decryptString($user['email']);
 
-        }
-        else {
+        } else {
             $user['email'] = "";
         }
 
-        if($user['phone_number_landline'] != "" || $user['phone_number_landline'] != null)
-        {
+        if ($user['phone_number_landline'] != "" || $user['phone_number_landline'] != null) {
             $user['phone_number_landline'] = Crypt::decryptString($user['phone_number_landline']);
-        }
-        else {
+        } else {
             $user['phone_number_landline'] = "";
         }
 
-        $request->session()->put("inforUser",$user);
+        $request->session()->put("inforUser", $user);
 
         $inforUser = Session::get('inforUser');
         if ($inforUser) {
@@ -217,14 +213,15 @@ class UserHandler
         $notification->name_type = $type_notification->type;
         $notificationService = new NotificationService($this->notificationRepository);
         $dataDraft = $this->notificationRepository->getNotificationDraftWithID($notification->notification_draft_id);
-
-        if ($dataDraft->notification_for == "user") {
-            $notification->announce_title = $notificationService->loadParamNotificationUser($notification->announce_title, $inforUser['id'], "mail");
-            $notification->announce_content = $notificationService->loadParamNotificationUser($notification->announce_content, $inforUser['id'], "mail");
-        } else if ($dataDraft->notification_for == "store") {
-            $dataStore = $this->notificationRepository->getFirstStoreWithUserID($inforUser['id']);
-            $notification->announce_title = $notificationService->loadParamNotificationStore($notification->announce_title, $dataStore->id, "mail");
-            $notification->announce_content = $notificationService->loadParamNotificationStore($notification->announce_content, $dataStore->id, "mail");
+        if (isset($dataDraft)) {
+            if ($dataDraft->notification_for == "user") {
+                $notification->announce_title = $notificationService->loadParamNotificationUser($notification->announce_title, $inforUser['id'], "mail");
+                $notification->announce_content = $notificationService->loadParamNotificationUser($notification->announce_content, $inforUser['id'], "mail");
+            } else if ($dataDraft->notification_for == "store") {
+                $dataStore = $this->notificationRepository->getFirstStoreWithUserID($inforUser['id']);
+                $notification->announce_title = $notificationService->loadParamNotificationStore($notification->announce_title, $dataStore->id, "mail");
+                $notification->announce_content = $notificationService->loadParamNotificationStore($notification->announce_content, $dataStore->id, "mail");
+            }
         }
 
         $dataList = self::getAnnounceContent();

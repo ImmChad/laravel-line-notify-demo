@@ -31,8 +31,7 @@ Route::get('/user/connect-sms', [UserController::class, 'viewConnectSMS']);
 Route::post('/user/verify-SMS', [UserController::class, 'verifySMS']);
 
 
-
-Route::group(['prefix'=>'/user','middleware'=>'checkUserLogin'],function(){
+Route::group(['prefix' => '/user', 'middleware' => 'checkUserLogin'], function () {
     Route::get('', [UserController::class, 'index']);
     Route::get('/view-user', [UserController::class, 'viewUser']);
     Route::get('notification/{id}/detail', [UserController::class, 'detailNotification']);
@@ -49,15 +48,11 @@ Route::get('line/login/callback', [UserController::class, 'handleLineCallback'])
 Route::get('authorized/google', [ConnectGmailController::class, 'redirectToGoogle']);
 Route::get('authorized/google/callback', [ConnectGmailController::class, 'handleGoogleCallback']);
 
-// Test Send Mess Twillio
-Route::post('test/send-mess-twilio', [NotificationController::class, 'sendMessTwilio']);
-
-
 
 // admin
 Route::get('/admin', [NotificationController::class, 'loginAdmin']);
 Route::post('/admin/login', [NotificationController::class, 'handleSubmitLogin']);
-Route::group(array('prefix' => '/admin','middleware'=>'checkAdminLogin'), function() {
+Route::group(array('prefix' => '/admin', 'middleware' => 'checkAdminLogin'), function () {
 
     Route::get('/log-out', [NotificationController::class, 'reqLogout']);
 
