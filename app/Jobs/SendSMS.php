@@ -53,22 +53,40 @@ class SendSMS implements ShouldQueue
             $notificationRepository = new NotificationRepository();
             $dataNotificationDraft = $notificationRepository->getNotificationDraftWithID($data_notification->notification_draft_id);
             $userSMS = [];
+
             if($dataNotificationDraft->notification_for == "user")
             {
-                $userSMS = $notificationRepository->getSeekerOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id,$dataNotificationDraft->created_at);
+                $userSMS = $notificationRepository->getSeekerOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id, $dataNotificationDraft->created_at);
             }
             else if ($dataNotificationDraft->notification_for == "store")
             {
-                $userSMS = $notificationRepository->getStoreOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id,$dataNotificationDraft->created_at);
+                $userSMS = $notificationRepository->getStoreOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id, $dataNotificationDraft->created_at);
             }
+
             $notificationService = new NotificationService($notificationRepository);
 
             foreach($userSMS as $subUserSMS) {
-                $content = $notificationService->loadParamNotificationStore($data_notification->announce_content,$subUserSMS->id) ;
-                $mess = "{$data_notification->announce_title} - {$content}";
+
+                $title = "";
+                $content = "";
+
+                if($dataNotificationDraft->notification_for == "user")
+                {
+                    $title = $notificationService->loadParamNotificationUser($data_notification->announce_title, $subUserSMS->id);
+                    $content = $notificationService->loadParamNotificationUser($data_notification->announce_content, $subUserSMS->id);
+                }
+                else if ($dataNotificationDraft->notification_for == "store")
+                {
+                    $content = $notificationService->loadParamNotificationStore($data_notification->announce_content, $subUserSMS->id);
+                    $title = $notificationService->loadParamNotificationStore($data_notification->announce_title, $subUserSMS->id);
+                }
+
+
+                $mess = "{$title} \r\n {$content}";
                 $notificationService = new NotificationService($notificationRepository);
-                SendItemSMS::dispatch($client,$mess,$subUserSMS->phoneNumberDecrypted);
+                SendItemSMS::dispatch($client, $mess, $subUserSMS->phoneNumberDecrypted);
             }
+
             DB::table('notification')->where([
                 'id'=>$this->notification_id
             ])

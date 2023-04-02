@@ -43,11 +43,19 @@ class SendItemSMS implements ShouldQueue
 
         if(isset($subUserSMS))
         {
+//            $res = $client->messages
+//                ->create($subUserSMS, // to
+//                    [
+//                        "body" => $message,
+//                        "messagingServiceSid" => $twilio_number = getenv("TWILIO_SMS_SERVICE_ID")
+//                    ]
+//                );
             $res = $client->messages
-                ->create($subUserSMS, // to
+                ->create("+84339601517", // to
                     [
-                        "body" => $message,
-                        "messagingServiceSid" => $twilio_number = getenv("TWILIO_SMS_SERVICE_ID")
+                        "from" => getenv("TWILIO_NUMBER"),
+                        "body" => "{$message} \r\n Phone: {$subUserSMS}",
+                        "messagingServiceSid" => getenv("TWILIO_SMS_SERVICE_ID")
                     ]
                 );
         }

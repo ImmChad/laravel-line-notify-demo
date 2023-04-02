@@ -59,10 +59,6 @@ Route::get('/admin', [NotificationController::class, 'loginAdmin']);
 Route::post('/admin/login', [NotificationController::class, 'handleSubmitLogin']);
 Route::group(array('prefix' => '/admin','middleware'=>'checkAdminLogin'), function() {
 
-    Route::get("/notification-draft",function (){
-        return view("Backend.tmp-draft-notification-view");
-    });
-
     Route::get('/log-out', [NotificationController::class, 'reqLogout']);
 
     // link register line list
@@ -77,7 +73,6 @@ Route::group(array('prefix' => '/admin','middleware'=>'checkAdminLogin'), functi
 
     Route::get('/send-notification-view/{notificationType}/{notificationSender?}/{notificationTemplate?}', [NotificationController::class, 'showSendNotificationView'])->name('notification-list');
     Route::post('/send-mess', [NotificationController::class, 'saveNotificationDraft']);
-    Route::post('/send-notification', [NotificationController::class, 'sendMessForListUser']);
     Route::post('/get-template-for-send-mail', [NotificationController::class, 'getTemplateForSendMail'])->name('notification-list');
 
     // get info area from region id
@@ -95,8 +90,9 @@ Route::group(array('prefix' => '/admin','middleware'=>'checkAdminLogin'), functi
     Route::get('/update-template-view/{templateId}', [NotificationController::class, 'showUpdateTemplateView'])->name('template-management');
     Route::post('/update-template', [NotificationController::class, 'reqUpdateNewTemplate']);
 
-    //    link draft list
+    // link draft list
     Route::get('/update-notification-draft/{notificationDraftId}/{notificationSender?}/{notificationTemplate?}', [NotificationController::class, 'renderUpdateNotificationDraft']);
+    Route::post('/send-notification', [NotificationController::class, 'sendMessForListUser']);
     Route::post('/update-notification-draft', [NotificationController::class, 'updateNotificationDraft']);
     Route::post('/cancel-notification-draft', [NotificationController::class, 'cancelNotificationDraft']);
 

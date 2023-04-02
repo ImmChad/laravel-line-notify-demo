@@ -254,7 +254,7 @@ class NotificationHandler
         $dataNotificationDraft = $this->notificationRepository->getNotificationDraftWithID($request->notification_draft_id);
         $newNotificationId = $this->notificationRepository->insertDataNotification([
             'type' => NotificationHandler::NOTIFICATION_FROM_ADMIN,
-            'announce_title' => $dataNotificationDraft->notification_title,
+            'announce_title' => $request->notificationTitle,
             'announce_content' => $request->notificationContent,
             'is_sent' => !isset($dataNotificationDraft->scheduled_at),
             'is_scheduled' => isset($dataNotificationDraft->scheduled_at),
@@ -263,6 +263,7 @@ class NotificationHandler
             'notification_draft_id' => $request->notification_draft_id
         ]);
         $resultRemove = $this->notificationRepository->removeNotificationDraft($request);
+
         if ($resultRemove) {
             event((new NewNotificationFromAdminEvent($newNotificationId)));
         }
@@ -276,7 +277,7 @@ class NotificationHandler
      */
     public function saveNotificationDraft(object $request): int
     {
-        if ($request->announceFor == "user") {
+        if($request->announceFor == "user") {
             if (intval($request->announceTypeFor) == 1) {
                 $listSeeker = $this->notificationRepository->getListUserAllRole2();
             } else {
@@ -300,7 +301,8 @@ class NotificationHandler
                 }
             }
 
-        } else {
+        }
+        else {
             if ($request->announceTypeFor == 1) {
                 $listStore = $this->notificationRepository->getListUserAllRole3();
             } else {
@@ -326,8 +328,8 @@ class NotificationHandler
             }
 
         }
-        return $this->notificationRepository->saveNotificationDraft($request, $totalUserLine, $totalUserMail, $totalUserSms);
 
+        return $this->notificationRepository->saveNotificationDraft($request, $totalUserLine, $totalUserMail, $totalUserSms);
     }
 
     /**

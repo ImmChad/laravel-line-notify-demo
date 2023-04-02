@@ -286,10 +286,10 @@
                                                 </ul>
                                             </nav>
                                             <div class="card-title col-sm-12 scroll-card"
-                                                 style="font-size: 20px; {{$notification->type!=3?'font-weight: 700;':''}} border: 2px solid black; border-radius: 0.2rem; height: 550px; overflow-y: scroll;">
-                                <span class="announce_content" style="padding:  1rem 0rem;">
-                                {{$notification->announce_title}} - {!! $notification->announce_content !!}
-                                </span>
+                                                 style="font-size: 20px; {{$notification->type!=3?'font-weight: 700;':''}} border: 2px solid black; border-radius: 0.2rem; height: 550px; overflow-y: scroll; padding: 1rem;">
+                                                <span class="announce_content" style="padding:  1rem 0rem;">
+                                                    {{$notification->announce_title}} <br> {!! $notification->announce_content !!}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>

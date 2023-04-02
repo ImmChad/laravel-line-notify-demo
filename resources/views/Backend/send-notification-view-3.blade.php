@@ -1,7 +1,6 @@
 @extends('Backend.backend-view')
 @section('ContentAdmin')
     <style>
-
         .content-send-notification {
             padding: 20px;
         }
@@ -187,7 +186,21 @@
                         </select>
                     </div>
 
-                    <input placeholder="Please Notification title" required=""minlength="10" maxlength="255" class="ipt-text-notification" id="ipt-title-notification" value="{{ isset($detailTemplate)? $detailTemplate->template_title : '' }}">
+                    <div class="field-ipt-text field-title-notification">
+                        <div
+                            placeholder="Please Notification title"
+                             required=""
+                             minlength="10"
+                             maxlength="255"
+                             contenteditable="true"
+                             class="ipt-text-notification"
+                             id="ipt-title-notification">
+                            @if(isset($detailTemplate))
+                                {!! $detailTemplate->template_title !!}
+                            @endif
+                        </div>
+                    </div>
+
 
                     <div class="section-template">
                         <div class="part-select-template">
@@ -216,6 +229,7 @@
                                     @else
 
                                         <option templateId="null">Please select type</option>
+
                                         @foreach($dataTemplate as $subDataTemplate)
                                             <option notificationSender="{{ $notificationSender }}"
                                                     templateId="{{ $subDataTemplate->id }}"
@@ -289,6 +303,7 @@
                                     </select>
                                 </div>
                             </div>
+
                             <div class="col-md-3">
                                 <div class="part-select-params" style="width: 100%;">
                                     <select class="form-select send-for-select" aria-label="Default select example"
@@ -310,6 +325,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="row" style="width: 100%; margin-top: 15px;">
                             <div class="col-md-3"></div>
                             <div class="col-md-3"></div>
@@ -351,10 +367,6 @@
             </div>
         </div>
     </div>
-
-
-    {{-- display calendar --}}
-    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>--}}
 
 @endsection
 
@@ -447,6 +459,7 @@
 
         })
 
+        // choose area from region
         function chooseArea(data) {
             console.log(data);
             let areaSelect = document.querySelector('.area-select');
@@ -471,16 +484,13 @@
 
         // send Notification
         let btnSend = document.querySelector('.btn-send')
-
-
         btnSend.addEventListener('click', () => {
 
             let notificationTypeSelect = document.querySelector('.notification-type-select');
             let sendForSelect = document.querySelector('.send-for-select')
 
-
             let announceFor = notificationTypeSelect.options[notificationTypeSelect.selectedIndex].getAttribute('uri')
-            let announceTitle = document.querySelector('#ipt-title-notification').value
+            let announceTitle = document.querySelector('#ipt-title-notification').innerHTML
             let announceContent = document.querySelector('#ipt-content-notification').innerHTML
 
             let announceTypeFor = sendForSelect.options[sendForSelect.selectedIndex].getAttribute('value')

@@ -49,6 +49,7 @@ class SendMail implements ShouldQueue
             $notificationRepository = new NotificationRepository();
             $dataNotificationDraft = $notificationRepository->getNotificationDraftWithID($notificationData->notification_draft_id);
             $userGmail = [];
+
             if($dataNotificationDraft->notification_for == "user")
             {
                 $userGmail = $notificationRepository->getSeekerNotLineHasMailWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id,$dataNotificationDraft->created_at);
@@ -57,27 +58,34 @@ class SendMail implements ShouldQueue
             {
                 $userGmail = $notificationRepository->getStoreNotLineHasMailWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id,$dataNotificationDraft->created_at);
             }
+
             $notificationService = new NotificationService($notificationRepository);
+
             foreach ($userGmail as $subUserGmail) {
+                $title = "";
                 $content = "";
+
                 if($dataNotificationDraft->notification_for == "user")
                 {
-                    $content = $notificationService->loadParamNotificationUser($notificationData->announce_content,$subUserGmail->id);
+                    $title = $notificationService->loadParamNotificationUser($notificationData->announce_title, $subUserGmail->id, "mail");
+                    $content = $notificationService->loadParamNotificationUser($notificationData->announce_content, $subUserGmail->id, "mail");
                 }
                 else if ($dataNotificationDraft->notification_for == "store")
                 {
-                    $content = $notificationService->loadParamNotificationStore($notificationData->announce_content,$subUserGmail->id) ;
+                    $title = $notificationService->loadParamNotificationStore($notificationData->announce_title, $subUserGmail->id, "mail");
+                    $content = $notificationService->loadParamNotificationStore($notificationData->announce_content, $subUserGmail->id, "mail") ;
                 }
+
                 $email = $subUserGmail->emailDecrypted;
-                $titleSubject = $notificationData->announce_title;
-                SendItemMail::dispatch($email, $content, $titleSubject);
+                SendItemMail::dispatch($email, $content, $title);
 
             }
+
             DB::table('notification')->where([
                 'id' => $this->notification_id
             ])
-                ->where('deleted_at', '=', null)
-                ->update(['is_sent' => 1]);
+            ->where('deleted_at', '=', null)
+            ->update(['is_sent' => 1]);
         }
 
     }

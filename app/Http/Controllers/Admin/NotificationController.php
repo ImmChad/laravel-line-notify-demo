@@ -137,7 +137,7 @@ class NotificationController extends Controller
     function saveNotificationDraft(Request $request): int
     {
         $request->validate([
-            'title' => 'required|max:255',
+            'title' => 'required',
             'message' => 'required',
         ]);
         return $this->notificationHandler->saveNotificationDraft($request);
@@ -220,7 +220,8 @@ class NotificationController extends Controller
     function reqAddNewTemplate(Request $request) : array
     {
         $request->validate([
-            'templateTitle' => 'required|max:255',
+            'templateName' => 'required|max:255',
+            'templateTitle' => 'required',
             'templateContent' => 'required'
         ]);
         return $this->notificationHandler->reqAddNewTemplate($request);
@@ -233,7 +234,8 @@ class NotificationController extends Controller
     public function reqUpdateNewTemplate(Request $request) : array
     {
         $request->validate([
-            'templateTitle' => 'required|max:255',
+            'templateName' => 'required|max:255',
+            'templateTitle' => 'required',
             'templateContent' => 'required'
         ]);
         return $this->notificationHandler->reqUpdateNewTemplate($request);
