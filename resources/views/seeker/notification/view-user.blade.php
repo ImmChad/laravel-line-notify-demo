@@ -1,4 +1,4 @@
-@extends('Frontend.home-user')
+@extends('seeker.home-user')
 @section('content')
     <style>
         /* @import 'root.css'; */
@@ -110,7 +110,7 @@
             background-color: white;
             color: gray;
             padding: 5px;
-            transform: translateX(-25%)translateY(-25%);
+            transform: translateX(-25%) translateY(-25%);
             border: 1px solid;
             cursor: pointer;
         }
@@ -139,8 +139,6 @@
             align-items: center;
             min-width: 600px;
         }
-
-
 
 
         .container-profile-register {
@@ -190,7 +188,7 @@
         }
 
         .exit-pop-up-ads {
-            display:none!important;
+            display: none !important;
             position: absolute;
             /* border-radius: 20px; */
             border: 4px solid var(--blue);
@@ -216,18 +214,18 @@
         }
 
         .btn-show-notification {
-            display: none!important;
+            display: none !important;
             cursor: pointer;
-        position: fixed;
-        font-size: 28px;
-        color: var(--blue);
-        border: 4px solid var(--blue);
-        /* border-radius: 50%; */
-        background-color: var(--bluePreHover);
-        padding: 4px 18px;
-        right: 100px;
-        top: 20px;
-            }
+            position: fixed;
+            font-size: 28px;
+            color: var(--blue);
+            border: 4px solid var(--blue);
+            /* border-radius: 50%; */
+            background-color: var(--bluePreHover);
+            padding: 4px 18px;
+            right: 100px;
+            top: 20px;
+        }
 
         .btn-show-notification:hover {
             background-color: var(--whitePostHover)
@@ -260,23 +258,25 @@
             <div class="card-header d-flex">
                 <h5>Infomation</h5>
             </div>
-            <div class="card-body p-0" >
-                <div class="row list-persons" id="addcon" style="display: flex; justify-content: center; align-items: flex-start;">
+            <div class="card-body p-0">
+                <div class="row list-persons" id="addcon"
+                     style="display: flex; justify-content: center; align-items: flex-start;">
                     <div class="col-xl-8 xl-50 col-md-7">
                         <div class="tab-content ps-0" id="v-pills-tabContent">
                             <div class="tab-pane contact-tab-0 tab-content-child fade show active" id="v-pills-user"
-                                role="tabpanel" aria-labelledby="v-pills-user-tab">
+                                 role="tabpanel" aria-labelledby="v-pills-user-tab">
                                 <div class="profile-mail">
                                     <div class="media">
-                                    @if (isset($dataUser['pictureUrl']))
-                                    <img class="img-100 img-fluid m-r-20 rounded-circle update_img_0"
-                                            src="{{ $dataUser['pictureUrl'] }}" alt="">
+                                        @if (isset($dataUser['pictureUrl']))
+                                            <img class="img-100 img-fluid m-r-20 rounded-circle update_img_0"
+                                                 src="{{ $dataUser['pictureUrl'] }}" alt="">
 
-                                    @else
-                                    <img class="img-100 img-fluid m-r-20 rounded-circle update_img_0"
-                                            src="https://store.kidbright.info/upload/cover-image/1544265083-nDP3ez.png" alt="">
+                                        @else
+                                            <img class="img-100 img-fluid m-r-20 rounded-circle update_img_0"
+                                                 src="https://store.kidbright.info/upload/cover-image/1544265083-nDP3ez.png"
+                                                 alt="">
 
-                                    @endif
+                                        @endif
 
                                         <div class="media-body mt-0">
                                             <h5><span class="first_name_0">{{ $dataUser['email'] }}</span></h5>
@@ -285,8 +285,11 @@
                                     <div class="email-general">
                                         <h6 class="mb-3">General</h6>
                                         <ul>
-                                            <li>Email <span class="font-primary first_name_0">{{ $dataUser['email'] }}</span></li>
-                                            <li>User ID<span class="font-primary mobile_num_0">{{ $dataUser['id'] }}</span>
+                                            <li>Email <span
+                                                        class="font-primary first_name_0">{{ $dataUser['email'] }}</span>
+                                            </li>
+                                            <li>User ID<span
+                                                        class="font-primary mobile_num_0">{{ $dataUser['id'] }}</span>
                                             </li>
                                             <li>Address Notification
                                                 <span class="font-primary email_add_0">
@@ -334,4 +337,4 @@
             window.location.href = "/user/notify/list";
         });
     </script>
-    @endsection
+@endsection

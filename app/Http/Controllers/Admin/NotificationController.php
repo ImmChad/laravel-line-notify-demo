@@ -6,20 +6,17 @@ use App\Events\NewStoreRequestRegistration;
 use App\Handler\NotificationHandler;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\User\UserController;
+use App\Services\NotificationUserService;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Http\Request;
-use Session;
-use stdClass;
-use Twilio\Exceptions\ConfigurationException;
-use Twilio\Exceptions\TwilioException;
-use Twilio\Rest\Client;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Collection;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
 
 /**
  *
@@ -28,18 +25,20 @@ class NotificationController extends Controller
 {
     /**
      * @param NotificationHandler $notificationHandler
+     * @param NotificationUserService $notificationUserService
      */
-    public function __construct(private NotificationHandler $notificationHandler)
-    {
+    public function __construct(
+        private NotificationHandler $notificationHandler,
+        private NotificationUserService $notificationUserService
+    ) {
     }
-
 
     /**
      * @return Application|Factory|View|RedirectResponse
      */
     function loginAdmin(): View|Factory|RedirectResponse|Application
     {
-        return $this->notificationHandler->loginAdmin();
+        return $this->notificationUserService->loginAdmin();
     }
 
     /**
@@ -53,15 +52,15 @@ class NotificationController extends Controller
             'username' => 'required|max:255',
             'password' => 'required|max:255',
         ]);
-        return $this->notificationHandler->handleSubmitLogin($validated);
+        return $this->notificationUserService->handleSubmitLogin($validated);
     }
 
     /**
      * @return RedirectResponse
      */
-    public function reqLogout() : RedirectResponse
+    public function reqLogout(): RedirectResponse
     {
-        return $this->notificationHandler->reqLogout();
+        return $this->notificationUserService->reqLogout();
     }
 
 
@@ -71,7 +70,7 @@ class NotificationController extends Controller
     function registerLineList(): Factory|View|Application
     {
         $dataList = $this->notificationHandler->getRegisterLineList();
-        return view('Backend.register-line-list', compact("dataList"));
+        return view('admin.notification.register-line-list', compact("dataList"));
     }
 
     /**
@@ -102,22 +101,28 @@ class NotificationController extends Controller
             $dataList = $this->notificationHandler->searchNotification($request);
             $dataList = $this->paginate($dataList);
             $dataList->withPath('/admin/notification-list');
-            return view('Backend.notification-list', compact('dataList'));
+            return view('admin.notification.notification-list', compact('dataList'));
         } else {
             return Redirect::to('/admin');
         }
-
     }
 
     /**
      * @param int $notificationType
-     * @param String|null $notificationSender
-     * @param String|null $notificationTemplate
+     * @param string|null $notificationSender
+     * @param string|null $notificationTemplate
      * @return Application|Factory|View|RedirectResponse
      */
-    function showSendNotificationView(int $notificationType, String $notificationSender = null, String $notificationTemplate = null): View|Factory|RedirectResponse|Application
-    {
-        return $this->notificationHandler->showSendNotificationView($notificationType, $notificationSender, $notificationTemplate);
+    function showSendNotificationView(
+        int $notificationType,
+        string $notificationSender = null,
+        string $notificationTemplate = null
+    ): View|Factory|RedirectResponse|Application {
+        return $this->notificationHandler->showSendNotificationView(
+            $notificationType,
+            $notificationSender,
+            $notificationTemplate
+        );
     }
 
     /**
@@ -131,23 +136,10 @@ class NotificationController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @return int
-     */
-    function saveNotificationDraft(Request $request): int
-    {
-        $request->validate([
-            'title' => 'required',
-            'message' => 'required',
-        ]);
-        return $this->notificationHandler->saveNotificationDraft($request);
-    }
-
-    /**
      * @param $notificationId
      * @return Application|Factory|View|RedirectResponse
      */
-    function showContentUpdateNotificationToView($notificationId) :Application|Factory|View|RedirectResponse
+    function showContentUpdateNotificationToView($notificationId): Application|Factory|View|RedirectResponse
     {
         return $this->notificationHandler->showContentUpdateNotificationToView($notificationId);
     }
@@ -169,7 +161,7 @@ class NotificationController extends Controller
      * @param int $id
      * @return Application|Factory|View|RedirectResponse
      */
-    function detailNotification(int $id) : Application|Factory|View|RedirectResponse
+    function detailNotification(int $id): Application|Factory|View|RedirectResponse
     {
         return $this->notificationHandler->detailNotification($id);
     }
@@ -178,83 +170,16 @@ class NotificationController extends Controller
      * @param int $notificationId
      * @return RedirectResponse
      */
-    function deleteNotification(int $notificationId) : RedirectResponse
+    function deleteNotification(int $notificationId): RedirectResponse
     {
         return $this->notificationHandler->deleteNotification($notificationId);
-    }
-
-    /**
-     * @return Application|Factory|View
-     */
-    function showTemplateManagementView() : Application|Factory|View
-    {
-        return $this->notificationHandler->showTemplateManagementView();
-    }
-
-    /**
-     * @return Application|Factory|View
-     */
-    function showAddNewTemplateView() : Application|Factory|View
-    {
-        if(!isset($_GET['templateType'])) {
-            $templateType = "";
-        } else {
-            $templateType = $_GET['templateType'];
-        }
-        return $this->notificationHandler->showAddNewTemplateView($templateType);
-    }
-
-    /**
-     * @param $templateId
-     * @return Application|Factory|View
-     */
-    function showUpdateTemplateView($templateId) : Application|Factory|View
-    {
-        return $this->notificationHandler->showUpdateTemplateView($templateId);
-    }
-
-    /**
-     * @param Request $request
-     * @return array
-     */
-    function reqAddNewTemplate(Request $request) : array
-    {
-        $request->validate([
-            'templateName' => 'required|max:255',
-            'templateTitle' => 'required',
-            'templateContent' => 'required'
-        ]);
-        return $this->notificationHandler->reqAddNewTemplate($request);
-    }
-
-    /**
-     * @param Request $request
-     * @return array
-     */
-    public function reqUpdateNewTemplate(Request $request) : array
-    {
-        $request->validate([
-            'templateName' => 'required|max:255',
-            'templateTitle' => 'required',
-            'templateContent' => 'required'
-        ]);
-        return $this->notificationHandler->reqUpdateNewTemplate($request);
-    }
-
-    /**
-     * @param Request $request
-     * @return Collection|stdClass|array
-     */
-    function getTemplateForSendMail(Request $request) : Collection|stdClass|array
-    {
-        return $this->notificationHandler->getTemplateForSendMail($request);
     }
 
     /**
      * @param Request $request
      * @return Collection|array
      */
-    function getAreaFromRegionId(Request $request) : Collection|array
+    function getAreaFromRegionId(Request $request): Collection|array
     {
         $request->validate([
             'regionId' => 'max:10'
@@ -263,57 +188,13 @@ class NotificationController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @return int
-     */
-    function cancelNotificationDraft(Request $request): int
-    {
-        return $this->notificationHandler->cancelNotificationDraft($request);
-    }
-    function renderUpdateNotificationDraft(String $notificationDraftId, String $notificationSender = null, String $notificationTemplate = null)
-    {
-        return $this->notificationHandler->renderUpdateNotificationDraft($notificationDraftId, $notificationSender, $notificationTemplate);
-    }
-
-    function updateNotificationDraft(Request $request)
-    {
-
-        return $this->notificationHandler->updateNotificationDraft($request);
-    }
-
-
-
-
-
-
-
-
-
-
-
-    // FIX HERRE
-
-    /**
-     * @param $sms_number
-     * @param $message
+     * @param string $smsNumber
+     * @param string $message
+     *
      * @return void
-     * @throws ConfigurationException
-     * @throws TwilioException
      */
-    static public function sendMessTwilio($sms_number, $message)
+    static public function sendMessTwilio(string $smsNumber, string $message): void
     {
-
-//        $account_sid = getenv("TWILIO_SID");
-//        $auth_token = getenv("TWILIO_AUTH_TOKEN");
-//        $client = new Client($account_sid, $auth_token);
-//        $res = $client->messages
-//            ->create($sms_number, // to
-//                [
-//                    "body" => $message,
-//                    "messagingServiceSid" => $twilio_number = getenv("TWILIO_SMS_SERVICE_ID")
-//                ]
-//            );
-        event(new NewStoreRequestRegistration(UserController::CHANNEL_SMS, $sms_number, "", $message));
-
+        event(new NewStoreRequestRegistration(UserController::CHANNEL_SMS, $smsNumber, "", $message));
     }
 }

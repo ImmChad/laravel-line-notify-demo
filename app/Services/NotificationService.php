@@ -30,7 +30,7 @@ class NotificationService
     }
 
     /**
-     * @param String $contentNotification
+     * @param string $contentNotification
      * @return string
      */
     public function loadParamNotificationStore(string $contentNotification, string $storeId, String $typeSend="notMail"): string

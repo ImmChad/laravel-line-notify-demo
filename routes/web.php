@@ -3,6 +3,8 @@
 // use App\Http\Controllers\Admin\NotificationController;
 
 use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\NotificationDraftController;
+use App\Http\Controllers\Admin\NotificationTemplateController;
 use App\Http\Controllers\User\ConnectGmailController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
@@ -56,41 +58,91 @@ Route::group(array('prefix' => '/admin', 'middleware' => 'checkAdminLogin'), fun
 
     Route::get('/log-out', [NotificationController::class, 'reqLogout']);
 
-    // link register line list
-    Route::get('/register-line-list', [NotificationController::class, 'registerLineList'])->name('register-line-list');
+    // 1. link register line list
+    Route::get('/register-line-list',
+        [NotificationController::class, 'registerLineList'])
+        ->name('admin.notification.register-line-list');
 
-    // link notification list
-    Route::post('/search-notification', [NotificationController::class, 'searchNotification']);
+    // 2. link notification list
+    Route::get('/notification-list',
+        [NotificationController::class, 'notificationList'])
+        ->name('admin.notification.notification-list');
 
-    Route::get('/notification-list', [NotificationController::class, 'notificationList'])->name('notification-list');
-    Route::get('/notification/{id}/detail', [NotificationController::class, 'detailNotification']);
-    Route::get('/notification/delete/{notificationId}', [NotificationController::class, 'deleteNotification']);
+    Route::get('/notification/{id}/detail',
+        [NotificationController::class, 'detailNotification'])
+        ->name('admin.notification.detailNotification');
 
-    Route::get('/send-notification-view/{notificationType}/{notificationSender?}/{notificationTemplate?}', [NotificationController::class, 'showSendNotificationView'])->name('notification-list');
-    Route::post('/send-mess', [NotificationController::class, 'saveNotificationDraft']);
-    Route::post('/get-template-for-send-mail', [NotificationController::class, 'getTemplateForSendMail'])->name('notification-list');
+    Route::get('/notification/delete/{notificationId}',
+        [NotificationController::class, 'deleteNotification'])
+        ->name('admin.notification.deleteNotification');
 
-    // get info area from region id
-    Route::post('/get-area-from-region-id', [NotificationController::class, 'getAreaFromRegionId']);
+    Route::post('/search-notification',
+        [NotificationController::class, 'searchNotification'])
+        ->name('admin.notification.searchNotification');
 
-    Route::get('/update-notification-view/{notificationId}', [NotificationController::class, 'showContentUpdateNotificationToView'])->name('notification-list');
-    Route::post('/update-mess', [NotificationController::class, 'sendUpdateForListUser']);
+    Route::get('/send-notification-view/{notificationType}/{notificationSender?}/{notificationTemplate?}',
+        [NotificationController::class, 'showSendNotificationView'])
+        ->name('admin.notification.showSendNotificationView');
 
-    // link template list
-    Route::get('/template-management', [NotificationController::class, 'showTemplateManagementView'])->name('template-management');
+    Route::post('/get-area-from-region-id',
+        [NotificationController::class, 'getAreaFromRegionId'])
+        ->name('admin.notification.getAreaFromRegionId');
 
-    Route::get('/add-new-template-view', [NotificationController::class, 'showAddNewTemplateView'])->name('template-management.add_get');
-    Route::post('/add-template', [NotificationController::class, 'reqAddNewTemplate']);
+    Route::get('/update-notification-view/{notificationId}',
+        [NotificationController::class, 'showContentUpdateNotificationToView'])
+        ->name('admin.notification.showContentUpdateNotificationToView');
 
-    Route::get('/update-template-view/{templateId}', [NotificationController::class, 'showUpdateTemplateView'])->name('template-management');
-    Route::post('/update-template', [NotificationController::class, 'reqUpdateNewTemplate']);
+    Route::post('/update-mess',
+        [NotificationController::class, 'sendUpdateForListUser'])
+        ->name('admin.notification.sendUpdateForListUser');
 
-    // link draft list
-    Route::get('/update-notification-draft/{notificationDraftId}/{notificationSender?}/{notificationTemplate?}', [NotificationController::class, 'renderUpdateNotificationDraft']);
-    Route::post('/send-notification', [NotificationController::class, 'sendMessForListUser']);
-    Route::post('/update-notification-draft', [NotificationController::class, 'updateNotificationDraft']);
-    Route::post('/cancel-notification-draft', [NotificationController::class, 'cancelNotificationDraft']);
+    // 3. template
+    Route::get('/template-management',
+        [NotificationTemplateController::class, 'showTemplateManagementView'])
+        ->name('admin.notification.template-management');
 
+    Route::get('/add-new-template-view',
+        [NotificationTemplateController::class, 'showAddNewTemplateView'])
+        ->name('admin.notification.template-management.add_get');
+
+    Route::post('/add-template',
+        [NotificationTemplateController::class, 'reqAddNewTemplate'])
+        ->name('admin.notification.reqAddNewTemplate');
+
+    Route::get('/update-template-view/{templateId}',
+        [NotificationTemplateController::class, 'showUpdateTemplateView'])
+        ->name('admin.notification.template-management');
+
+    Route::post('/update-template',
+        [NotificationTemplateController::class, 'reqUpdateNewTemplate'])
+        ->name('admin.notification.reqUpdateNewTemplate');
+
+    Route::post('/get-template-for-send-mail',
+        [NotificationTemplateController::class, 'getTemplateForSendMail'])
+        ->name('admin.notification.getTemplateForSendMail');
+
+
+    Route::get('/update-notification-draft/{notificationDraftId}/{notificationSender?}/{notificationTemplate?}',
+        [NotificationDraftController::class, 'renderUpdateNotificationDraft'])
+        ->name('admin.notification.renderUpdateNotificationDraft');
+
+    Route::post('/update-notification-draft',
+        [NotificationDraftController::class, 'updateNotificationDraft'])
+        ->name('admin.notification.updateNotificationDraft');
+
+    Route::post('/cancel-notification-draft',
+        [NotificationDraftController::class, 'cancelNotificationDraft'])
+        ->name('admin.notification.cancelNotificationDraft');
+
+    Route::post('/send-mess',
+        [NotificationDraftController::class, 'saveNotificationDraft'])
+        ->name('admin.notification.saveNotificationDraft');
+
+
+    // 4. Cronjob
+    Route::post('/send-notification',
+        [NotificationController::class, 'sendMessForListUser'])
+        ->name('admin.notification.sendMessForListUser');
 });
 
 

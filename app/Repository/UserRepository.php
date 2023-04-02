@@ -17,7 +17,7 @@ use stdClass;
 class UserRepository
 {
     /**
-     * @param String $userId
+     * @param string $userId
      * @param array $attributes
      * @return int
      */
@@ -31,7 +31,7 @@ class UserRepository
     }
 
     /**
-     * @param String $userId
+     * @param string $userId
      * @param array $attributes
      * @return int
      */
@@ -44,7 +44,7 @@ class UserRepository
     }
 
     /**
-     * @param String $id
+     * @param string $id
      * @param array $attributes
      * @return int
      */
@@ -54,13 +54,12 @@ class UserRepository
     }
 
     /**
-     * @param String $userId
+     * @param string $userId
      * @param $lineId
      * @return bool
      */
     function insertNotificationUserLine(string $userId, $lineId): bool
     {
-        date_default_timezone_set('Asia/Ho_Chi_Minh');
         $time = date('Y/m/d H:i:s');
         $id = Str::uuid()->toString();
         $dataUserLine = DB::table("notification_user_line")->where("user_id", $userId)->first();
@@ -99,7 +98,7 @@ class UserRepository
 
     /**
      * @param int $notificationId
-     * @param String $userId
+     * @param string $userId
      * @return bool
      */
     public function insertNotificationRead(int $notificationId, string $userId): bool
@@ -119,7 +118,7 @@ class UserRepository
     }
 
     /**
-     * @param String $userCreatedAt
+     * @param string $userCreatedAt
      * @return Collection
      */
     public function getNotificationExceptNewRegisterBefore(string $userCreatedAt): Collection
@@ -135,7 +134,7 @@ class UserRepository
 
     /**
      * @param int $notificationId
-     * @param String $userId
+     * @param string $userId
      * @return Collection|null
      */
     public function getNotificationReadWithUserIdNotificationId(int $notificationId, string $userId): Collection|null

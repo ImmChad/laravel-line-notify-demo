@@ -1,4 +1,4 @@
-@extends('Backend.backend-view')
+@extends('admin.backend-view')
 @section('ContentAdmin')
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
             integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
@@ -60,11 +60,11 @@
                                 <option value="0" {{isset($_REQUEST['templateType'])?'selected':''}}>All
                                 </option>
                                 <option
-                                    value="user" {{isset($_REQUEST['templateType']) && $_REQUEST['templateType']=="user" ?'selected':''}}>
+                                        value="user" {{isset($_REQUEST['templateType']) && $_REQUEST['templateType']=="user" ?'selected':''}}>
                                     User
                                 </option>
                                 <option
-                                    value="store" {{isset($_REQUEST['templateType']) && $_REQUEST['templateType']=="store" ?'selected':''}}>
+                                        value="store" {{isset($_REQUEST['templateType']) && $_REQUEST['templateType']=="store" ?'selected':''}}>
                                     Store
                                 </option>
                             </select>
@@ -73,9 +73,9 @@
 
                     <div class="media-body text-end" style="display: flex; justify-content: flex-end;">
                         <button
-                            class="btn btn-outline-primary ms-2 btn-new-notification"
-                            style="display: flex; justify-content: center; align-items: center;"
-                            data-toggle="dropdown"
+                                class="btn btn-outline-primary ms-2 btn-new-notification"
+                                style="display: flex; justify-content: center; align-items: center;"
+                                data-toggle="dropdown"
                         >
                             <i data-feather="send"></i>New Notification
                         </button>

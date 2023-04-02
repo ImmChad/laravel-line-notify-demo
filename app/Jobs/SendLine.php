@@ -4,8 +4,10 @@ namespace App\Jobs;
 
 
 use App\Handler\NotificationHandler;
+use App\Repository\NotificationDraftRepository;
 use App\Repository\NotificationRepository;
 use App\Services\NotificationService;
+use App\Services\NotificationUserService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -21,14 +23,19 @@ class SendLine implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    protected $notification_id;
+    protected int $notificationId;
 
     /**
-     * @param $notification_id
+     * @param int $notificationId
      */
-    public function __construct($notification_id)
+    public function __construct(
+        int $notificationId,
+        private NotificationRepository $notificationRepository,
+        private NotificationDraftRepository $notificationDraftRepository,
+        private NotificationUserService $notificationUserService
+    )
     {
-        $this->notification_id = $notification_id;
+        $this->notificationId = $notificationId;
     }
 
     /**
@@ -37,20 +44,20 @@ class SendLine implements ShouldQueue
     public function handle(): void
     {
         $data_notification = DB::table('notification')->where([
-            'id' => $this->notification_id
+            'id' => $this->notificationId
         ])
             ->where('deleted_at', '=', null)
             ->first();
 
         if (isset($data_notification)) {
             $notificationRepository = new NotificationRepository();
-            $dataNotificationDraft = $notificationRepository->getNotificationDraftWithID($data_notification->notification_draft_id);
+            $dataNotificationDraft = $this->notificationDraftRepository->getNotificationDraftWithID($data_notification->notification_draft_id);
             $userLine = [];
 
             if ($dataNotificationDraft->notification_for == "user") {
-                $userLine = $notificationRepository->getSeekerHasLineWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id, $dataNotificationDraft->created_at);
+                $userLine = $this->notificationUserService->getSeekerHasLineWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id, $dataNotificationDraft->created_at);
             } else if ($dataNotificationDraft->notification_for == "store") {
-                $userLine = $notificationRepository->getStoreHasLineWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id, $dataNotificationDraft->created_at);
+                $userLine = $this->notificationUserService->getStoreHasLineWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id, $dataNotificationDraft->created_at);
             }
 
             $notificationService = new NotificationService($notificationRepository);
@@ -72,7 +79,7 @@ class SendLine implements ShouldQueue
             }
 
             DB::table('notification')->where([
-                'id' => $this->notification_id
+                'id' => $this->notificationId
             ])
                 ->where('deleted_at', '=', null)
                 ->update(['is_sent' => 1]);

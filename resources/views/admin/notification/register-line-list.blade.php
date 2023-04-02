@@ -1,13 +1,14 @@
-@extends('Backend.backend-view')
+@extends('admin.backend-view')
 @section('ContentAdmin')
-<style>
-        .link-detail-announce
-        {
+    <style>
+        .link-detail-announce {
             cursor: pointer;
         }
+
         .widget-joins:after {
-            height:0px !important;
+            height: 0px !important;
         }
+
         .widget-joins .media .media-body svg {
             width: 30px;
             height: 30px;
@@ -26,12 +27,12 @@
             <div class="table-responsive">
                 <table class="table">
                     <thead>
-                        <tr>
-                            <th scope="col">Username</th>
-                            <th scope="col">Role</th>
-                            <th scope="col">Address</th>
-                            <th scope="col">Time Connected</th>
-                        </tr>
+                    <tr>
+                        <th scope="col">Username</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Address</th>
+                        <th scope="col">Time Connected</th>
+                    </tr>
                     </thead>
                     <tbody>
                     @foreach ($dataList as $subDataList )

@@ -1,6 +1,7 @@
-@extends('Frontend.home-user')
+@extends('seeker.notification.home-user')
 @section('content')
-    <div style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+    <div
+        style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column;">
         {{-- <a href="{{$authUrl}}" style="font-size: 20px; cursor: pointer; margin: 1rem 0rem;">Connect to Line</a>
         <a href="{{url($authGmail)}}" style="font-size: 20px; cursor: pointer; margin: 1rem 0rem;">Connect to Gmail</a>
         <a href="#" style="font-size: 20px; cursor: pointer; margin: 1rem 0rem;" onclick="displayToast('Feature is developing!')">Connect to SMS</a> --}}
@@ -9,9 +10,12 @@
                 <div class="login-card">
                     <div>
                         <div>
-                            <a class="logo" href="/" style="margin-bottom: 0px; display: flex; justify-content: center; align-items: center;">
-                                <img class="img-fluid for-light" src="{{ asset('Image/logo.png') }}" style="width: 50px; height: 50px;" alt="looginpage">
-                                <span style="font-size: 20px; display: flex; justify-content: center; align-items: center;">Girl Meee</span>
+                            <a class="logo" href="/"
+                               style="margin-bottom: 0px; display: flex; justify-content: center; align-items: center;">
+                                <img class="img-fluid for-light" src="{{ asset('Image/logo.png') }}"
+                                     style="width: 50px; height: 50px;" alt="looginpage">
+                                <span
+                                    style="font-size: 20px; display: flex; justify-content: center; align-items: center;">Girl Meee</span>
                             </a>
                         </div>
                         <div class="login-main">
@@ -20,9 +24,12 @@
                                 <p>Connect to Line, email</p>
                                 <h6 class="text-muted mt-4 or"> Connect with</h6>
                                 <div class="social mt-4">
-                                    <div class="btn-showcase" style="width: 100%; display: flex; justify-content: center; align-items: center; flex-direction: column;">
-                                        <a class="btn btn-light" style="margin: 0.5rem 0rem;" href="{{$authUrl}}" target="_blank"><i class="txt-linkedin" data-feather="message-circle"></i>LINE</a>
-                                        <a class="btn btn-light" style="margin: 0.5rem 0rem;" href="{{url($authGmail)}}" target="_blank"><i class="txt-twitter" data-feather="mail"></i>GMAIL</a>
+                                    <div class="btn-showcase"
+                                         style="width: 100%; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+                                        <a class="btn btn-light" style="margin: 0.5rem 0rem;" href="{{$authUrl}}"
+                                           target="_blank"><i class="txt-linkedin" data-feather="message-circle"></i>LINE</a>
+                                        <a class="btn btn-light" style="margin: 0.5rem 0rem;" href="{{url($authGmail)}}"
+                                           target="_blank"><i class="txt-twitter" data-feather="mail"></i>GMAIL</a>
                                     </div>
                                 </div>
                             </form>
@@ -66,7 +73,7 @@
 
     <script>
         @if(isset($messToast))
-            displayToast('{{ json_decode($messToast) }}');
+        displayToast('{{ json_decode($messToast) }}');
         @endif
 
         function displayToast(mess) {

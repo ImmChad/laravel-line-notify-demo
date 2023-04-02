@@ -4,11 +4,13 @@ namespace App\Handler;
 
 use App\Events\NewStoreRequestRegistration;
 use App\Http\Controllers\User\UserController;
-use App\Models\User;
+use App\Repository\NotificationDraftRepository;
 use App\Repository\NotificationRepository;
+use App\Repository\NotificationTypeRepository;
 use App\Repository\UserRepository;
 use App\Services\LineService;
 use App\Services\NotificationService;
+use App\Services\NotificationUserService;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
@@ -22,12 +24,13 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use LINE\LINEBot;
 use LINE\LINEBot\HTTPClient\CurlHTTPClient;
 use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
-use Session;
+
 use Twilio\Exceptions\ConfigurationException;
 use Twilio\Exceptions\RestException;
 use Twilio\Exceptions\TwilioException;
@@ -37,33 +40,35 @@ class UserHandler
 {
     public const NOTIFICATION_NEW_REGISTER = 1;
 
-    protected const NOTIFICATION_FROM_ADMIN = 2;
-
-    protected const NOTIFICATION_EMAIL_MAGAZINE = 3;
-
-    const CHANNEL_LINE = 1;
-    const CHANNEL_EMAIL = 2;
     const CHANNEL_SMS = 3;
 
-    public function __construct(private readonly UserRepository         $userRepository,
-                                private readonly NotificationRepository $notificationRepository,
-                                private LineService                     $lineService)
-    {
+    public function __construct(
+        private UserRepository $userRepository,
+        private NotificationRepository $notificationRepository,
+        private NotificationDraftRepository $notificationDraftRepository,
+        private NotificationTypeRepository $notificationTypeRepository,
+        private NotificationUserService $notificationUserService,
+        private LineService $lineService
+    ) {
     }
 
 
     /**
      * @param Request $request
+     *
      * @return View|Application|Factory
      */
 
-    public function index(Request $request): View|Application|Factory
+    public function index(): View|Application|Factory
     {
         $inforUser = Session::get('inforUser');
         $authUrl = $this->lineService->getLoginBaseUrl();
         $authGmail = 'authorized/google';
         $announceCount = self::checkAnnounceCount();
-        return view('Frontend.view-user', compact(['authUrl', 'authGmail']))->with(["dataUser" => $inforUser])->with(['announceCount' => $announceCount]);
+
+        return view('seeker.notification.view-user', compact(['authUrl', 'authGmail']))->with(["dataUser" => $inforUser])->with(
+            ['announceCount' => $announceCount]
+        );
     }
 
     /**
@@ -75,23 +80,10 @@ class UserHandler
     public function handleGoogleCallback(Request $request): RedirectResponse
     {
         $user = Socialite::driver('google')->stateless()->user();
-        date_default_timezone_set('Asia/Ho_Chi_Minh');
         $inforUser = Session::get('inforUser');
-
-
-//        $this->userRepository->updateNotificationUserInfo($inforUser['userId'], [
-//            'pictureUrl' => $user->avatar
-//        ]);
-
-//        $this->userRepository->updateNotificationUserSetting($inforUser['userId'], [
-//            'address' => $user->email,
-//            'notification_channel_id' => UserController::CHANNEL_EMAIL,
-//            'updated_at' => date('Y/m/d H:i:s'),
-//        ]);
 
         $inforUser['address'] = $user->email;
         $inforUser['pictureUrl'] = $user->avatar;
-//        $request->session()->put('inforUser', $inforUser);
 
         $email = $user->email;
         $displayName = $user->name;
@@ -115,7 +107,6 @@ class UserHandler
         $user = json_decode(json_encode($user), true);
         if ($user['email'] != "" || $user['email'] != null) {
             $user['email'] = Crypt::decryptString($user['email']);
-
         } else {
             $user['email'] = "";
         }
@@ -132,7 +123,7 @@ class UserHandler
         if ($inforUser) {
             return Redirect::to('/user');
         } else {
-            return view('Frontend.login-user');
+            return view('seeker.notification.login-user');
         }
     }
 
@@ -146,9 +137,8 @@ class UserHandler
         if ($inforUser) {
             return Redirect::to('/user');
         } else {
-            return view('Frontend.view-register-sms');
+            return view('seeker.notification.view-register-sms');
         }
-
     }
 
     /**
@@ -160,9 +150,8 @@ class UserHandler
         if ($inforUser) {
             return Redirect::to('/user');
         } else {
-            return view('Frontend.signup-user');
+            return view('seeker.notification.signup-user');
         }
-
     }
 
     function getAnnounceContent(): array
@@ -171,21 +160,28 @@ class UserHandler
         $notifications = $this->userRepository->getNotificationExceptNewRegisterBefore($inforUser['created_at']);
         $ListData = [];
         $notifications = array_filter($notifications->toArray(), function ($notification) use ($inforUser) {
-            $dataUsers = $this->notificationRepository->getUsersCreatedBeforeNotificationCurrent($notification->id)->toArray();
+            $dataUsers = $this->notificationUserService->getUsersCreatedBeforeNotificationCurrent(
+                $notification->id
+            )->toArray();
             $userIds = array_map(
                 function ($dataUser) {
                     return $dataUser->id;
-                }, $dataUsers);
+                },
+                $dataUsers
+            );
             foreach ($userIds as $userId) {
                 if ($inforUser['id'] == $userId) {
                     return $notification;
                 }
             }
-
         });
+
         foreach ($notifications as $notification) {
             $inforUser = Session::get('inforUser');
-            $dataAnnounce = $this->userRepository->getNotificationReadWithUserIdNotificationId($notification->id, $inforUser['id']);
+            $dataAnnounce = $this->userRepository->getNotificationReadWithUserIdNotificationId(
+                $notification->id,
+                $inforUser['id']
+            );
             if (count($dataAnnounce) > 0) {
                 $notification->read_at = $dataAnnounce[0]->read_at;
             } else {
@@ -193,7 +189,7 @@ class UserHandler
             }
             $ListData[count($ListData)] = $notification;
         }
-//        dd($ListData,$notifications);
+
         return $ListData;
     }
 
@@ -208,19 +204,37 @@ class UserHandler
         $notification = $this->userRepository->getNotificationBeforeUserCreatedAtWithId($id, $inforUser['created_at']);
 
         $this->userRepository->insertNotificationRead($id, $inforUser['id']);
-        $type_notification = $this->notificationRepository->getTypeNameFromTypeNotification($notification->type)->first();
+        $type_notification = $this->notificationTypeRepository->getDetail($notification->type)->first();
 
         $notification->name_type = $type_notification->type;
         $notificationService = new NotificationService($this->notificationRepository);
-        $dataDraft = $this->notificationRepository->getNotificationDraftWithID($notification->notification_draft_id);
+        $dataDraft = $this->notificationDraftRepository->getNotificationDraftWithID($notification->notification_draft_id);
         if (isset($dataDraft)) {
             if ($dataDraft->notification_for == "user") {
-                $notification->announce_title = $notificationService->loadParamNotificationUser($notification->announce_title, $inforUser['id'], "mail");
-                $notification->announce_content = $notificationService->loadParamNotificationUser($notification->announce_content, $inforUser['id'], "mail");
-            } else if ($dataDraft->notification_for == "store") {
-                $dataStore = $this->notificationRepository->getFirstStoreWithUserID($inforUser['id']);
-                $notification->announce_title = $notificationService->loadParamNotificationStore($notification->announce_title, $dataStore->id, "mail");
-                $notification->announce_content = $notificationService->loadParamNotificationStore($notification->announce_content, $dataStore->id, "mail");
+                $notification->announce_title = $notificationService->loadParamNotificationUser(
+                    $notification->announce_title,
+                    $inforUser['id'],
+                    "mail"
+                );
+                $notification->announce_content = $notificationService->loadParamNotificationUser(
+                    $notification->announce_content,
+                    $inforUser['id'],
+                    "mail"
+                );
+            } else {
+                if ($dataDraft->notification_for == "store") {
+                    $dataStore = $this->notificationUserService->getFirstStoreWithUserID($inforUser['id']);
+                    $notification->announce_title = $notificationService->loadParamNotificationStore(
+                        $notification->announce_title,
+                        $dataStore->id,
+                        "mail"
+                    );
+                    $notification->announce_content = $notificationService->loadParamNotificationStore(
+                        $notification->announce_content,
+                        $dataStore->id,
+                        "mail"
+                    );
+                }
             }
         }
 
@@ -229,7 +243,9 @@ class UserHandler
         $dataList->withPath('/user/notify/list');
         $announceCount = self::checkAnnounceCount();
 
-        return view("Frontend.view-announce-user-detail", compact('dataList', 'announceCount'))->with(['notification' => $notification]);
+        return view("Frontend.view-announce-user-detail", compact('dataList', 'announceCount'))->with(
+            ['notification' => $notification]
+        );
     }
 
     /**
@@ -238,7 +254,6 @@ class UserHandler
      */
     public function handleLineCallback(Request $request): RedirectResponse
     {
-        date_default_timezone_set('Asia/Ho_Chi_Minh');
         $code = $request->input('code', '');
         $inforUser = Session::get('inforUser');
         $response = $this->lineService->getLineToken($code);
@@ -274,7 +289,8 @@ class UserHandler
         $userIds = $userId;
         $titleSubject = "Notification";
         $textNotification = 'Hello ' . $displayName . ', click on this link to see notifications about new users.';
-        $this->notificationRepository->insertDataNotification(['type' => self::NOTIFICATION_NEW_REGISTER,
+        $this->notificationRepository->insertDataNotification([
+            'type' => self::NOTIFICATION_NEW_REGISTER,
             'announce_title' => $titleSubject,
             'announce_content' => $textNotification,
             'created_at' => date('Y/m/d H:i:s'),
@@ -293,7 +309,8 @@ class UserHandler
     /**
      * @return View|Application|Factory|RedirectResponse|\Illuminate\Contracts\Foundation\Application
      */
-    function viewAllAnnounceUser(): View|Application|Factory|RedirectResponse|\Illuminate\Contracts\Foundation\Application
+    function viewAllAnnounceUser(
+    ): View|Application|Factory|RedirectResponse|\Illuminate\Contracts\Foundation\Application
     {
         $inforUser = Session::get('inforUser');
         if ($inforUser) {
@@ -301,7 +318,7 @@ class UserHandler
             $dataList = $this->paginate($dataList);
             $dataList->withPath('/user/notify/list');
             $announceCount = self::checkAnnounceCount();
-            return view('Frontend.view-announce-user', compact('announceCount'))->with(["dataList" => $dataList]);
+            return view('seeker.notification.view-announce-user', compact('announceCount'))->with(["dataList" => $dataList]);
         } else {
             return Redirect::to('/');
         }
@@ -330,7 +347,7 @@ class UserHandler
         $authUrl = $this->lineService->getLoginBaseUrl();
         $authGmail = 'authorized/google';
         $announceCount = self::checkAnnounceCount();
-        return view('Frontend.setting-connect-user', compact(['authUrl', 'authGmail', 'announceCount']));
+        return view('seeker.notification.setting-connect-user', compact(['authUrl', 'authGmail', 'announceCount']));
     }
 
     /**
@@ -341,9 +358,9 @@ class UserHandler
      */
     public function connectSMS(Request $request): array
     {
-        $this->validate($request, [
-            'number_sms' => 'required|regex:/^([0-9\s\+\(\)]*)$/|min:10'
-        ]);
+//        $this->validate($request, [
+//            'number_sms' => 'required|regex:/^([0-9\s\+\(\)]*)$/|min:10'
+//        ]);
         $number_sms_nospace = str_replace(' ', '', $request->number_sms);
         $user = DB::table('notification_user_info')
             ->where(['phone_number' => $number_sms_nospace])
@@ -364,16 +381,20 @@ class UserHandler
                 "mess" => "Phone Number Invalid"
             ];
         }
-        $request->session()->put('register-SMS'
-            , ['number-SMS' => $number_sms_nospace,
+        $request->session()->put(
+            'register-SMS'
+            ,
+            [
+                'number-SMS' => $number_sms_nospace,
                 'displayName' => $request->displayName,
-                'password' => $request->password]);
+                'password' => $request->password
+            ]
+        );
         $_SESSION['timeExpired'] = now()->addMinutes(10);
         return [
             "valid" => $verification->status == "pending",
             "mess" => "OK"
         ];
-
     }
 
     /**
@@ -384,7 +405,9 @@ class UserHandler
         $inforUser = Session::get('inforUser');
         if ($inforUser) {
             $announceCount = self::checkAnnounceCount();
-            return view('Frontend.view-user')->with(["dataUser" => $inforUser])->with(['announceCount' => $announceCount]);
+            return view('seeker.notification.view-user')->with(["dataUser" => $inforUser])->with(
+                ['announceCount' => $announceCount]
+            );
         } else {
             return Redirect::to('/');
         }
@@ -413,22 +436,23 @@ class UserHandler
      */
     function loginUser(Request $request): array
     {
-        $this->validate($request, [
-            'sms_number' => 'required|regex:/^([0-9\s\+\(\)]*)$/|min:10'
-        ]);
+//        $this->validate($request, [
+//            'sms_number' => 'required|regex:/^([0-9\s\+\(\)]*)$/|min:10'
+//        ]);
         $dataUser = self::getDataAccount_CaseLogin($request->sms_number, $request->password);
 
         $mess = "Successfully Login ";
         if (isset($dataUser)) {
-
             $convertedArrayDataUser = json_decode(json_encode($dataUser), true);
             $convertedArrayDataUser['id'] = $dataUser->id;
             $request->session()->put('inforUser', $convertedArrayDataUser);
         } else {
             $mess = "Wrong Phone Number or Password";
         }
-        return ['isLogined' => isset($dataUser),
-            'mess' => $mess];
+        return [
+            'isLogined' => isset($dataUser),
+            'mess' => $mess
+        ];
     }
 
     /**
@@ -466,18 +490,18 @@ class UserHandler
                         "mess" => "Connected SMS"
                     ];
                 } else {
-                    date_default_timezone_set('Asia/Ho_Chi_Minh');
-                    date_default_timezone_get();
                     $uuid_user_info = Str::uuid()->toString();
                     $uuid_user_setting = Str::uuid()->toString();
                     $time = date('Y/m/d H:i:s');
+
                     $inforUser = Session::get('inforUser');
                     $user_id = DB::table('notification_user_info')
                         ->insertGetId([
                             'id' => $uuid_user_info,
                             'phone_number' => $registerSMS['number-SMS'],
                             'password' => $registerSMS['password'],
-                            'displayName' => $registerSMS['displayName']]);
+                            'displayName' => $registerSMS['displayName']
+                        ]);
                     $result_inserted = DB::table('notification_user_settings')->insertGetId([
                         'id' => $uuid_user_setting,
                         'user_id' => $uuid_user_info,
@@ -488,7 +512,8 @@ class UserHandler
                     $textNotification = 'Hello ' . $registerSMS['displayName'] . ', click on this link to see notifications about new users.';
                     $titleSubject = "Notification";
                     DB::table('notification')->insert(
-                        ['type' => self::NOTIFICATION_NEW_REGISTER,
+                        [
+                            'type' => self::NOTIFICATION_NEW_REGISTER,
                             'announce_title' => $titleSubject,
                             'announce_content' => $textNotification,
                             'created_at' => date('Y/m/d H:i:s'),
@@ -497,7 +522,14 @@ class UserHandler
                             'scheduled_at' => null
                         ]
                     );
-                    event(new NewStoreRequestRegistration(self::CHANNEL_SMS, $registerSMS['number-SMS'], "", $textNotification));
+                    event(
+                        new NewStoreRequestRegistration(
+                            self::CHANNEL_SMS,
+                            $registerSMS['number-SMS'],
+                            "",
+                            $textNotification
+                        )
+                    );
                 }
 
                 if (!isset($_SESSION)) {
@@ -510,7 +542,6 @@ class UserHandler
                     "approved" => $verification_check->status == "approved",
                     "mess" => "Connected SMS"
                 ];
-
             } else {
                 return [
                     "approved" => $verification_check->status == "approved",
@@ -526,15 +557,17 @@ class UserHandler
     }
 
     /**
-     * @param String $phone_number
-     * @param String $password
+     * @param string $phone_number
+     * @param string $password
      * @return Model|Builder|null
      */
     function getDataAccount_CaseLogin(string $phone_number, string $password): Model|Builder|null
     {
         $dataAccount = DB::table('notification_user_info')
-            ->where(['phone_number' => $phone_number,
-                'password' => $password])
+            ->where([
+                'phone_number' => $phone_number,
+                'password' => $password
+            ])
             ->first();
         if (isset($dataAccount)) {
             $dataUserSetting = DB::table('notification_user_settings')->
@@ -544,9 +577,8 @@ class UserHandler
                 'address'
             ])->first();
             $dataAccount->address = $dataUserSetting->address;
-        } else {
-
         }
+
         return $dataAccount;
     }
 

@@ -1,4 +1,4 @@
-@extends('Backend.backend-view')
+@extends('admin.backend-view')
 @section('ContentAdmin')
     <style>
         .content-send-notification {
@@ -175,11 +175,19 @@
                     <div id="btn-back-page">Back</div>
                     <div class="section-select-type ">
                         <select class="form-select send-type-select" aria-label="Default select example">
-                            @if($dataTemplate['template_type'] == 'user')
-                                <option value="user">User</option>
+                            @if(isset($listParam))
+                                <option value="0">Please select type</option>
+                                <option value="user" {{ $_REQUEST['templateType'] == 'user' ? 'selected' : '' }}>User
+                                </option>
+                                <option value="store" {{ $_REQUEST['templateType'] == 'store' ? 'selected' : '' }}>
+                                    Store
+                                </option>
                             @else
+                                <option value="0" selected>Please select type</option>
+                                <option value="user">User</option>
                                 <option value="store">Store</option>
                             @endif
+
                         </select>
                     </div>
                     <div class="section-template">
@@ -187,40 +195,35 @@
                             <div class="part-input-text-template">
                                 <div class="field-ipt-text field-title-notification">
                                     <input
-                                        placeholder="Please input name"
-                                        required
-                                        minlength="10"
-                                        maxlength="225"
-                                        contenteditable="true"
-                                        class="ipt-text-notification"
-                                        id="ipt-name-notification"
-                                        value="{{ $dataTemplate['template_name'] }}">
-
+                                            placeholder="Please input name"
+                                            required
+                                            minlength="10"
+                                            maxlength="225"
+                                            contenteditable="true"
+                                            class="ipt-text-notification"
+                                            id="ipt-name-notification">
                                 </div>
 
                                 <div class="field-ipt-text field-title-notification">
                                     <div
-                                        placeholder="Please input title"
-                                        required
-                                        minlength="10"
-                                        maxlength="225"
-                                        contenteditable="true"
-                                        class="ipt-text-notification"
-                                        id="ipt-title-notification">{!! $dataTemplate['template_title'] !!}</div>
+                                            placeholder="Please input title"
+                                            required
+                                            minlength="10"
+                                            maxlength="225"
+                                            contenteditable="true"
+                                            class="ipt-text-notification"
+                                            id="ipt-title-notification"></div>
                                 </div>
+
                                 <div class="field-ipt-text field-content-notification">
                                     <div
-                                        contenteditable="true"
-                                        placeholder="Please input content"
-                                        required
-                                        minlength="100"
-                                        maxlength="200"
-                                        class="ipt-text-notification"
-                                        id="ipt-content-notification">
-                                        @if(!isset($_REQUEST['templateType']) || $_REQUEST['templateType'] == $dataTemplate['template_type'])
-                                            {!! $dataTemplate['template_content'] !!}
-                                        @endif
-                                    </div>
+                                            contenteditable="true"
+                                            placeholder="Please input content"
+                                            required
+                                            minlength="100"
+                                            maxlength="200"
+                                            class="ipt-text-notification"
+                                            id="ipt-content-notification"></div>
                                 </div>
                             </div>
 
@@ -229,7 +232,10 @@
 
                             @if(isset($listParam))
                                 @foreach($listParam as $subListParam)
-                                    <div class="name-param"><button style="padding: 0px;  background: none; color: white;" class="btn param-added">{{ $subListParam->value }}</button></div>
+                                    <div class="name-param">
+                                        <button style="padding: 0px;  background: none; color: white;"
+                                                class="btn param-added">{{ $subListParam->value }}</button>
+                                    </div>
                                 @endforeach
                             @else
                                 <div>Please choose send for user or store.</div>
@@ -237,7 +243,7 @@
 
                         </div>
                         <div class="section-option-btn">
-                            <div data-template-id="{{$dataTemplate['id']}}" id="btn-save-new-template" class="btn btn-primary btn-opt-add-template">
+                            <div id="btn-save-new-template" class="btn btn-primary btn-opt-add-template">
                                 Save
                             </div>
                         </div>
@@ -252,24 +258,10 @@
         @section('script')
             <script>
 
-                // button back
-                let returnNotificationList = document.querySelector('#btn-back-page');
-                returnNotificationList.addEventListener('click', (e) => {
-                    window.location.href = "/admin/template-management";
-                });
 
                 const nameParams = document.querySelectorAll(".name-param")
                 const edt = document.querySelector("#ipt-content-notification")
                 const itn = document.querySelector("#ipt-title-notification")
-                let sendTypeSelect = document.querySelector('.send-type-select')
-
-                // button remove param
-                let btnRemoves = document.querySelectorAll(".param-added .icon-remove")
-                btnRemoves.forEach(btnRemove => {
-                    btnRemove.addEventListener("click", event => {
-                        event.currentTarget.closest(".param-added").remove()
-                    })
-                })
 
                 nameParams.forEach(nameParam => {
                     nameParam.addEventListener("click", event => {
@@ -285,20 +277,12 @@
                         btn.contentEditable = false
                         btn.appendChild(icRemove);
 
-                        if(
-                            range.commonAncestorContainer.parentNode == edt
-                            || range.commonAncestorContainer == edt
-                            || range.commonAncestorContainer.parentNode == itn
-                            || range.commonAncestorContainer == itn
-                            || edt.contains(range.commonAncestorContainer.parentNode)
-                            || edt.contains(range.commonAncestorContainer)
-                            || itn.contains(range.commonAncestorContainer.parentNode)
-                            || itn.contains(range.commonAncestorContainer)
-                        )
-                        {
+                        if (range.commonAncestorContainer.parentNode == edt || range.commonAncestorContainer == edt || range.commonAncestorContainer.parentNode == itn || range.commonAncestorContainer == itn) {
                             range.insertNode(btn);
                         }
-                        console.log(range.commonAncestorContainer)
+                        // edt.innerHTML = edt.innerHTML.trim().replace("\n") + btn.outerHTML
+
+
                         let btnRemoves = document.querySelectorAll(".param-added .icon-remove")
                         btnRemoves.forEach(btnRemove => {
                             btnRemove.addEventListener("click", event => {
@@ -308,10 +292,17 @@
                     })
                 })
 
+                // navigation send type for add template
+                let sendTypeSelect = document.querySelector('.send-type-select')
+                sendTypeSelect.addEventListener('change', () => {
+                    let templateType = sendTypeSelect.options[sendTypeSelect.selectedIndex].getAttribute('value')
+                    if (templateType != 0) {
+                        window.location.href = '/admin/add-new-template-view?templateType=' + templateType;
+                    }
+                })
 
-                // button update
                 let btnSaveNewTemplate = document.querySelector('#btn-save-new-template')
-                btnSaveNewTemplate.addEventListener('click', (event) => {
+                btnSaveNewTemplate.addEventListener('click', (e) => {
 
                     let templateType = sendTypeSelect.options[sendTypeSelect.selectedIndex].getAttribute('value')
                     let templateName = document.querySelector('#ipt-name-notification').value
@@ -319,31 +310,20 @@
                     let templateContent = document.querySelector('#ipt-content-notification').innerHTML
 
 
-
-                    if(templateType == 0)
-                    {
+                    if (templateType == 0) {
                         displayToast('Please select type')
-                    }
-                    else if(templateName.trim() == "")
-                    {
+                    } else if (templateName.trim() == "") {
                         displayToast('Please enter template name')
-                    }
-                    else if(templateTitle.trim() == "")
-                    {
-                        displayToast('Please enter full template title')
-                    }
-                    else if(templateContent.trim() == "")
-                    {
-                        displayToast('Please enter full template content')
-                    } else
-                    {
+                    } else if (templateTitle.trim() == "") {
+                        displayToast('Please enter template title')
+                    } else if (templateContent.trim() == "") {
+                        displayToast('Please enter template content')
+                    } else {
                         let form = new FormData()
                         form.append('templateType', templateType)
                         form.append('templateName', templateName)
                         form.append('templateTitle', templateTitle)
                         form.append('templateContent', templateContent)
-                        form.append('id', event.currentTarget.getAttribute("data-template-id"))
-
 
                         $.ajaxSetup({
                             headers: {
@@ -351,16 +331,16 @@
                             }
                         });
                         $.ajax({
-                            url: '{{URL::to("/admin/update-template")}}',
+                            url: '{{URL::to("/admin/add-template")}}',
                             method: 'post',
                             data: form,
                             contentType: false,
                             processData: false,
                             dataType: 'json',
                             success: function (data) {
-                                document.querySelector('#ipt-title-notification').value = ""
+                                document.querySelector('#ipt-name-notification').value = ""
+                                document.querySelector('#ipt-title-notification').innerHTML = ""
                                 document.querySelector('#ipt-content-notification').innerHTML = ""
-                                location.href = "/admin/template-management";
                                 displayToast('Success!')
                             },
                             error: function () {
@@ -370,6 +350,16 @@
                     }
 
                 })
+
+            </script>
+
+            <script>
+
+                let returnNotificationList = document.querySelector('#btn-back-page');
+                returnNotificationList.addEventListener('click', (e) => {
+                    window.location.href = "/admin/template-management";
+                });
+
 
             </script>
 @endsection

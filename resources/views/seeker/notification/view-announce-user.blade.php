@@ -1,4 +1,4 @@
-@extends('Frontend.home-user')
+@extends('seeker.home-user')
 @section('content')
     <style>
         .page-wrapper .page-header .header-wrapper {
@@ -30,8 +30,8 @@
             border-radius: 50%;
             right: 0;
         }
-        .container-fluid
-        {
+
+        .container-fluid {
             padding: 0px !important !important;
         }
     </style>
@@ -109,7 +109,7 @@
                                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                  stroke-linejoin="round" class="feather feather-airplay m-0">
                                 <path
-                                    d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path>
+                                        d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path>
                                 <polygon points="12 15 17 21 7 21 12 15"></polygon>
                             </svg>
                         </div>
@@ -124,9 +124,9 @@
                     </div></script>
             </div>
         </div>
-            <div class="row"
-                 style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 1rem 0px; background: #f0f1f6"
-            >
+        <div class="row"
+             style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 1rem 0px; background: #f0f1f6"
+        >
             <div class="col-sm-12" style="padding-left: 0px; padding-right: 0px;">
                 <div class="col-lg-12 grid-margin stretch-card">
                     <div class="card scroll-card" style=" height: calc(100vh - 2rem); overflow-y: scroll;">
@@ -194,8 +194,8 @@
                     </div>
                 </div>
             </div>
-    </div>
-    <!-- Container-fluid Ends-->
+        </div>
+        <!-- Container-fluid Ends-->
     </div>
     <!-- footer start-->
 

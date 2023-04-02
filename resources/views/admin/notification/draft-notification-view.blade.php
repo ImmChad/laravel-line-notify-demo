@@ -1,4 +1,4 @@
-@extends('Backend.backend-view')
+@extends('admin.backend-view')
 @section('ContentAdmin')
     <style>
         .widget-joins:after {
@@ -165,14 +165,16 @@
             font-style: italic;
             color: #a927f9;
         }
-        .form-popup
-        {
+
+        .form-popup {
             width: max-content;
         }
-        .faq-body{
+
+        .faq-body {
             max-height: 70vh;
             overflow: auto;
         }
+
         .param-added {
             padding: 5px 10px;
             background: rgba(115, 102, 255, 0.75);
@@ -209,7 +211,7 @@
                             <thead class="thead-dark">
                             </thead>
                             <tbody>
-                            <tr class="template-box" >
+                            <tr class="template-box">
                                 <th scope="row">Notification For</th>
                                 <td>{{ $dataDraft->notification_for }}</td>
                             </tr>
@@ -242,51 +244,59 @@
                             </tbody>
                         </table>
                         <div class="section-list-btn">
-                            <button type="button" class="btn btn-light" id="btn-cancel-notification-case-draft" draft_id="{{ $dataDraft->id }}" >Cancel</button>
-                            <button type="button" class="btn btn-info" id="btn-edit-notification-case-draft" draft_id="{{ $dataDraft->id }}">Edit</button>
-                            <button type="button" class="btn btn-primary" id="btn-send-notification-case-draft" draft_id="{{ $dataDraft->id }}">Send</button>
+                            <button type="button" class="btn btn-light" id="btn-cancel-notification-case-draft"
+                                    draft_id="{{ $dataDraft->id }}">Cancel
+                            </button>
+                            <button type="button" class="btn btn-info" id="btn-edit-notification-case-draft"
+                                    draft_id="{{ $dataDraft->id }}">Edit
+                            </button>
+                            <button type="button" class="btn btn-primary" id="btn-send-notification-case-draft"
+                                    draft_id="{{ $dataDraft->id }}">Send
+                            </button>
                         </div>
                     </div>
 
-                    <div class="col-2 section-preview-notification" style="height: 500px; overflow-y: hidden; box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;">
-                            <style>
-                                @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400);
+                    <div class="col-2 section-preview-notification"
+                         style="height: 500px; overflow-y: hidden; box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;">
+                        <style>
+                            @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400);
 
-                                .container {
-                                    width: 400px;
-                                    padding: 10px;
-                                }
+                            .container {
+                                width: 400px;
+                                padding: 10px;
+                            }
 
-                                .message-blue {
-                                    position: relative;
-                                    padding: 10px;
-                                    background-color: #A8DDFD;
-                                    width: 100%;
-                                    height: max-content;
-                                    text-align: left;
-                                    font: 400 0.9em 'Open Sans', sans-serif;
-                                    border: 1px solid #97C6E3;
-                                    border-radius: 0px 20px 20px 20px;
-                                }
+                            .message-blue {
+                                position: relative;
+                                padding: 10px;
+                                background-color: #A8DDFD;
+                                width: 100%;
+                                height: max-content;
+                                text-align: left;
+                                font: 400 0.9em 'Open Sans', sans-serif;
+                                border: 1px solid #97C6E3;
+                                border-radius: 0px 20px 20px 20px;
+                            }
 
-                                .message-content {
-                                    padding: 0;
-                                    margin: 0;
-                                }
+                            .message-content {
+                                padding: 0;
+                                margin: 0;
+                            }
 
-                            </style>
+                        </style>
 
-                            <div class="container scroll-none" style="height: 450px; overflow-y: scroll">
-                                <div class="message-blue">
-                                    <div id="preview-mess-content-notification" class="message-content">{!! $dataDraft->notification_content !!}</div>
+                        <div class="container scroll-none" style="height: 450px; overflow-y: scroll">
+                            <div class="message-blue">
+                                <div id="preview-mess-content-notification"
+                                     class="message-content">{!! $dataDraft->notification_content !!}</div>
 
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
     @if($dataDraft->notification_for == "user")
         <div class="data-line-table" style="display: none;">
@@ -294,7 +304,7 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        <th scope="col">Nickname </th>
+                        <th scope="col">Nickname</th>
                         <th scope="col">Real name</th>
                         <th scope="col">Line ID</th>
                     </tr>
@@ -317,23 +327,23 @@
         <div class="data-email-table" style="display: none;">
             @if(count($dataDraft->emailUsers) > 0)
                 <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">Nickname </th>
-                    <th scope="col">Real name</th>
-                    <th scope="col">Email address</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach($dataDraft->emailUsers as $sublistUser)
-                    <tr data-id-register=''>
-                        <td>{{ $sublistUser->nickname }}</td>
-                        <td>{{ $sublistUser->realname }}</td>
-                        <td>{{ $sublistUser->emailDecrypted }}</td>
+                    <thead>
+                    <tr>
+                        <th scope="col">Nickname</th>
+                        <th scope="col">Real name</th>
+                        <th scope="col">Email address</th>
                     </tr>
-                @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    @foreach($dataDraft->emailUsers as $sublistUser)
+                        <tr data-id-register=''>
+                            <td>{{ $sublistUser->nickname }}</td>
+                            <td>{{ $sublistUser->realname }}</td>
+                            <td>{{ $sublistUser->emailDecrypted }}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
             @else
                 <h6>No Email user</h6>
             @endif
@@ -342,23 +352,23 @@
         <div class="data-sms-table" style="display: none;">
             @if(count($dataDraft->smsUsers) > 0)
                 <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">Nickname </th>
-                    <th scope="col">Real name</th>
-                    <th scope="col">Phone Number</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach($dataDraft->smsUsers as $sublistUser)
-                    <tr data-id-register=''>
-                        <td>{{ $sublistUser->nickname }}</td>
-                        <td>{{ $sublistUser->realname }}</td>
-                        <td>{{ $sublistUser->phoneNumberDecrypted }}</td>
+                    <thead>
+                    <tr>
+                        <th scope="col">Nickname</th>
+                        <th scope="col">Real name</th>
+                        <th scope="col">Phone Number</th>
                     </tr>
-                @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    @foreach($dataDraft->smsUsers as $sublistUser)
+                        <tr data-id-register=''>
+                            <td>{{ $sublistUser->nickname }}</td>
+                            <td>{{ $sublistUser->realname }}</td>
+                            <td>{{ $sublistUser->phoneNumberDecrypted }}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
             @else
                 <h6>No SMS user</h6>
             @endif
@@ -414,11 +424,11 @@
             @if(count($dataDraft->smsUsers) > 0)
                 <table class="table">
                     <thead>
-                        <tr>
+                    <tr>
 
-                            <th scope="col">Real name</th>
-                            <th scope="col">Phone Number</th>
-                        </tr>
+                        <th scope="col">Real name</th>
+                        <th scope="col">Phone Number</th>
+                    </tr>
                     </thead>
                     <tbody>
                     @foreach($dataDraft->smsUsers as $sublistUser)
@@ -447,17 +457,16 @@
         });
 
         // This function is convert html code to content notification
-        function convertHTMLToContentNotification(htmlTagContent)
-        {
+        function convertHTMLToContentNotification(htmlTagContent) {
             htmlTagContent = htmlTagContent.cloneNode(true)
-            const paramAddedS =  htmlTagContent.querySelectorAll(".param-added");
-            paramAddedS.forEach(paramAdded=>{
+            const paramAddedS = htmlTagContent.querySelectorAll(".param-added");
+            paramAddedS.forEach(paramAdded => {
                 paramAdded.querySelector(".icon-remove").remove()
                 paramAdded.outerHTML = `{${paramAdded.textContent}}`
             })
 
-            const paramBr =  htmlTagContent.querySelectorAll("br");
-            paramBr.forEach(paramBR=>{
+            const paramBr = htmlTagContent.querySelectorAll("br");
+            paramBr.forEach(paramBR => {
                 paramBR.outerHTML = `{br}`
             })
 
@@ -465,7 +474,7 @@
         }
 
         const btnSend = document.querySelector("#btn-send-notification-case-draft");
-        btnSend.addEventListener("click", event =>{
+        btnSend.addEventListener("click", event => {
             var form = new FormData()
             form.append("notificationContent", convertHTMLToContentNotification(document.querySelector("#preview-mess-content-notification")))
             form.append("notificationTitle", convertHTMLToContentNotification(document.querySelector("#notification-title")))
@@ -479,7 +488,7 @@
             $.ajax({
                 url: '{{URL::to("/admin/send-notification")}}',
                 method: 'post',
-                data:form,
+                data: form,
                 contentType: false,
                 processData: false,
                 dataType: 'json',
@@ -495,9 +504,9 @@
         })
 
         const btnCancel = document.querySelector("#btn-cancel-notification-case-draft");
-        btnCancel.addEventListener("click", event =>{
+        btnCancel.addEventListener("click", event => {
             var form = new FormData()
-            form.append("notification_draft_id",event.currentTarget.getAttribute("draft_id"))
+            form.append("notification_draft_id", event.currentTarget.getAttribute("draft_id"))
 
             $.ajaxSetup({
                 headers: {
@@ -507,7 +516,7 @@
             $.ajax({
                 url: '{{URL::to("/admin/cancel-notification-draft")}}',
                 method: 'post',
-                data:form,
+                data: form,
                 contentType: false,
                 processData: false,
                 dataType: 'json',
@@ -523,7 +532,7 @@
         })
 
         const btnEdit = document.querySelector("#btn-edit-notification-case-draft");
-        btnEdit.addEventListener("click", event =>{
+        btnEdit.addEventListener("click", event => {
             location.href = `/admin/update-notification-draft/${btnEdit.getAttribute("draft_id")}/{{$dataDraft->notification_for}}`
         })
 
@@ -534,10 +543,10 @@
         let closePopup = parentFormPopup.querySelector(".close-popup")
 
 
-        closePopup.addEventListener("click", eventClose =>{
+        closePopup.addEventListener("click", eventClose => {
             let tmpParent = eventClose.currentTarget.closest(".parent-form-popup")
             tmpParent.style.display = "none"
-            tmpParent.querySelector(".faq-form").innerHTML=``
+            tmpParent.querySelector(".faq-form").innerHTML = ``
         })
 
         let trUserSms = document.querySelector("#tr-user-sms")

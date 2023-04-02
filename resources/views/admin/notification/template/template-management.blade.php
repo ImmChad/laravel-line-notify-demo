@@ -1,4 +1,4 @@
-@extends('Backend.backend-view')
+@extends('admin.notification.backend-view')
 @section('ContentAdmin')
     <style>
         .widget-joins .media .media-body svg {
@@ -50,11 +50,11 @@
                                             <option value="0" {{isset($_REQUEST['templateType'])?'selected':''}}>All
                                             </option>
                                             <option
-                                                value="user" {{isset($_REQUEST['templateType']) && $_REQUEST['templateType']=="user" ?'selected':''}}>
+                                                    value="user" {{isset($_REQUEST['templateType']) && $_REQUEST['templateType']=="user" ?'selected':''}}>
                                                 User
                                             </option>
                                             <option
-                                                value="store" {{isset($_REQUEST['templateType']) && $_REQUEST['templateType']=="store" ?'selected':''}}>
+                                                    value="store" {{isset($_REQUEST['templateType']) && $_REQUEST['templateType']=="store" ?'selected':''}}>
                                                 Store
                                             </option>
                                         </select>

@@ -19,7 +19,7 @@ class Notification extends Model
         'is_sent',
         'is_scheduled',
         'scheduled_at',
-        'deleted_at'
+        'deleted_at',
     ];
     protected $primaryKey = 'id';
     protected $table = 'notification';

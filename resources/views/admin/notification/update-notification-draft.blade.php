@@ -1,4 +1,4 @@
-@extends('Backend.backend-view')
+@extends('admin.backend-view')
 @section('ContentAdmin')
     <style>
 
@@ -119,6 +119,7 @@
             padding: 10px;
             margin-bottom: 10px;
         }
+
         .param-added {
             padding: 5px 10px;
             background: rgba(115, 102, 255, 0.75);
@@ -205,7 +206,7 @@
                          contenteditable="true"
                          class="ipt-text-notification"
                          id="ipt-title-notification"
-                        >
+                    >
                         {!! $detailTemplate->template_content !!}
                     </div>
 
@@ -267,11 +268,15 @@
                     </div>
 
 
-                    <div class="section-params" style="padding: 1rem; width: 100%; display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
+                    <div class="section-params"
+                         style="padding: 1rem; width: 100%; display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
 
                         @if(isset($listParam))
                             @foreach($listParam as $subListParam)
-                                <div class="name-param" style=" margin: 0 0.2rem;"><button style="padding: 0px;  background: none; color: white;" class="btn param-added">{{ $subListParam->value }}</button></div>
+                                <div class="name-param" style=" margin: 0 0.2rem;">
+                                    <button style="padding: 0px;  background: none; color: white;"
+                                            class="btn param-added">{{ $subListParam->value }}</button>
+                                </div>
                             @endforeach
                         @else
                             <div>Please choose send for user or store.</div>
@@ -289,7 +294,7 @@
                                             <option regionId="0" selected>Please select region</option>
                                             @foreach($dataRegion as $subDataRegion)
                                                 <option
-                                                    regionId="{{ $subDataRegion->id }}">{{ $subDataRegion->region_name }}
+                                                        regionId="{{ $subDataRegion->id }}">{{ $subDataRegion->region_name }}
                                                     - {{ $subDataRegion->region_name_jp }}</option>
                                             @endforeach
                                         @else
@@ -314,7 +319,7 @@
                                             <option industryId="0" selected>Please select industry</option>
                                             @foreach($dataIndustry as $subDataIndustry)
                                                 <option
-                                                    industryId="{{ $subDataIndustry->id }}">{{ $subDataIndustry->industry_name }}
+                                                        industryId="{{ $subDataIndustry->id }}">{{ $subDataIndustry->industry_name }}
                                                     - {{ $subDataIndustry->industry_name_jp }}</option>
                                             @endforeach
                                         @else
@@ -349,20 +354,20 @@
                             <div class="col-md-3"></div>
                             <div class="col-md-3">
                                 <div
-                                    class="form-check form-check-inline radio radio-dark btn btn-outline-primary btn-tick-send">
-                                    <input  class="form-check-input radio-send-with-schedule" type="radio" name="radio1"
+                                        class="form-check form-check-inline radio radio-dark btn btn-outline-primary btn-tick-send">
+                                    <input class="form-check-input radio-send-with-schedule" type="radio" name="radio1"
                                            id="radio1"
-                                            value="scheduled">
+                                           value="scheduled">
                                     <label for="radio1" class="form-check-label mb-0" style="margin: 0;">Send with
                                         schedule</label>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div
-                                    class="form-check form-check-inline radio radio-dark btn btn-outline-primary btn-tick-send">
+                                        class="form-check form-check-inline radio radio-dark btn btn-outline-primary btn-tick-send">
                                     <input checked class="form-check-input radio-send-now" type="radio" name="radio1"
                                            id="radio2"
-                                           value="option1" >
+                                           value="option1">
                                     <label for="radio2" class="form-check-label mb-0" style="margin: 0;">Send
                                         now</label>
                                 </div>
@@ -372,7 +377,9 @@
                             <div class="col-md-3"></div>
                             <div class="col-md-3"></div>
                             <div class="col-md-3">
-                                <input style="display: none" class="form-control digits ipt-time-schedule" id="example-datetime-local-input" type="datetime-local"  data-bs-original-title="" title="">
+                                <input style="display: none" class="form-control digits ipt-time-schedule"
+                                       id="example-datetime-local-input" type="datetime-local" data-bs-original-title=""
+                                       title="">
                             </div>
                             <div class="col-md-3">
                                 <button class="btn btn-outline-primary btn-send">
@@ -395,20 +402,18 @@
 
 @section('script')
     <script>
-        const iptTimeScheduled= document.querySelector(".ipt-time-schedule")
+        const iptTimeScheduled = document.querySelector(".ipt-time-schedule")
         const radioSchedule = document.querySelector(".radio-send-with-schedule")
-        radioSchedule.addEventListener("change",event =>{
+        radioSchedule.addEventListener("change", event => {
             console.log(event.currentTarget.checked)
 
-            if(event.currentTarget.checked)
-            {
+            if (event.currentTarget.checked) {
                 iptTimeScheduled.style.display = "block"
             }
         })
         const radioNow = document.querySelector(".radio-send-now")
-        radioNow.addEventListener("change",event => {
-            if(event.currentTarget.checked = "scheduled")
-            {
+        radioNow.addEventListener("change", event => {
+            if (event.currentTarget.checked = "scheduled") {
                 iptTimeScheduled.style.display = "none"
             }
         })
@@ -442,7 +447,7 @@
                 btn.contentEditable = false
                 btn.appendChild(icRemove);
 
-                if(
+                if (
                     range.commonAncestorContainer.parentNode == edt
                     || range.commonAncestorContainer == edt
                     || range.commonAncestorContainer.parentNode == itn
@@ -451,8 +456,7 @@
                     || edt.contains(range.commonAncestorContainer)
                     || itn.contains(range.commonAncestorContainer.parentNode)
                     || itn.contains(range.commonAncestorContainer)
-                )
-                {
+                ) {
                     range.insertNode(btn);
                 }
 
@@ -565,24 +569,16 @@
             let diffInSeconds = "";
 
 
-            if(announceFor == "null")
-            {
+            if (announceFor == "null") {
                 displayToast('Please select type')
-            }
-            else if(announceTitle.trim() == "")
-            {
+            } else if (announceTitle.trim() == "") {
                 displayToast('Please enter full announce title')
-            }
-            else if(announceContent.trim() == "")
-            {
+            } else if (announceContent.trim() == "") {
                 displayToast('Please enter full announce content')
-            }
-            else
-            {
+            } else {
 
-                let getSchedule =  document.querySelector('.radio-send-with-schedule:checked')
-                if(getSchedule != null)
-                {
+                let getSchedule = document.querySelector('.radio-send-with-schedule:checked')
+                if (getSchedule != null) {
                     const now = new Date();
                     const formattedDate = new Intl.DateTimeFormat('en-US', {
                         year: 'numeric',
@@ -604,7 +600,7 @@
 
                     newDate = dateChoose + " " + newHour + ":" + minuteChoose + ":" + secondChoose;
 
-                    if(created_at.trim() != "") {
+                    if (created_at.trim() != "") {
                         const date1 = new Date(newDate);
                         const date2 = new Date(created_at);
                         diffInSeconds = (date2 - date1) / 1000;
@@ -612,23 +608,18 @@
                         diffInSeconds = 0;
                     }
 
-                }
-                else
-                {
+                } else {
                     diffInSeconds = 0;
                 }
 
-                if(diffInSeconds < 0)
-                {
+                if (diffInSeconds < 0) {
                     displayToast("Can't enter this date in the past to set the timer!")
-                }
-                else {
-                    if(announceTypeFor == 1)
-                    {
+                } else {
+                    if (announceTypeFor == 1) {
                         let areaId = "0"
                         let industryId = "0"
 
-                        var form  = new FormData();
+                        var form = new FormData();
                         form.append('message', announceContent);
                         form.append('title', announceTitle);
                         form.append('announceFor', announceFor);
@@ -661,9 +652,7 @@
                                 displayToast('Can not add data!');
                             }
                         })
-                    }
-                    else if (announceTypeFor == 2)
-                    {
+                    } else if (announceTypeFor == 2) {
                         let areaSelect = document.querySelector('.area-select')
                         let industrySelect = document.querySelector('.industry-select')
 
@@ -671,7 +660,7 @@
                         let industryId = industrySelect.options[industrySelect.selectedIndex].getAttribute('industryid')
 
 
-                        var form  = new FormData();
+                        var form = new FormData();
                         form.append('message', announceContent);
                         form.append('title', announceTitle);
                         form.append('announceFor', announceFor);
@@ -697,7 +686,7 @@
                             dataType: 'json',
                             success: function (data) {
 
-                               window.location.href = "/admin/send-notification-view/3?messToast=Send Success!";
+                                window.location.href = "/admin/send-notification-view/3?messToast=Send Success!";
 
                             },
                             error: function () {
@@ -706,9 +695,7 @@
                         })
 
 
-
-                    }
-                    else {
+                    } else {
                         displayToast('Please select send for')
                     }
                 }

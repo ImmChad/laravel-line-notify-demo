@@ -1,4 +1,4 @@
-@extends('Backend.backend-view')
+@extends('admin.backend-view')
 @section('ContentAdmin')
     <style>
         .content-send-notification {
@@ -193,13 +193,13 @@
 
                     <div class="field-ipt-text field-title-notification">
                         <div
-                            placeholder="Please Notification title"
-                            required=""
-                            minlength="10"
-                            maxlength="255"
-                            contenteditable="true"
-                            class="ipt-text-notification"
-                            id="ipt-title-notification">
+                                placeholder="Please Notification title"
+                                required=""
+                                minlength="10"
+                                maxlength="255"
+                                contenteditable="true"
+                                class="ipt-text-notification"
+                                id="ipt-title-notification">
                             @if(isset($detailTemplate))
                                 {!! $detailTemplate->template_title !!}
                             @else
@@ -223,11 +223,15 @@
 
                     </div>
 
-                    <div class="section-params" style="padding: 1rem; width: 100%; display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
+                    <div class="section-params"
+                         style="padding: 1rem; width: 100%; display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
 
                         @if(isset($listParam))
                             @foreach($listParam as $subListParam)
-                                <div class="name-param" style=" margin: 0 0.2rem;"><button style="padding: 0px;  background: none; color: white;" class="btn param-added">{{ $subListParam->value }}</button></div>
+                                <div class="name-param" style=" margin: 0 0.2rem;">
+                                    <button style="padding: 0px;  background: none; color: white;"
+                                            class="btn param-added">{{ $subListParam->value }}</button>
+                                </div>
                             @endforeach
                         @else
                             <div>Please choose send for user or store.</div>
@@ -247,11 +251,12 @@
                                                 @if($regionId == $subDataRegion->id)
                                                     <option regionId="0">Please select region</option>
                                                     <option
-                                                        regionId="{{ $subDataRegion->id }}" selected>{{ $subDataRegion->region_name }}
+                                                            regionId="{{ $subDataRegion->id }}"
+                                                            selected>{{ $subDataRegion->region_name }}
                                                         - {{ $subDataRegion->region_name_jp }}</option>
                                                 @else
                                                     <option
-                                                        regionId="{{ $subDataRegion->id }}">{{ $subDataRegion->region_name }}
+                                                            regionId="{{ $subDataRegion->id }}">{{ $subDataRegion->region_name }}
                                                         - {{ $subDataRegion->region_name_jp }}</option>
                                                 @endif
                                             @endforeach
@@ -259,7 +264,7 @@
                                             <option regionId="0" selected>Please select region</option>
                                             @foreach($dataRegion as $subDataRegion)
                                                 <option
-                                                    regionId="{{ $subDataRegion->id }}" >{{ $subDataRegion->region_name }}
+                                                        regionId="{{ $subDataRegion->id }}">{{ $subDataRegion->region_name }}
                                                     - {{ $subDataRegion->region_name_jp }}</option>
                                             @endforeach
                                         @endif
@@ -276,10 +281,11 @@
                                             @foreach($dataArea as $subDataArea)
                                                 @if($dataNotification->area_id == $subDataArea->id)
                                                     <option
-                                                        areaId="{{ $subDataArea->id }}" selected>{{ $subDataArea->area_name }}</option>
+                                                            areaId="{{ $subDataArea->id }}"
+                                                            selected>{{ $subDataArea->area_name }}</option>
                                                 @else
                                                     <option
-                                                        areaId="{{ $subDataArea->id }}">{{ $subDataArea->area_name }}</option>
+                                                            areaId="{{ $subDataArea->id }}">{{ $subDataArea->area_name }}</option>
                                                 @endif
                                             @endforeach
                                         @else
@@ -296,11 +302,12 @@
                                             @foreach($dataIndustry as $subDataIndustry)
                                                 @if($dataNotification->industry_id == $subDataIndustry->id)
                                                     <option
-                                                        industryId="{{ $subDataIndustry->id }}" selected>{{ $subDataIndustry->industry_name }}
+                                                            industryId="{{ $subDataIndustry->id }}"
+                                                            selected>{{ $subDataIndustry->industry_name }}
                                                         - {{ $subDataIndustry->industry_name_jp }}</option>
                                                 @else
                                                     <option
-                                                        industryId="{{ $subDataIndustry->id }}">{{ $subDataIndustry->industry_name }}
+                                                            industryId="{{ $subDataIndustry->id }}">{{ $subDataIndustry->industry_name }}
                                                         - {{ $subDataIndustry->industry_name_jp }}</option>
                                                 @endif
 
@@ -309,7 +316,7 @@
                                             <option industryId="0" selected>Please select industry</option>
                                             @foreach($dataIndustry as $subDataIndustry)
                                                 <option
-                                                    industryId="{{ $subDataIndustry->id }}">{{ $subDataIndustry->industry_name }}
+                                                        industryId="{{ $subDataIndustry->id }}">{{ $subDataIndustry->industry_name }}
                                                     - {{ $subDataIndustry->industry_name_jp }}</option>
                                             @endforeach
                                         @endif
@@ -323,11 +330,15 @@
                                             style="width: 100%;">
 
                                         @if($dataNotification->notification_for == "user")
-                                            <option value="1" >All user</option>
-                                            <option value="2" {{ $dataNotification->area_id > 0 || $dataNotification->industry_id > 0 ? "selected" : ""  }}>User narrow down selection from area</option>
+                                            <option value="1">All user</option>
+                                            <option value="2" {{ $dataNotification->area_id > 0 || $dataNotification->industry_id > 0 ? "selected" : ""  }}>
+                                                User narrow down selection from area
+                                            </option>
                                         @elseif($dataNotification->notification_for == "store")
                                             <option value="1">All store</option>
-                                            <option value="2" {{ $dataNotification->area_id > 0 || $dataNotification->industry_id > 0 ? "selected" : ""  }}>Store narrow down selection from area</option>
+                                            <option value="2" {{ $dataNotification->area_id > 0 || $dataNotification->industry_id > 0 ? "selected" : ""  }}>
+                                                Store narrow down selection from area
+                                            </option>
                                         @else
                                             <option value="0" selected>Null</option>
                                         @endif
@@ -386,7 +397,7 @@
                 btn.contentEditable = false
                 btn.appendChild(icRemove);
 
-                if(
+                if (
                     range.commonAncestorContainer.parentNode == edt
                     || range.commonAncestorContainer == edt
                     || range.commonAncestorContainer.parentNode == itn
@@ -395,8 +406,7 @@
                     || edt.contains(range.commonAncestorContainer)
                     || itn.contains(range.commonAncestorContainer.parentNode)
                     || itn.contains(range.commonAncestorContainer)
-                )
-                {
+                ) {
                     range.insertNode(btn);
                 }
 
@@ -489,33 +499,25 @@
             let getNotificationId = document.querySelector('#getNotificationId').value
 
 
-            if(announceFor == "null")
-            {
+            if (announceFor == "null") {
                 displayToast('Please select type')
-            }
-            else if(announceTitle.trim() == "")
-            {
+            } else if (announceTitle.trim() == "") {
                 displayToast('Please enter full announce title')
-            }
-            else if(announceContent.trim() == "")
-            {
+            } else if (announceContent.trim() == "") {
                 displayToast('Please enter full announce content')
-            }
-            else
-            {
+            } else {
 
-                if(announceTypeFor == 1)
-                {
+                if (announceTypeFor == 1) {
                     let areaId = "0"
                     let industryId = "0"
 
-                    var form  = new FormData();
+                    var form = new FormData();
                     form.append('getDraftId', getDraftId);
                     form.append('getNotificationId', getNotificationId);
                     form.append('message', announceContent);
                     form.append('title', announceTitle);
                     form.append('notificationTitle', convertHTMLToContentNotification(document.querySelector("#ipt-title-notification")))
-                    form.append('notificationContent',  convertHTMLToContentNotification(document.querySelector("#ipt-content-notification")));
+                    form.append('notificationContent', convertHTMLToContentNotification(document.querySelector("#ipt-content-notification")));
                     form.append('areaId', areaId);
                     form.append('industryId', industryId);
                     form.append('type_notification', "2");
@@ -540,9 +542,7 @@
                             displayToast('Can not add data!');
                         }
                     })
-                }
-                else if (announceTypeFor == 2)
-                {
+                } else if (announceTypeFor == 2) {
                     let areaSelect = document.querySelector('.area-select')
                     let industrySelect = document.querySelector('.industry-select')
 
@@ -550,13 +550,13 @@
                     let industryId = industrySelect.options[industrySelect.selectedIndex].getAttribute('industryid')
 
 
-                    var form  = new FormData();
+                    var form = new FormData();
                     form.append('getDraftId', getDraftId);
                     form.append('getNotificationId', getNotificationId);
                     form.append('message', announceContent);
                     form.append('title', announceTitle);
                     form.append('notificationTitle', convertHTMLToContentNotification(document.querySelector("#ipt-title-notification")))
-                    form.append('notificationContent',  convertHTMLToContentNotification(document.querySelector("#ipt-content-notification")));
+                    form.append('notificationContent', convertHTMLToContentNotification(document.querySelector("#ipt-content-notification")));
                     form.append('announceFor', announceFor);
                     form.append('areaId', areaId);
                     form.append('industryId', industryId);
@@ -583,8 +583,7 @@
                             displayToast('Can not add data!');
                         }
                     })
-                }
-                else {
+                } else {
                     displayToast('Please select send for')
                 }
 
@@ -594,17 +593,16 @@
 
 
         // This function is convert html code to content notification
-        function convertHTMLToContentNotification(htmlTagContent)
-        {
+        function convertHTMLToContentNotification(htmlTagContent) {
             htmlTagContent = htmlTagContent.cloneNode(true)
-            const paramAddedS =  htmlTagContent.querySelectorAll(".param-added");
-            paramAddedS.forEach(paramAdded=>{
+            const paramAddedS = htmlTagContent.querySelectorAll(".param-added");
+            paramAddedS.forEach(paramAdded => {
                 paramAdded.querySelector(".icon-remove").remove()
                 paramAdded.outerHTML = `{${paramAdded.textContent}}`
             })
 
-            const paramBr =  htmlTagContent.querySelectorAll("br");
-            paramBr.forEach(paramBR=>{
+            const paramBr = htmlTagContent.querySelectorAll("br");
+            paramBr.forEach(paramBR => {
                 paramBR.outerHTML = `{br}`
             })
 

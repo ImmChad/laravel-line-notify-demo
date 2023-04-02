@@ -33,8 +33,6 @@ class TriggerForNewNotificationFromAdminListener implements ShouldQueue
      */
     public function handle(NewNotificationFromAdminEvent $event): void
     {
-        date_default_timezone_set('Asia/Ho_Chi_Minh');
-
         $data_notification = DB::table('notification')->where([
             'id' => $event->notification_id
         ])->first();
