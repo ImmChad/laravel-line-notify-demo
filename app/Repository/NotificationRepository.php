@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use JetBrains\PhpStorm\NoReturn;
+use PhpParser\Node\Scalar\String_;
 use stdClass;
 use function Webmozart\Assert\Tests\StaticAnalysis\object;
 
@@ -57,29 +58,30 @@ class NotificationRepository
     }
 
     /**
+     * @param String $id
      * @return Collection
      */
-    public function listConnectLine(): Collection
+    public function listConnectLine(String $id): Collection
     {
-        return NotificationUserSettings::where(['notification_channel_id' => UserController::CHANNEL_LINE])
-            ->get(
-                array(
-                    'id',
-                    'user_id',
-                    'notification_channel_id',
-                    'created_at',
-                    'address'
-                )
-            );
+        return DB::table('notification_user_line')->where('user_id', $id)->get();
+    }
+
+    /**
+     * @param String $userId
+     * @return Collection
+     */
+    public function getSeekerNameByUserId(String $userId) : Collection
+    {
+        return DB::table('seeker')->where(['user_id' => $userId])->get();
     }
 
     /**
      * @param String $userId
      * @return String
      */
-    public function getUserNameByUserId(String $userId) : String
+    public function getStoreNameByUserId(String $userId) : Collection
     {
-        return NotificationUserInfo::where(['id' => $userId])->get()[0]->displayName;
+        return DB::table('store')->where(['user_id' => $userId])->get();
     }
 
     /**
@@ -186,7 +188,6 @@ class NotificationRepository
      * @param object $request
      * @return int
      */
-
     function updateNotificationForListUser(object $request): int
     {
         return Notification::where('id', $request->announce_id)
@@ -195,7 +196,6 @@ class NotificationRepository
                 'announce_content' => $request->message
             ]);
     }
-
 
     /**
      * @param int $status
@@ -582,7 +582,6 @@ class NotificationRepository
                 $dataDraft->emailUsers = self::getStoreNotLineHasMailWithAreaIDIndustryIDCreatedAt($dataDraft->area_id, $dataDraft->industry_id, $dataDraft->created_at);
                 $dataDraft->smsUsers = self::getStoreOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($dataDraft->area_id, $dataDraft->industry_id, $dataDraft->created_at);
             }
-//            dd($dataDraft);
         }
 
 
@@ -664,28 +663,37 @@ class NotificationRepository
                 ->whereRaw("user.id = store.user_id")
                 ->distinct()
                 ->get();
-//        dd(\DB::getQueryLog());
         return $stores->map(function ($store)
         {
-
-            $store->lineId = self::getLineIdWithUserId($store->id);
+            $userId = self::getUserIdByStoreId($store->id);
+            $store->lineId = self::getLineIdWithUserId($userId->user_id);
             $notification = new NotificationService($this);
             return $store;
         });
     }
+
+    /**
+     * @param String $storeId
+     * @return Collection|stdClass|array
+     */
+    public function getUserIdByStoreId(String $storeId) : Collection|stdClass|array
+    {
+        return DB::table('store')->where('id', $storeId)->get()->first();
+    }
+
     public function getLineIdWithUserId(String $userId)
     {
-            $dataLine = DB::table("notification_user_line")->where("user_id",$userId)->get("line_id")->first();
+            $dataLine = DB::table("notification_user_line")->where("user_id", $userId)->get("line_id")->first();
             if(isset($dataLine))
             {
                 return $dataLine->line_id;
             }
             return null;
-
     }
+
     public function getStoreNotLineHasMailWithAreaIDIndustryIDCreatedAt(int $areaId, int $industryId, String $created_at): Collection
     {
-        $allUserLine = self::getAllUserIdUserLine()   ;
+        $allUserLine = self::getAllUserIdUserLine();
         $stores =
             DB::table(DB::raw('user, store'))
                 ->select(DB::raw('store.id, store.store_name, store.phone_number, store.mail_address'))
@@ -707,6 +715,7 @@ class NotificationRepository
                 ->whereNotIn('user.id',$allUserLine)
                 ->distinct()
                 ->get();
+
         return $stores->map(function ($store) use ($industryId, $areaId) {
             $store->emailDecrypted = Crypt::decryptString($store->mail_address);
 
@@ -750,7 +759,6 @@ class NotificationRepository
     {
         return DB::table('seeker')->where(['user_id'=>$userId])->get()->first();
     }
-
     /**
      * @param int $areaId
      * @param int $industryId
@@ -801,7 +809,12 @@ class NotificationRepository
         });
     }
 
-
+    /**
+     * @param int $areaId
+     * @param int $industryId
+     * @param String $created_at
+     * @return mixed
+     */
     public function getSeekerNotLineHasMailWithAreaIDIndustryIDCreatedAt(int $areaId, int $industryId, String $created_at)
     {
         $allUserLine = self::getAllUserIdUserLine()   ;
@@ -849,6 +862,12 @@ class NotificationRepository
         });
     }
 
+    /**
+     * @param int $areaId
+     * @param $industryId
+     * @param String $created_at
+     * @return mixed
+     */
     public function getSeekerOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt(int $areaId, $industryId, String $created_at)
     {
         $allUserLine = self::getAllUserIdUserLine()   ;
@@ -892,6 +911,16 @@ class NotificationRepository
             return $seeker;
         });
     }
+
+
+    /**
+     * @return Collection
+     */
+    public function getAllUser() : Collection
+    {
+        return DB::table('user')->get();
+    }
+
     /**
      * @return Collection
      */
@@ -957,20 +986,6 @@ class NotificationRepository
                     'id',
                     'industry_name',
                     'industry_name_jp'
-                )
-            );
-    }
-
-    /**
-     * @return Collection
-     */
-    public function getStore() : Collection
-    {
-        return DB::table('static_store')
-            ->get(
-                array(
-                    'id',
-                    'store_name'
                 )
             );
     }

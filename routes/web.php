@@ -52,6 +52,8 @@ Route::get('authorized/google/callback', [ConnectGmailController::class, 'handle
 // Test Send Mess Twillio
 Route::post('test/send-mess-twilio', [NotificationController::class, 'sendMessTwilio']);
 
+
+
 // admin
 Route::get('/admin', [NotificationController::class, 'loginAdmin']);
 Route::post('/admin/login', [NotificationController::class, 'handleSubmitLogin']);
@@ -90,10 +92,10 @@ Route::group(array('prefix' => '/admin','middleware'=>'checkAdminLogin'), functi
     Route::get('/add-new-template-view', [NotificationController::class, 'showAddNewTemplateView'])->name('template-management.add_get');
     Route::post('/add-template', [NotificationController::class, 'reqAddNewTemplate']);
 
-
     Route::get('/update-template-view/{templateId}', [NotificationController::class, 'showUpdateTemplateView'])->name('template-management');
     Route::post('/update-template', [NotificationController::class, 'reqUpdateNewTemplate']);
-//    link draft list
+
+    //    link draft list
     Route::get('/update-notification-draft/{notificationDraftId}/{notificationSender?}/{notificationTemplate?}', [NotificationController::class, 'renderUpdateNotificationDraft']);
     Route::post('/update-notification-draft', [NotificationController::class, 'updateNotificationDraft']);
     Route::post('/cancel-notification-draft', [NotificationController::class, 'cancelNotificationDraft']);

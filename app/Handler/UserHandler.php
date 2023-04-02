@@ -54,10 +54,10 @@ class UserHandler
 
     /**
      * @param Request $request
-     * @return View|Application|Factory|\Illuminate\Contracts\Foundation\Application
+     * @return View|Application|Factory
      */
 
-    public function index(Request $request): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
+    public function index(Request $request): View|Application|Factory
     {
         $inforUser = Session::get('inforUser');
         $authUrl = $this->lineService->getLoginBaseUrl();
@@ -115,12 +115,30 @@ class UserHandler
         return Redirect::to('/user');
     }
 
-    public function viewLoginUser(Request $request): View|Application|Factory|RedirectResponse|\Illuminate\Contracts\Foundation\Application
+    /**
+     * @param Request $request
+     * @return View|Application|Factory|RedirectResponse
+     */
+    public function viewLoginUser(Request $request): View|Application|Factory|RedirectResponse
     {
-        $user =  DB::table("user")->where('id','ed09a60e-6beb-4bb7-84e3-bbb07b830e3a')->first();
+        $user =  DB::table("user")->where('id','ef84e2d0-b5f9-4df6-bee4-6d9bc79bb019')->first();
         $user = json_decode(json_encode($user),true);
-        $user['email'] = Crypt::decryptString($user['email']);
-        $user['phone_number_landline'] = Crypt::decryptString($user['phone_number_landline']);
+        if($user['email'] != "" || $user['email'] != null)
+        {
+            $user['email'] = Crypt::decryptString($user['email']);
+
+        }
+        else {
+            $user['email'] = "";
+        }
+
+        if($user['phone_number_landline'] != "" || $user['phone_number_landline'] != null)
+        {
+            $user['phone_number_landline'] = Crypt::decryptString($user['phone_number_landline']);
+        }
+        else {
+            $user['phone_number_landline'] = "";
+        }
 
         $request->session()->put("inforUser",$user);
 
@@ -134,9 +152,9 @@ class UserHandler
 
 
     /**
-     * @return View|Application|Factory|\Illuminate\Contracts\Foundation\Application|RedirectResponse
+     * @return View|Application|Factory|RedirectResponse
      */
-    public function viewConnectSMS(): View|Application|Factory|\Illuminate\Contracts\Foundation\Application|RedirectResponse
+    public function viewConnectSMS(): View|Application|Factory|RedirectResponse
     {
         $inforUser = Session::get('inforUser');
         if ($inforUser) {
@@ -196,12 +214,12 @@ class UserHandler
     /**
      * @param Request $request
      * @param $id
-     * @return View|Application|Factory|\Illuminate\Contracts\Foundation\Application
+     * @return View|Application|Factory
      */
-    function detailNotification(Request $request, $id): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
+    function detailNotification(Request $request, $id): View|Application|Factory
     {
         $inforUser = Session::get('inforUser');
-        $notification = $this->userRepository->getNotificationBeforeUserCreatedAtWithId($id, $inforUser->created_at);
+        $notification = $this->userRepository->getNotificationBeforeUserCreatedAtWithId($id, $inforUser['created_at']);
 
         $this->userRepository->insertNotificationRead($id, $inforUser['id']);
         $type_notification = $this->notificationRepository->getTypeNameFromTypeNotification($notification->type)->first();

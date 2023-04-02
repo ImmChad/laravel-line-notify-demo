@@ -63,10 +63,10 @@ class UserRepository
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         $time = date('Y/m/d H:i:s');
         $id = Str::uuid()->toString();
-        $dataUserLine = DB::table("notification_user_line")->where("user_id",$userId)->first();
+        $dataUserLine = DB::table("notification_user_line")->where("user_id", $userId)->first();
         if(!isset($dataUserLine))
         {
-            return  DB::table("notification_user_line")->insert(
+            return DB::table("notification_user_line")->insert(
                 [
                     "id"=>$id,
                     "user_id"=>$userId,
@@ -84,18 +84,18 @@ class UserRepository
 
     public function updateEmailUserCaseConnectMail(String $id, String $email)
     {
-        return DB::table("user")->where("id",$id)->update(
+        return DB::table("user")->where("id", $id)->update(
             [
-                "phone_number_landline"=>Crypt::encryptString($email)
+                "email"=>Crypt::encryptString($email)
             ]
         );
     }
 
     public function updateEmailStoreCaseConnectMail(String $id, String $email)
     {
-        return DB::table("store")->where("user_id",$id)->update(
+        return DB::table("store")->where("user_id", $id)->update(
             [
-                "phone_number"=>Crypt::encryptString("+84339601517")
+                "mail_address"=>Crypt::encryptString($email)
             ]
         );
     }

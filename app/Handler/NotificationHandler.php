@@ -99,16 +99,58 @@ class NotificationHandler
      */
     public function getRegisterLineList(): array
     {
-        $data = $this->notificationRepository->listConnectLine();
-        $List = [];
+        $listUser = $this->notificationRepository->getAllUser();
 
-        foreach ($data as $subData) {
-            $displayName = $this->notificationRepository->getUserNameByUserId($subData->user_id);
-            $subData->displayName = $displayName;
-            $List[count($List)] = $subData;
+
+
+
+        $data = [];
+        foreach ($listUser as $subListUser)
+        {
+
+            $line_id = $this->notificationRepository->listConnectLine($subListUser->id);
+
+            if(count($line_id) > 0)
+            {
+                $subListUser->line_id = $line_id[0]->line_id;
+                $data[count($data)] = $subListUser;
+            }
         }
 
-        return $List;
+        foreach ($data as $subData)
+        {
+            if($subData->role == 2)
+            {
+                $getNameSeeker = $this->notificationRepository->getSeekerNameByUserId($subData->id);
+                if(count($getNameSeeker) > 0)
+                {
+                    $subData->typeRole = 2;
+                    $subData->name = $getNameSeeker[0]->nickname;
+                }
+                else
+                {
+                    $subData->typeRole = 2;
+                    $subData->name = "No has name";
+                }
+
+            }
+            else if($subData->role == 3)
+            {
+                $getNameStore = $this->notificationRepository->getStoreNameByUserId($subData->id);
+                if(count($getNameStore) > 0)
+                {
+                    $subData->typeRole = 3;
+                    $subData->name = $getNameStore[0]->store_name;
+                }
+                else
+                {
+                    $subData->typeRole = 3;
+                    $subData->name = "No has name";
+                }
+            }
+        }
+
+        return $data;
     }
 
     /**
