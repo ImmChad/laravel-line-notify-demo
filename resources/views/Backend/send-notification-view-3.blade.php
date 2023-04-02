@@ -69,6 +69,7 @@
             height: 100%;
             min-height: 300px;
             padding: 30px;
+            padding-top: 60px;
             resize: none;
             border-radius: .5rem;
             border: 3px solid var(--theme-deafult);

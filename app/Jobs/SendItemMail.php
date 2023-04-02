@@ -44,7 +44,7 @@ class SendItemMail implements ShouldQueue
         {
             Mail::send([], [], function ($message) use ($email, $titleSubject, $textNotification) {
                 $message->from(env('MAIL_FROM_ADDRESS'), 'Notification Web');
-                $message->to("dunglm.21it@vku.udn.vn");
+                $message->to($email);
                 $message->subject($titleSubject);
                 $message->html($textNotification);
             });
