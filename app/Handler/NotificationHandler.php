@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Redirect;
 use DB;
 use Session;
 use stdClass;
+use function Webmozart\Assert\Tests\StaticAnalysis\lower;
 
 class NotificationHandler
 {
@@ -102,48 +103,34 @@ class NotificationHandler
         $listUser = $this->notificationRepository->getAllUser();
 
 
-
-
         $data = [];
-        foreach ($listUser as $subListUser)
-        {
+        foreach ($listUser as $subListUser) {
 
             $line_id = $this->notificationRepository->listConnectLine($subListUser->id);
 
-            if(count($line_id) > 0)
-            {
+            if (count($line_id) > 0) {
                 $subListUser->line_id = $line_id[0]->line_id;
                 $data[count($data)] = $subListUser;
             }
         }
 
-        foreach ($data as $subData)
-        {
-            if($subData->role == 2)
-            {
+        foreach ($data as $subData) {
+            if ($subData->role == 2) {
                 $getNameSeeker = $this->notificationRepository->getSeekerNameByUserId($subData->id);
-                if(count($getNameSeeker) > 0)
-                {
+                if (count($getNameSeeker) > 0) {
                     $subData->typeRole = 2;
                     $subData->name = $getNameSeeker[0]->nickname;
-                }
-                else
-                {
+                } else {
                     $subData->typeRole = 2;
                     $subData->name = "No has name";
                 }
 
-            }
-            else if($subData->role == 3)
-            {
+            } else if ($subData->role == 3) {
                 $getNameStore = $this->notificationRepository->getStoreNameByUserId($subData->id);
-                if(count($getNameStore) > 0)
-                {
+                if (count($getNameStore) > 0) {
                     $subData->typeRole = 3;
                     $subData->name = $getNameStore[0]->store_name;
-                }
-                else
-                {
+                } else {
                     $subData->typeRole = 3;
                     $subData->name = "No has name";
                 }
@@ -183,10 +170,31 @@ class NotificationHandler
                 $matchedNotifications[$key]->read_user = $countRead;
                 $matchedNotifications[$key]->total_user = count($countPerson);
 
+            } else if ($matchedNotifications[$key]->type == 1) {
+                $checkRead = $this->notificationRepository->getNotificationReadType1($notification->id);
+
+                $matchedNotifications[$key]->read_user = count($checkRead);
+
+                $matchedNotifications[$key]->total_user = 1;
+            }
+            if (isset($request->templateType) && $request->templateType != 0) {
+                $dataDraft = $this->notificationRepository->getNotificationDraftWithID($matchedNotifications[$key]->notification_draft_id);
+                if (isset($matchedNotifications[$key]->notification_draft_id)) {
+                    $matchedNotifications[$key]->notification_for = $dataDraft->notification_for;
+                    if (!(strtolower($request->templateType) == strtolower($matchedNotifications[$key]->notification_for))) {
+                        unset($matchedNotifications[$key]);
+                    }
+                } else {
+
+                    if (isset($request->templateType)) {
+                        unset($matchedNotifications[$key]);
+                    }
+
+                }
             }
 
-        }
 
+        }
         return $matchedNotifications;
     }
 
@@ -277,7 +285,7 @@ class NotificationHandler
      */
     public function saveNotificationDraft(object $request): int
     {
-        if($request->announceFor == "user") {
+        if ($request->announceFor == "user") {
             if (intval($request->announceTypeFor) == 1) {
                 $listSeeker = $this->notificationRepository->getListUserAllRole2();
             } else {
@@ -301,8 +309,7 @@ class NotificationHandler
                 }
             }
 
-        }
-        else {
+        } else {
             if ($request->announceTypeFor == 1) {
                 $listStore = $this->notificationRepository->getListUserAllRole3();
             } else {
@@ -411,16 +418,13 @@ class NotificationHandler
         $dataTemplate = $data[0];
         $dataTemplate = $dataTemplate->toArray();
         $listParam = [];
-        if(isset($_REQUEST['templateType']))
-        {
+        if (isset($_REQUEST['templateType'])) {
             if ($_REQUEST['templateType'] == "user") {
                 $listParam = $this->notificationRepository->getParamUser();
             } elseif ($_REQUEST['templateType'] == "store") {
                 $listParam = $this->notificationRepository->getParamStore();
             }
-        }
-        else
-        {
+        } else {
             if ($dataTemplate['template_type'] == "user") {
                 $listParam = $this->notificationRepository->getParamUser();
             } elseif ($dataTemplate['template_type'] == "store") {
