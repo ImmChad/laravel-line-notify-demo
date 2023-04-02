@@ -11,7 +11,6 @@ use App\Models\NotificationType;
 use App\Models\NotificationUserInfo;
 use App\Models\NotificationUserSettings;
 use App\Services\NotificationService;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
@@ -19,7 +18,10 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
+use JetBrains\PhpStorm\NoReturn;
+use PhpParser\Node\Scalar\String_;
 use stdClass;
+use function Webmozart\Assert\Tests\StaticAnalysis\object;
 
 class NotificationRepository
 {
@@ -89,7 +91,8 @@ class NotificationRepository
      */
     public function getNotificationBySearch(string $textSearch): Collection
     {
-        return Notification::where('announce_title', 'like', "%{$textSearch}%")
+        return Notification::where('type', '!=', 1)
+            ->where('announce_title', 'like', "%{$textSearch}%")
             ->orderBy('created_at', 'DESC')
             ->get();
     }
@@ -107,6 +110,7 @@ class NotificationRepository
      * @param int $id
      * @return Collection|array
      */
+
     public function getUsersCreatedBeforeNotificationCurrent(int $id): Collection|array
     {
 
@@ -149,6 +153,47 @@ class NotificationRepository
         return NotificationUserSettings::where('created_at', '<=', $createdAt)
             ->where('notification_channel_id', 2)
             ->get();
+    }
+
+
+    /**
+     * @param int $areaId
+     * @return Collection|stdClass
+     */
+    public function getRegionIdByAreaId(int $areaId): Collection|stdClass
+    {
+        $pref = self::getPrefCdByAreaId($areaId);
+        $regionCd = self::getRegionCdByPrefCd($pref->pref_cd);
+        $regionId = self::getRegionIdByRegionCd($regionCd->region_cd);
+
+        return $regionId;
+    }
+
+    /**
+     * @param int $areaId
+     * @return Collection|stdClass
+     */
+    public function getPrefCdByAreaId(int $areaId): Collection|stdClass
+    {
+        return DB::table('static_area')->where('id', $areaId)->get()->first();
+    }
+
+    /**
+     * @param int $prefCd
+     * @return Collection|stdClass
+     */
+    public function getRegionCdByPrefCd(int $prefCd): Collection|stdClass
+    {
+        return DB::table('static_pref')->where('pref_cd', $prefCd)->get()->first();
+    }
+
+    /**
+     * @param int $regionCd
+     * @return Collection|stdClass
+     */
+    public function getRegionIdByRegionCd(int $regionCd): Collection|stdClass
+    {
+        return DB::table('static_region')->where('region_cd', $regionCd)->get()->first();
     }
 
 
@@ -345,6 +390,7 @@ class NotificationRepository
                 )
             );
     }
+
 
     /**
      * @param int $regionId
@@ -581,12 +627,22 @@ class NotificationRepository
         return $dataDraft;
     }
 
+    /**
+     * @param $notificationDraftId
+     * @return stdClass|null
+     */
     public function getNotificationDraftWithID($notificationDraftId): stdClass|null
     {
         return DB::table('notification_draft')->where(["id" => $notificationDraftId])->orderBy('created_at', 'DESC')->get()->first();
     }
 
-    public function getAllUserIdSeekerWithAreaIDIndustryIDCreatedAt(int $areaId, int $industryId, string $created_at): Collection
+    /**
+     * @param int $areaId
+     * @param int $industryId
+     * @param String $created_at
+     * @return Collection
+     */
+    public function getAllUserIdSeekerWithAreaIDIndustryIDCreatedAt(int $areaId, int $industryId, string $created_at)
     {
         $nameTableSeekerLocation = ($areaId > 0 ? ', seeker_expect_location sel' : '');
         $nameTableSeekerIndustry = ($industryId > 0 ? ', seeker_expect_industry sei' : '');
@@ -608,7 +664,7 @@ class NotificationRepository
             ->get();
     }
 
-    public function getAllUserIdStoreWithAreaIDIndustryIDCreatedAt(int $areaId, int $industryId, string $created_at): Collection
+    public function getAllUserIdStoreWithAreaIDIndustryIDCreatedAt(int $areaId, int $industryId, string $created_at)
     {
 
         return DB::table(DB::raw("store, user"))
@@ -838,7 +894,7 @@ class NotificationRepository
      * @param String $created_at
      * @return mixed
      */
-    public function getSeekerOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt(int $areaId, $industryId, string $created_at): mixed
+    public function getSeekerOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt(int $areaId, $industryId, string $created_at)
     {
         $allUserLine = self::getAllUserIdUserLine();
         $nameTableSeekerLocation = ($areaId > 0 ? ', seeker_expect_location sel' : '');
@@ -991,18 +1047,8 @@ class NotificationRepository
         return DB::statement("DELETE FROM notification_draft WHERE id = '{$notificationId}' ");
     }
 
-    public function getFirstStoreWithUserID(string $userId): Model|Builder|null|stdClass
+    public function getFirstStoreWithUserID(string $userId)
     {
         return DB::table('store')->where("user_id", $userId)->first();
-    }
-
-    /**
-     * @param int $notificationId
-     * @return Collection
-     */
-    public function getNotificationReadType1(int $notificationId): Collection
-    {
-        return NotificationRead::where('notification_id', $notificationId)
-            ->get();
     }
 }

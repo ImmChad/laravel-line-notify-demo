@@ -153,6 +153,20 @@
             -ms-user-select: none; /* IE 10 and IE 11 */
             user-select: none; /* Standard syntax */
         }
+
+        .section-params {
+            position: relative;
+            display: flex;
+            justify-content: start;
+        }
+
+        .name-param {
+            padding: 5px 10px;
+            background: var(--theme-deafult);
+            color: white;
+            cursor: pointer;
+        }
+
     </style>
 
 
@@ -258,8 +272,20 @@
 
                     </div>
 
+                    <div class="section-params" style="padding: 1rem; width: 100%; display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
+
+                        @if(isset($listParam))
+                            @foreach($listParam as $subListParam)
+                                <div class="name-param" style=" margin: 0 0.2rem;"><button style="padding: 0px;  background: none; color: white;" class="btn param-added">{{ $subListParam->value }}</button></div>
+                            @endforeach
+                        @else
+                            <div>Please choose send for user or store.</div>
+                        @endif
+
+                    </div>
 
                     <div class="section-option-others">
+
                         <div class="row" style="width: 100%;">
                             <div class="col-md-3">
                                 <div class="part-select-params" style="width: 100%;">
@@ -350,6 +376,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="row" style="width: 100%; margin-top: 15px;">
                             <div class="col-md-3"></div>
                             <div class="col-md-3"></div>
@@ -394,10 +421,51 @@
     <script>
         // remove param in input content
         const edt = document.querySelector("#ipt-content-notification")
+        const itn = document.querySelector("#ipt-title-notification")
+
         let btnRemoves = edt.querySelectorAll(".param-added .icon-remove")
         btnRemoves.forEach(btnRemove => {
             btnRemove.addEventListener("click", event => {
                 event.currentTarget.closest(".param-added").remove()
+            })
+        })
+
+        // creat param in content
+        const nameParams = document.querySelectorAll(".name-param")
+        nameParams.forEach(nameParam => {
+            nameParam.addEventListener("click", event => {
+
+                const range = window.getSelection().getRangeAt(0);
+                const btn = document.createElement('button');
+                const icRemove = document.createElement('i')
+                icRemove.classList.add("icon-remove")
+                icRemove.textContent = "-"
+
+                btn.classList.add("param-added")
+                btn.textContent = event.currentTarget.textContent;
+                btn.contentEditable = false
+                btn.appendChild(icRemove);
+
+                if(
+                    range.commonAncestorContainer.parentNode == edt
+                    || range.commonAncestorContainer == edt
+                    || range.commonAncestorContainer.parentNode == itn
+                    || range.commonAncestorContainer == itn
+                    || edt.contains(range.commonAncestorContainer.parentNode)
+                    || edt.contains(range.commonAncestorContainer)
+                    || itn.contains(range.commonAncestorContainer.parentNode)
+                    || itn.contains(range.commonAncestorContainer)
+                )
+                {
+                    range.insertNode(btn);
+                }
+
+                let btnRemoves = document.querySelectorAll(".param-added .icon-remove")
+                btnRemoves.forEach(btnRemove => {
+                    btnRemove.addEventListener("click", event => {
+                        event.currentTarget.closest(".param-added").remove()
+                    })
+                })
             })
         })
     </script>
@@ -647,6 +715,8 @@
             }
 
         })
+
+
 
     </script>
 
