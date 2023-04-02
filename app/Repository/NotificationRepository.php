@@ -38,21 +38,31 @@ class NotificationRepository
         ])->get();
     }
 
-
     /**
      * @param int $notificationId
-     *
+     * @return Collection|stdClass
+     */
+    public function getDraftIdByNotificationId(int $notificationId) : Collection|stdClass
+    {
+        return DB::table('notification')->where('id', $notificationId)->get()->first();
+    }
+
+    /**
+     * @param String $notificationDraftId
      * @return Collection
      */
-    public function getContentUpdateNotificationToView(int $notificationId): Collection
+    public function getContentUpdateNotificationToView(String $notificationDraftId): Collection
     {
-        return Notification::where('id', $notificationId)
+        return DB::table('notification_draft')->where('id', $notificationDraftId)
             ->get(
                 array(
                     'id',
-                    'type',
-                    'announce_title',
-                    'announce_content',
+                    'notification_for',
+                    'notification_title',
+                    'notification_content',
+                    'area_id',
+                    'industry_id',
+                    'is_processed'
                 )
             );
     }
@@ -149,6 +159,56 @@ class NotificationRepository
     }
 
 
+    /**
+     * @param int $areaId
+     * @return Collection|stdClass
+     */
+    public function getRegionIdByAreaId(int $areaId) : Collection|stdClass
+    {
+        $pref = self::getPrefCdByAreaId($areaId);
+        $regionCd = self::getRegionCdByPrefCd($pref->pref_cd);
+        $regionId = self::getRegionIdByRegionCd($regionCd->region_cd);
+
+        return $regionId;
+    }
+
+    /**
+     * @param int $areaId
+     * @return Collection|stdClass
+     */
+    public function getPrefCdByAreaId(int $areaId) : Collection|stdClass
+    {
+        return DB::table('static_area')->where('id', $areaId)->get()->first();
+    }
+
+    /**
+     * @param int $prefCd
+     * @return Collection|stdClass
+     */
+    public function getRegionCdByPrefCd(int $prefCd) : Collection|stdClass
+    {
+        return DB::table('static_pref')->where('pref_cd', $prefCd)->get()->first();
+    }
+
+    /**
+     * @param int $regionCd
+     * @return Collection|stdClass
+     */
+    public function getRegionIdByRegionCd(int $regionCd) : Collection|stdClass
+    {
+        return DB::table('static_region')->where('region_cd', $regionCd)->get()->first();
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * @param String $userId
@@ -194,6 +254,21 @@ class NotificationRepository
             ->update([
                 'announce_title' => $request->title,
                 'announce_content' => $request->message
+            ]);
+    }
+
+    /**
+     * @param object $request
+     * @return int
+     */
+    function updateDraftNotificaton(object $request): int
+    {
+        return DB::table('notification_draft')->where('id', $request->getDraftId)
+            ->update([
+                'notification_title' => $request->title,
+                'notification_content' => $request->message,
+                'area_id' => $request->areaId,
+                'industry_id' => $request->industryId
             ]);
     }
 

@@ -258,34 +258,9 @@
                     window.location.href = "/admin/template-management";
                 });
 
-
-                function getCaretPosition(editableDiv) {
-                    var caretPos = 0,
-                        sel, range;
-                    if (window.getSelection) {
-                        sel = window.getSelection();
-                        if (sel.rangeCount) {
-                            range = sel.getRangeAt(0);
-                            if (range.commonAncestorContainer.parentNode == editableDiv || range.commonAncestorContainer == editableDiv) {
-                                caretPos = range.endOffset;
-                            }
-                        }
-                    } else if (document.selection && document.selection.createRange) {
-                        range = document.selection.createRange();
-                        if (range.commonAncestorContainer.parentNode == editableDiv || range.commonAncestorContainer == editableDiv) {
-                            var tempEl = document.createElement("span");
-                            editableDiv.insertBefore(tempEl, editableDiv.firstChild);
-                            var tempRange = range.duplicate();
-                            tempRange.moveToElementText(tempEl);
-                            tempRange.setEndPoint("EndToEnd", range);
-                            caretPos = tempRange.text.length;
-                        }
-                    }
-                    return caretPos;
-                }
-
                 const nameParams = document.querySelectorAll(".name-param")
                 const edt = document.querySelector("#ipt-content-notification")
+                const itn = document.querySelector("#ipt-title-notification")
                 let sendTypeSelect = document.querySelector('.send-type-select')
 
                 // button remove param
@@ -294,15 +269,6 @@
                     btnRemove.addEventListener("click", event => {
                         event.currentTarget.closest(".param-added").remove()
                     })
-                })
-
-                let startPos = 0;
-                edt.addEventListener('blur', event => {
-                    for (var i = 0; i < getSelection().rangeCount; i++) {
-                        console.log(getSelection().getRangeAt(i))
-                    }
-                    startPos = getCaretPosition(event.currentTarget);
-                    console.log(startPos)
                 })
 
                 nameParams.forEach(nameParam => {
@@ -319,8 +285,20 @@
                         btn.contentEditable = false
                         btn.appendChild(icRemove);
 
-                        range.insertNode(btn);
-
+                        if(
+                            range.commonAncestorContainer.parentNode == edt
+                            || range.commonAncestorContainer == edt
+                            || range.commonAncestorContainer.parentNode == itn
+                            || range.commonAncestorContainer == itn
+                            || edt.contains(range.commonAncestorContainer.parentNode)
+                            || edt.contains(range.commonAncestorContainer)
+                            || itn.contains(range.commonAncestorContainer.parentNode)
+                            || itn.contains(range.commonAncestorContainer)
+                        )
+                        {
+                            range.insertNode(btn);
+                        }
+                        console.log(range.commonAncestorContainer)
                         let btnRemoves = document.querySelectorAll(".param-added .icon-remove")
                         btnRemoves.forEach(btnRemove => {
                             btnRemove.addEventListener("click", event => {

@@ -80,18 +80,46 @@ class NotificationHandler
      */
     public function showContentUpdateNotificationToView(int $notificationId): View|Factory|RedirectResponse|Application
     {
-        $returnData = $this->notificationRepository->getContentUpdateNotificationToView($notificationId);
+        $getDraftId = $this->notificationRepository->getDraftIdByNotificationId($notificationId);
+
+        if($getDraftId->is_sent != 1)
+        {
+        $notification_draft_id = $getDraftId->notification_draft_id;
+        $returnData = $this->notificationRepository->getContentUpdateNotificationToView($getDraftId->notification_draft_id);
         $dataNotification = $returnData[0];
 
-        if ($returnData[0]->type == 2) {
-            return view('Backend.update-notification-view-2', compact('dataNotification'));
-        } else if ($returnData[0]->type == 3) {
-            $dataTemplate = $this->notificationRepository->getTemplate();
-            return view('Backend.update-notification-view-3', compact('dataNotification', 'dataTemplate'));
-        } else {
-            return view('Backend.update-notification-view-2', compact('dataNotification'));
-        }
 
+            $dataTemplate = $this->notificationRepository->getTemplateByTemplateType($dataNotification->notification_for);
+            $dataRegion = $this->notificationRepository->getRegion();
+            $dataIndustry = $this->notificationRepository->getIndustry();
+
+            $listParam = "";
+            if($dataNotification->notification_for == "user")
+            {
+                $listParam = $this->notificationRepository->getParamUser();
+            }
+            else
+            {
+                $listParam = $this->notificationRepository->getParamStore();
+            }
+
+            if($dataNotification->area_id != 0)
+            {
+                $regionId = $this->notificationRepository->getRegionIdByAreaId($dataNotification->area_id)->id;
+
+                $dataArea = $this->notificationRepository->getAreaFromRegionId($regionId);
+
+                return view('Backend.update-notification-view-3', compact('dataNotification', 'dataTemplate', 'dataRegion', 'dataIndustry', 'listParam', 'regionId', 'dataArea', 'notificationId', 'notification_draft_id'));
+            }
+            else
+            {
+                return view('Backend.update-notification-view-3', compact('dataNotification', 'dataTemplate', 'dataRegion', 'dataIndustry', 'listParam', 'notificationId', 'notification_draft_id'));
+            }
+        }
+        else
+        {
+            return Redirect::to('/admin/notification-list');
+        }
     }
 
     /**
@@ -225,12 +253,23 @@ class NotificationHandler
                         $dataRegion = $this->notificationRepository->getRegion();
                         $dataIndustry = $this->notificationRepository->getIndustry();
 
+                        $listParam = "";
+                        if($notificationSender == "user")
+                        {
+                            $listParam = $this->notificationRepository->getParamUser();
+                        }
+                        else
+                        {
+                            $listParam = $this->notificationRepository->getParamStore();
+                        }
+
 
                         if ($notificationTemplate != null) {
+
                             $detailTemplate = $this->notificationRepository->getTemplateFromId($notificationTemplate)->first();
-                            return view('Backend.send-notification-view-3', compact('notificationSender', 'dataTemplate', 'detailTemplate', 'dataRegion', 'dataIndustry'));
+                            return view('Backend.send-notification-view-3', compact('notificationSender', 'dataTemplate', 'detailTemplate', 'dataRegion', 'dataIndustry', 'listParam'));
                         } else {
-                            return view('Backend.send-notification-view-3', compact('notificationSender', 'dataTemplate', 'dataRegion', 'dataIndustry'));
+                            return view('Backend.send-notification-view-3', compact('notificationSender', 'dataTemplate', 'dataRegion', 'dataIndustry', 'listParam'));
                         }
                     } else {
                         return view('Backend.send-notification-view-3');
@@ -338,6 +377,8 @@ class NotificationHandler
      */
     function sendUpdateForListUser(object $request): int
     {
+        $updateDraftNotificaton = $this->notificationRepository->updateDraftNotificaton($request);
+
         return $this->notificationRepository->updateNotificationForListUser($request);
     }
 
@@ -514,6 +555,7 @@ class NotificationHandler
         $detailTemplate->id = null;
         $detailTemplate->template_title = $dataDraft->notification_title;
         $detailTemplate->template_content = $dataDraft->notification_content;
+
         if (isset($dataDraft)) {
 
             if ($notificationSender != null) {
@@ -531,9 +573,9 @@ class NotificationHandler
             } else {
                 return view('Backend.update-notification-draft', compact('dataDraft', 'notificationSender', 'detailTemplate'));
             }
+
         } else {
             return Redirect::to('/admin/notification-list');
-
         }
 
     }

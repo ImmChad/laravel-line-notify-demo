@@ -82,7 +82,7 @@ class NotificationController extends Controller
      *
      * @return LengthAwarePaginator
      */
-    public function paginate($items, int $perPage = 10, $page = null, array $options = []): LengthAwarePaginator
+    public function paginate($items, int $perPage = 20, $page = null, array $options = []): LengthAwarePaginator
     {
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
         $items = $items instanceof Collection ? $items : Collection::make($items);
@@ -159,7 +159,7 @@ class NotificationController extends Controller
     function sendUpdateForListUser(Request $request): int
     {
         $request->validate([
-            'title' => 'required|max:255',
+            'title' => 'required',
             'message' => 'required',
         ]);
         return $this->notificationHandler->sendUpdateForListUser($request);
