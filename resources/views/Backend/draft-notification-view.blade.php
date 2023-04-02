@@ -441,6 +441,10 @@
 @section('script')
 
     <script>
+        let btnBackPage = document.querySelector('#btn-back-page');
+        btnBackPage.addEventListener('click', (e) => {
+            window.location.href = "/admin/notification-list";
+        });
 
         // This function is convert html code to content notification
         function convertHTMLToContentNotification(htmlTagContent)

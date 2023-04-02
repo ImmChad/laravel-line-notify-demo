@@ -560,6 +560,16 @@ class NotificationHandler
         $detailTemplate->template_title = $dataDraft->notification_title;
         $detailTemplate->template_content = $dataDraft->notification_content;
 
+        $listParam = "";
+        if($dataDraft->notification_for == "user")
+        {
+            $listParam = $this->notificationRepository->getParamUser();
+        }
+        else
+        {
+            $listParam = $this->notificationRepository->getParamStore();
+        }
+
         if (isset($dataDraft)) {
 
             if ($notificationSender != null) {
@@ -567,15 +577,16 @@ class NotificationHandler
                 $dataRegion = $this->notificationRepository->getRegion();
                 $dataIndustry = $this->notificationRepository->getIndustry();
 
-                if ($notificationTemplate != null) {
+                if($notificationTemplate != null) {
                     $detailTemplate = $this->notificationRepository->getTemplateFromId($notificationTemplate)->first();
-                    return view('Backend.update-notification-draft', compact('dataDraft', 'notificationSender', 'dataTemplate', 'detailTemplate', 'dataRegion', 'dataIndustry'));
+                    return view('Backend.update-notification-draft', compact('dataDraft', 'notificationSender', 'dataTemplate', 'detailTemplate', 'dataRegion', 'dataIndustry', 'listParam'));
                 } else {
 
-                    return view('Backend.update-notification-draft', compact('dataDraft', 'notificationSender', 'dataTemplate', 'detailTemplate', 'dataRegion', 'dataIndustry'));
+                    return view('Backend.update-notification-draft', compact('dataDraft', 'notificationSender', 'dataTemplate', 'detailTemplate', 'dataRegion', 'dataIndustry', 'listParam'));
                 }
+
             } else {
-                return view('Backend.update-notification-draft', compact('dataDraft', 'notificationSender', 'detailTemplate'));
+                return view('Backend.update-notification-draft', compact('dataDraft', 'notificationSender', 'detailTemplate', 'listParam'));
             }
 
         } else {
