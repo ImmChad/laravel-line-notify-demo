@@ -161,9 +161,9 @@ class UserController extends Controller
     /**
      * @param Request $request
      * @param $id
-     * @return View|Application|Factory|\Illuminate\Contracts\Foundation\Application
+     * @return View|Application|Factory
      */
-    function detailNotification(Request $request, $id): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
+    function detailNotification(Request $request, $id): View|Application|Factory
     {
         return $this->userHandler->detailNotification($request, $id);
 

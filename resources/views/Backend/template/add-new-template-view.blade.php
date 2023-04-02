@@ -192,13 +192,26 @@
                         <div class="part-input-text-template">
                             <div class="field-ipt-text field-title-notification">
                                 <input
+                                    placeholder="Please input name"
+                                    required
+                                    minlength="10"
+                                    maxlength="225"
+                                    contenteditable="true"
+                                    class="ipt-text-notification"
+                                    id="ipt-name-notification">
+                            </div>
+
+                            <div class="field-ipt-text field-title-notification">
+                                <div
                                     placeholder="Please input title"
                                     required
                                     minlength="10"
                                     maxlength="225"
+                                    contenteditable="true"
                                     class="ipt-text-notification"
-                                    id="ipt-title-notification">
+                                    id="ipt-title-notification"></div>
                             </div>
+
                             <div class="field-ipt-text field-content-notification">
                                 <div
                                     contenteditable="true"
@@ -216,7 +229,7 @@
 
                         @if(isset($listParam))
                             @foreach($listParam as $subListParam)
-                                <div class="name-param">{{ $subListParam->value }}</div>
+                                <div class="name-param"><button style="padding: 0px;  background: none; color: white;" class="btn param-added">{{ $subListParam->value }}</button></div>
                             @endforeach
                         @else
                             <div>Please choose send for user or store.</div>
@@ -265,6 +278,7 @@
 
         const nameParams = document.querySelectorAll(".name-param")
         const edt = document.querySelector("#ipt-content-notification")
+
         let startPos = 0;
         edt.addEventListener('blur', event => {
             for (var i = 0; i < getSelection().rangeCount; i++) {
@@ -276,8 +290,7 @@
 
         nameParams.forEach(nameParam => {
             nameParam.addEventListener("click", event => {
-                // edt.focus();
-                // edt.setSelectionRange(startPos, startPos);
+
                 const range = window.getSelection().getRangeAt(0);
                 const btn = document.createElement('button');
                 const icRemove = document.createElement('i')
@@ -288,14 +301,18 @@
                 btn.textContent = event.currentTarget.textContent;
                 btn.contentEditable = false
                 btn.appendChild(icRemove);
-                edt.innerHTML = edt.innerHTML.trim().replace("\n") + btn.outerHTML
-                let btnRemoves = edt.querySelectorAll(".param-added .icon-remove")
+
+                range.insertNode(btn);
+                // edt.innerHTML = edt.innerHTML.trim().replace("\n") + btn.outerHTML
+
+
+
+                let btnRemoves = document.querySelectorAll(".param-added .icon-remove")
                 btnRemoves.forEach(btnRemove => {
                     btnRemove.addEventListener("click", event => {
                         event.currentTarget.closest(".param-added").remove()
                     })
                 })
-
             })
         })
 
@@ -313,7 +330,8 @@
         btnSaveNewTemplate.addEventListener('click', (e) => {
 
             let templateType = sendTypeSelect.options[sendTypeSelect.selectedIndex].getAttribute('value')
-            let templateTitle = document.querySelector('#ipt-title-notification').value
+            let templateName = document.querySelector('#ipt-name-notification').value
+            let templateTitle = document.querySelector('#ipt-title-notification').innerHTML
             let templateContent = document.querySelector('#ipt-content-notification').innerHTML
 
 
@@ -322,17 +340,22 @@
             {
                 displayToast('Please select type')
             }
+            else if(templateName.trim() == "")
+            {
+                displayToast('Please enter template name')
+            }
             else if(templateTitle.trim() == "")
             {
-                displayToast('Please enter full template title')
+                displayToast('Please enter template title')
             }
             else if(templateContent.trim() == "")
             {
-                displayToast('Please enter full template content')
+                displayToast('Please enter template content')
             } else
             {
                 let form = new FormData()
                 form.append('templateType', templateType)
+                form.append('templateName', templateName)
                 form.append('templateTitle', templateTitle)
                 form.append('templateContent', templateContent)
 
@@ -349,7 +372,8 @@
                     processData: false,
                     dataType: 'json',
                     success: function (data) {
-                        document.querySelector('#ipt-title-notification').value = ""
+                        document.querySelector('#ipt-name-notification').value = ""
+                        document.querySelector('#ipt-title-notification').innerHTML = ""
                         document.querySelector('#ipt-content-notification').innerHTML = ""
                         displayToast('Success!')
                     },
@@ -365,195 +389,12 @@
 
     <script>
 
-        {{--let dataTemplate = document.querySelector('#dataTemplate');--}}
-        {{--dataTemplate.addEventListener('change', (e) => {--}}
-        {{--    let template_id = e.currentTarget.options[e.currentTarget.selectedIndex].getAttribute('template_id');--}}
-        {{--    let template_name = e.currentTarget.options[e.currentTarget.selectedIndex].getAttribute('template_name');--}}
-
-
-        {{--    if(template_id != 0) {--}}
-        {{--        var form  = new FormData();--}}
-        {{--        form.append('template_id', template_id);--}}
-
-
-        {{--        $.ajaxSetup({--}}
-        {{--            headers: {--}}
-        {{--                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')--}}
-        {{--            }--}}
-        {{--        });--}}
-        {{--        $.ajax({--}}
-        {{--            url: '{{URL::to("/admin/get-template-for-send-mail")}}',--}}
-        {{--            method: 'post',--}}
-        {{--            data: form,--}}
-        {{--            contentType: false,--}}
-        {{--            processData: false,--}}
-        {{--            dataType: 'json',--}}
-        {{--            success: function(data) {--}}
-
-
-        {{--                var announce_content = CKEDITOR.instances['announce_content'];--}}
-        {{--                let newDiv = `${data.template_content}`;--}}
-        {{--                announce_content.insertHtml(newDiv);--}}
-
-        {{--                document.querySelector('#announce_title').value = data.template_title;--}}
-
-        {{--            },--}}
-        {{--            error: function() {--}}
-        {{--                displayToast('Can not add data!');--}}
-        {{--            }--}}
-        {{--        });--}}
-        {{--    } else {--}}
-
-        {{--    }--}}
-        {{--})--}}
-
-
         let returnNotificationList = document.querySelector('#btn-back-page');
         returnNotificationList.addEventListener('click', (e) => {
             window.location.href = "/admin/template-management";
         });
 
 
-        // let btnSendIt = document.querySelector('.btn-send-it');
-        // btnSendIt.addEventListener('click', (e)=> {
-        //     e.preventDefault();
-        //
-        //
-        //     $('.parent-form-popup').css("display", "flex");
-        //     $('.parent-form-popup .title-popup').text("Do you want to schedule to send it? If not, it will send now.");
-        //
-        //
-        //     let newHtml = `
-        //     <input class="form-control digits" id="example-datetime-local-input" type="datetime-local"  data-bs-original-title="" title="">
-        //     <button class="btn btn-info send-notification" notification_type="3" style="margin-top: 1rem;">SEND IT</button>
-        //     `;
-        //
-        //
-        //     // document.querySelector('.parent-form-popup .faq-form').insertAdjacentHTML('beforeend', newHtml);
-        //     document.querySelector('.parent-form-popup .faq-form').innerHTML = newHtml;
-        //
-        //
-        //     let sendNotification = document.querySelector('.send-notification');
-        //     sendNotification.addEventListener('click', (e) => {
-        //         var editorData = CKEDITOR.instances.announce_content.getData();
-        //         let notification_type = e.currentTarget.getAttribute('notification_type');
-        //         sendNotificationOnService(notification_type, editorData);
-        //     });
-        //
-        //
-        //     $('.parent-form-popup .close-popup').click(function() {
-        //         $('.parent-form-popup').css("display", "none");
-        //     });
-        //
-        //
-        //     $('#created_at').each(function () {
-        //         $(this).datetimepicker();
-        //     });
-        //
-        //
-        // });
-
-
-        {{--function sendNotificationOnService(notification_type, editorData) {--}}
-        {{--    const now = new Date();--}}
-        {{--    const formattedDate = new Intl.DateTimeFormat('en-US', {--}}
-        {{--        year: 'numeric',--}}
-        {{--        month: '2-digit',--}}
-        {{--        day: '2-digit',--}}
-        {{--        hour: '2-digit',--}}
-        {{--        minute: '2-digit',--}}
-        {{--        second: '2-digit',--}}
-        {{--        hour12: false,--}}
-        {{--    }).format(new Date(now));--}}
-
-
-        {{--    const [month, day, year, ...time] = formattedDate.split(/[\s/:]/);--}}
-        {{--    const newFormattedDate = `${year}/${month}/${day} ${time.join(":")}`;--}}
-        {{--    let newDate = newFormattedDate.replace(',', "");--}}
-
-
-        {{--    let created_at = $('#example-datetime-local-input').val();--}}
-        {{--    let announce_content = editorData;--}}
-        {{--    let announce_title = $('#announce_title').val();--}}
-        {{--    // let span = document.createElement('span')--}}
-        {{--    // span.innerHTML = announce_content--}}
-        {{--    // let lengthText = span.textContent.length;--}}
-        {{--    let [dateChoose, timeChoose] = newDate.split(' ');--}}
-        {{--    let [hourChoose, minuteChoose, secondChoose] = timeChoose.split(':');--}}
-        {{--    let newHour = hourChoose.replace('24', '00');--}}
-
-
-        {{--    newDate = dateChoose + " " + newHour + ":" + minuteChoose + ":" + secondChoose;--}}
-
-
-        {{--    let diffInSeconds = "";--}}
-
-
-        {{--    if(created_at.trim() != "") {--}}
-        {{--        const date1 = new Date(newDate);--}}
-        {{--        const date2 = new Date(created_at);--}}
-        {{--        diffInSeconds = (date2 - date1) / 1000;--}}
-        {{--        console.log(newDate);--}}
-        {{--        console.log(created_at);--}}
-        {{--        console.log(diffInSeconds);--}}
-        {{--    } else {--}}
-        {{--        created_at = 0;--}}
-        {{--        diffInSeconds = 0;--}}
-        {{--    }--}}
-        {{--    if(diffInSeconds < 0) {--}}
-        {{--        displayToast("Can't enter this date in the past to set the timer!")--}}
-        {{--    } else {--}}
-        {{--        if(announce_title.trim() != "" && announce_content.trim() != "") {--}}
-        {{--            // console.log(created_at + " " + announce_title + " " + announce_content);--}}
-
-
-        {{--            console.log(notification_type);--}}
-        {{--            console.log(announce_title);--}}
-        {{--            console.log(announce_content);--}}
-        {{--            console.log(created_at);--}}
-        {{--            console.log(diffInSeconds);--}}
-
-
-
-
-
-
-        {{--            var form  = new FormData();--}}
-        {{--            form.append('message', announce_content);--}}
-        {{--            form.append('title', announce_title);--}}
-        {{--            form.append('delayTime', diffInSeconds);--}}
-        {{--            form.append('scheduled_at', created_at);--}}
-        {{--            form.append('type_notification', notification_type);--}}
-
-
-        {{--            $.ajaxSetup({--}}
-        {{--                headers: {--}}
-        {{--                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')--}}
-        {{--                }--}}
-        {{--            });--}}
-        {{--            $.ajax({--}}
-        {{--                url: '{{URL::to("/admin/send-mess")}}',--}}
-        {{--                method: 'post',--}}
-        {{--                data: form,--}}
-        {{--                contentType: false,--}}
-        {{--                processData: false,--}}
-        {{--                dataType: 'json',--}}
-        {{--                success: function(data) {--}}
-
-        {{--                    window.location.href = "/admin/send-notification-view/3?messToast=Send Success!";--}}
-
-        {{--                },--}}
-        {{--                error: function() {--}}
-        {{--                    displayToast('Can not add data!');--}}
-        {{--                }--}}
-        {{--            });--}}
-        {{--        } else {--}}
-        {{--            displayToast("Please, Enter full!");--}}
-        {{--        }--}}
-        {{--    }--}}
-
-
-        {{--}--}}
 
 
     </script>

@@ -187,6 +187,10 @@
         .param-added .icon-remove {
             display: none;
         }
+
+        .scroll-none::-webkit-scrollbar {
+            display: none;
+        }
     </style>
 
 
@@ -205,14 +209,16 @@
                             <thead class="thead-dark">
                             </thead>
                             <tbody>
-                            <tr class="template-box">
+                            <tr class="template-box" >
                                 <th scope="row">Notification For</th>
                                 <td>{{ $dataDraft->notification_for }}</td>
                             </tr>
+
                             <tr class="template-box">
                                 <th scope="row">Notification Title</th>
-                                <td>{{ $dataDraft->notification_title }}</td>
+                                <td id="notification-title">{!!  $dataDraft->notification_title  !!}</td>
                             </tr>
+
                             <tr id="tr-user-line" class="template-box">
                                 <th scope="row">Line user List will see</th>
                                 <td>{{ $dataDraft->line_user }}</td>
@@ -242,7 +248,7 @@
                         </div>
                     </div>
 
-                    <div class="col-2 section-preview-notification">
+                    <div class="col-2 section-preview-notification" style="height: 500px; overflow-y: hidden; box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;">
                             <style>
                                 @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400);
 
@@ -269,9 +275,10 @@
                                 }
 
                             </style>
-                            <div class="container">
+
+                            <div class="container scroll-none" style="height: 450px; overflow-y: scroll">
                                 <div class="message-blue">
-                                    <p id="preview-mess-content-notification" class="message-content">{!! $dataDraft->notification_content !!}</p>
+                                    <div id="preview-mess-content-notification" class="message-content">{!! $dataDraft->notification_content !!}</div>
 
                                 </div>
                             </div>
@@ -427,132 +434,136 @@
             @endif
         </div>
     @endif
+
 @endsection
 
 
 @section('script')
 
-            <script>
+    <script>
 
-                function convertHTMLToContentNotification(htmlTagContent)
-                {
-                    htmlTagContent = htmlTagContent.cloneNode(true)
-                    const paramAddedS =  htmlTagContent.querySelectorAll(".param-added");
-                    paramAddedS.forEach(paramAdded=>{
-                        paramAdded.querySelector(".icon-remove").remove()
-                        paramAdded.outerHTML = `{${paramAdded.textContent}}`
-                    })
-                    return htmlTagContent.textContent
+        // This function is convert html code to content notification
+        function convertHTMLToContentNotification(htmlTagContent)
+        {
+            htmlTagContent = htmlTagContent.cloneNode(true)
+            const paramAddedS =  htmlTagContent.querySelectorAll(".param-added");
+            paramAddedS.forEach(paramAdded=>{
+                paramAdded.querySelector(".icon-remove").remove()
+                paramAdded.outerHTML = `{${paramAdded.textContent}}`
+            })
 
+            const paramBr =  htmlTagContent.querySelectorAll("br");
+            paramBr.forEach(paramBR=>{
+                paramBR.outerHTML = `{br}`
+            })
+
+            return htmlTagContent.textContent
+        }
+
+        const btnSend = document.querySelector("#btn-send-notification-case-draft");
+        btnSend.addEventListener("click", event =>{
+            var form = new FormData()
+            form.append("notificationContent", convertHTMLToContentNotification(document.querySelector("#preview-mess-content-notification")))
+            form.append("notificationTitle", convertHTMLToContentNotification(document.querySelector("#notification-title")))
+            form.append("notification_draft_id", event.currentTarget.getAttribute("draft_id"))
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
-                const btnSend = document.querySelector("#btn-send-notification-case-draft");
-                btnSend.addEventListener("click", event =>{
-                    var form = new FormData()
-                    form.append("notificationContent", convertHTMLToContentNotification(document.querySelector("#preview-mess-content-notification")))
-                    form.append("notification_draft_id",event.currentTarget.getAttribute("draft_id"))
+            });
+            $.ajax({
+                url: '{{URL::to("/admin/send-notification")}}',
+                method: 'post',
+                data:form,
+                contentType: false,
+                processData: false,
+                dataType: 'json',
+                success: function (data) {
 
-                    $.ajaxSetup({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        }
-                    });
-                    $.ajax({
-                        url: '{{URL::to("/admin/send-notification")}}',
-                        method: 'post',
-                        data:form,
-                        contentType: false,
-                        processData: false,
-                        dataType: 'json',
-                        success: function (data) {
+                    window.location.href = "/admin/notification-list?messToast=Send Success!";
 
-                            window.location.href = "/admin/notification-list?messToast=Send Success!";
+                },
+                error: function () {
+                    displayToast('Can not add data!');
+                }
+            })
+        })
 
-                        },
-                        error: function () {
-                            displayToast('Can not add data!');
-                        }
-                    })
-                })
+        const btnCancel = document.querySelector("#btn-cancel-notification-case-draft");
+        btnCancel.addEventListener("click", event =>{
+            var form = new FormData()
+            form.append("notification_draft_id",event.currentTarget.getAttribute("draft_id"))
 
-                const btnCancel = document.querySelector("#btn-cancel-notification-case-draft");
-                btnCancel.addEventListener("click", event =>{
-                    var form = new FormData()
-                    form.append("notification_draft_id",event.currentTarget.getAttribute("draft_id"))
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: '{{URL::to("/admin/cancel-notification-draft")}}',
+                method: 'post',
+                data:form,
+                contentType: false,
+                processData: false,
+                dataType: 'json',
+                success: function (data) {
 
-                    $.ajaxSetup({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        }
-                    });
-                    $.ajax({
-                        url: '{{URL::to("/admin/cancel-notification-draft")}}',
-                        method: 'post',
-                        data:form,
-                        contentType: false,
-                        processData: false,
-                        dataType: 'json',
-                        success: function (data) {
+                    window.location.href = "/admin/notification-list?messToast=Send Success!";
 
-                            window.location.href = "/admin/notification-list?messToast=Send Success!";
+                },
+                error: function () {
+                    displayToast('Can not add data!');
+                }
+            })
+        })
 
-                        },
-                        error: function () {
-                            displayToast('Can not add data!');
-                        }
-                    })
-                })
+        const btnEdit = document.querySelector("#btn-edit-notification-case-draft");
+        btnEdit.addEventListener("click", event =>{
+            location.href = `/admin/update-notification-draft/${btnEdit.getAttribute("draft_id")}/{{$dataDraft->notification_for}}`
+        })
 
-                const btnEdit = document.querySelector("#btn-edit-notification-case-draft");
-                btnEdit.addEventListener("click", event =>{
-                    location.href = `/admin/update-notification-draft/${btnEdit.getAttribute("draft_id")}/{{$dataDraft->notification_for}}`
-                })
+    </script>
 
-            </script>
-
-            <script>
-                let parentFormPopup = document.querySelector(".parent-form-popup")
-                let closePopup = parentFormPopup.querySelector(".close-popup")
-                closePopup.addEventListener("click", eventClose =>{
-                    let tmpParent = eventClose.currentTarget.closest(".parent-form-popup")
-                    tmpParent.style.display = "none"
-                    tmpParent.querySelector(".faq-form").innerHTML=``
-                })
-                let trUserSms = document.querySelector("#tr-user-sms")
-                trUserSms.addEventListener("click", event => {
-                    let dataSmsTable = document.querySelector(".data-sms-table").cloneNode(true);
-                    dataSmsTable.style.display = "block"
-                    parentFormPopup.querySelector(".title-popup").textContent = "SMS user List"
-                    parentFormPopup.querySelector(".faq-form").appendChild(dataSmsTable)
-                    parentFormPopup.style.display = "block"
-                })
-
-                let trUserLine = document.querySelector("#tr-user-line")
-                trUserLine.addEventListener("click", event => {
-                    let dataLineTable = document.querySelector(".data-line-table").cloneNode(true);
-                    dataLineTable.style.display = "block"
-                    parentFormPopup.querySelector(".title-popup").textContent = "Line user List"
-                    parentFormPopup.querySelector(".faq-form").appendChild(dataLineTable)
-                    parentFormPopup.style.display = "block"
-                })
-                let trUserEmail = document.querySelector("#tr-user-email")
-                trUserEmail.addEventListener("click", event => {
-                    let dataEmailTable = document.querySelector(".data-email-table").cloneNode(true);
-                    dataEmailTable.style.display = "block"
-                    parentFormPopup.querySelector(".title-popup").textContent = "Email user List"
-                    parentFormPopup.querySelector(".faq-form").appendChild(dataEmailTable)
-                    parentFormPopup.style.display = "block"
-                })
+    <script>
+        let parentFormPopup = document.querySelector(".parent-form-popup")
+        let closePopup = parentFormPopup.querySelector(".close-popup")
 
 
-{{--                @if(isset($dataDraft))--}}
-{{--                    loadDataLineUserCount({{$dataDraft}})--}}
-{{--                    loadDataMailUserCount({{$dataDraft}})--}}
-{{--                    loadDataSMSUserCount({{$dataDraft}})--}}
-{{--                @endif--}}
+        closePopup.addEventListener("click", eventClose =>{
+            let tmpParent = eventClose.currentTarget.closest(".parent-form-popup")
+            tmpParent.style.display = "none"
+            tmpParent.querySelector(".faq-form").innerHTML=``
+        })
 
+        let trUserSms = document.querySelector("#tr-user-sms")
+        trUserSms.addEventListener("click", event => {
+            let dataSmsTable = document.querySelector(".data-sms-table").cloneNode(true);
+            dataSmsTable.style.display = "block"
+            parentFormPopup.querySelector(".title-popup").textContent = "SMS user List"
+            parentFormPopup.querySelector(".faq-form").appendChild(dataSmsTable)
+            parentFormPopup.style.display = "block"
+        })
 
+        let trUserLine = document.querySelector("#tr-user-line")
+        trUserLine.addEventListener("click", event => {
+            let dataLineTable = document.querySelector(".data-line-table").cloneNode(true);
+            dataLineTable.style.display = "block"
+            parentFormPopup.querySelector(".title-popup").textContent = "Line user List"
+            parentFormPopup.querySelector(".faq-form").appendChild(dataLineTable)
+            parentFormPopup.style.display = "block"
+        })
 
-            </script>
+        let trUserEmail = document.querySelector("#tr-user-email")
+        trUserEmail.addEventListener("click", event => {
+            let dataEmailTable = document.querySelector(".data-email-table").cloneNode(true);
+            dataEmailTable.style.display = "block"
+            parentFormPopup.querySelector(".title-popup").textContent = "Email user List"
+            parentFormPopup.querySelector(".faq-form").appendChild(dataEmailTable)
+            parentFormPopup.style.display = "block"
+        })
+
+    </script>
 
 @endsection
 

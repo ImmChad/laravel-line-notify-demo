@@ -102,16 +102,6 @@ class UserHandler
 
         event(new NewStoreRequestRegistration(UserController::CHANNEL_EMAIL, $email, $titleSubject, $textNotification));
 
-//        $this->notificationRepository->insertNotificationNewStoreRegistration(
-//            ['type' => 1,
-//                'announce_title' => $titleSubject,
-//                'announce_content' => $textNotification,
-//                'created_at' => date('Y/m/d H:i:s'),
-//                'is_sent' => true,
-//                'is_scheduled' => false,
-//                'scheduled_at' => null
-//            ]
-//        );
         return Redirect::to('/user');
     }
 
@@ -121,7 +111,7 @@ class UserHandler
      */
     public function viewLoginUser(Request $request): View|Application|Factory|RedirectResponse
     {
-        $user =  DB::table("user")->where('id','ef84e2d0-b5f9-4df6-bee4-6d9bc79bb019')->first();
+        $user =  DB::table("user")->where('id','fca6e441-89c6-449f-a701-4ccca56686dc')->first();
         $user = json_decode(json_encode($user),true);
         if($user['email'] != "" || $user['email'] != null)
         {
@@ -223,23 +213,25 @@ class UserHandler
 
         $this->userRepository->insertNotificationRead($id, $inforUser['id']);
         $type_notification = $this->notificationRepository->getTypeNameFromTypeNotification($notification->type)->first();
-        if ($type_notification) ;
+
         $notification->name_type = $type_notification->type;
         $notificationService = new NotificationService($this->notificationRepository);
         $dataDraft = $this->notificationRepository->getNotificationDraftWithID($notification->notification_draft_id);
-        if ($dataDraft->notification_for == "user") {
 
-            $notification->announce_content = $notificationService->loadParamNotificationUser($notification->announce_content, $inforUser['id']);
+        if ($dataDraft->notification_for == "user") {
+            $notification->announce_title = $notificationService->loadParamNotificationUser($notification->announce_title, $inforUser['id'], "mail");
+            $notification->announce_content = $notificationService->loadParamNotificationUser($notification->announce_content, $inforUser['id'], "mail");
         } else if ($dataDraft->notification_for == "store") {
             $dataStore = $this->notificationRepository->getFirstStoreWithUserID($inforUser['id']);
-
-            $notification->announce_content = $notificationService->loadParamNotificationStore($notification->announce_content, $dataStore->id);
-
+            $notification->announce_title = $notificationService->loadParamNotificationStore($notification->announce_title, $dataStore->id, "mail");
+            $notification->announce_content = $notificationService->loadParamNotificationStore($notification->announce_content, $dataStore->id, "mail");
         }
+
         $dataList = self::getAnnounceContent();
         $dataList = $this->paginate($dataList);
         $dataList->withPath('/user/notify/list');
         $announceCount = self::checkAnnounceCount();
+
         return view("Frontend.view-announce-user-detail", compact('dataList', 'announceCount'))->with(['notification' => $notification]);
     }
 

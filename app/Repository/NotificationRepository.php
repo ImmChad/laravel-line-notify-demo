@@ -277,7 +277,7 @@ class NotificationRepository
         return NotificationTemplate::insert([
                 'id' => Str::uuid()->toString(),
                 'template_type' => $request->templateType,
-                'template_name' => $request->templateTitle,
+                'template_name' => $request->templateName,
                 'template_title' => $request->templateTitle,
                 'template_content' => $request->templateContent,
                 'created_at' => date('Y/m/d H:i:s')
@@ -293,7 +293,7 @@ class NotificationRepository
         return NotificationTemplate::where('id', $request->id)
             ->update([
                 'created_at' => now(),
-                'template_name' => $request->templateTitle,
+                'template_name' => $request->templateName,
                 'template_title' => $request->templateTitle,
                 'template_content' => $request->templateContent,
             ]);
@@ -487,6 +487,7 @@ class NotificationRepository
         $totalUserSms = 0;
         $totalUserLine = 0;
         $totalUserMail = 0;
+
         if($request->announceFor == "user")
         {
             $totalUserSms = count($this->getSeekerOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($request->areaId,$request->industryId,$now));
@@ -499,6 +500,7 @@ class NotificationRepository
             $totalUserMail = count($this->getStoreNotLineHasMailWithAreaIDIndustryIDCreatedAt($request->areaId,$request->industryId,$now));
             $totalUserLine = count($this->getStoreHasLineWithAreaIDIndustryIDCreatedAt($request->areaId,$request->industryId,$now));
         }
+
         return DB::table('notification_draft')->insertGetId([
             'id' => Str::uuid()->toString(),
             'notification_for' => $request->announceFor,
@@ -927,7 +929,7 @@ class NotificationRepository
     public function getTemplate() : Collection
     {
         return DB::table('notification_template')
-            ->orderBy('id', 'desc')
+            ->orderBy('created_at', 'desc')
             ->get(
                 array(
                     'id',

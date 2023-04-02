@@ -21,6 +21,7 @@ class NotificationService
     const PARAM_USER_NAME = "{user_nm}";
     const PARAM_PREFECTURE_NAME = "{prefecture_nm}";
     const PARAM_BUSINESS_NAME = "{business_nm}";
+    const PARAM_BR = "{br}";
 
 
     public function __construct(private NotificationRepository $notificationRepository)
@@ -32,7 +33,7 @@ class NotificationService
      * @param String $contentNotification
      * @return string
      */
-    public function loadParamNotificationStore(string $contentNotification, string $storeId): string
+    public function loadParamNotificationStore(string $contentNotification, string $storeId, String $typeSend="notMail"): string
     {
         $dataStore = DB::table('store')->where("id", $storeId)->first();
 
@@ -109,10 +110,22 @@ class NotificationService
             $contentNotification = str_replace(self::PARAM_PLAN, "Free", $contentNotification);
         }
 
+        if (strpos($contentNotification, self::PARAM_BR) >= 0 )
+        {
+            if($typeSend == "notMail")
+            {
+                $contentNotification = str_replace(self::PARAM_BR, "\r\n", $contentNotification);
+            }
+            else
+            {
+                $contentNotification = str_replace(self::PARAM_BR, "<br>", $contentNotification);
+            }
+        }
+
         return $contentNotification;
     }
 
-    public function loadParamNotificationUser(string $contentNotification, string $userId): string
+    public function loadParamNotificationUser(string $contentNotification, string $userId, String $typeSend="notMail"): string
     {
         $dataUser = DB::table('user')->where("id", $userId)->first();
 
@@ -171,6 +184,7 @@ class NotificationService
             $areaName = isset($dataArea) ? $dataArea->area_name : "Your Area";
             $contentNotification = str_replace(self::PARAM_AREA_KEY, $areaName ?? "", $contentNotification);
         }
+
         if (strpos($contentNotification, self::PARAM_BUSINESS_NAME) >= 0) {
             $dataIndustry = DB::table(DB::raw("seeker_expect_industry, static_industry"))
                 ->select(DB::raw("static_industry.industry_name_jp"))
@@ -180,6 +194,7 @@ class NotificationService
             $industryName = isset($dataIndustry) ? $dataIndustry->industry_name_jp : "Your Industry";
             $contentNotification = str_replace(self::PARAM_BUSINESS_NAME, $industryName ?? "", $contentNotification);
         }
+
         if (strpos($contentNotification, self::PARAM_SHOP_NAME) >= 0) {
             $dataStore = DB::table(DB::raw("store"))
                 ->select(DB::raw("store.store_name"))
@@ -188,6 +203,7 @@ class NotificationService
             $storeName = isset($dataStore) ? $dataStore->store_name : 'Store Name';
             $contentNotification = str_replace(self::PARAM_SHOP_NAME, $storeName ?? "", $contentNotification);
         }
+
         if (strpos($contentNotification, self::PARAM_SHOP_ID) >= 0) {
             $dataStore = DB::table(DB::raw("store"))
                 ->select(DB::raw("store.id"))
@@ -196,6 +212,19 @@ class NotificationService
             $id = isset($dataStore) ? $dataStore->id : "";
             $contentNotification = str_replace(self::PARAM_SHOP_ID, $id ?? "", $contentNotification);
         }
+
+        if (strpos($contentNotification, self::PARAM_BR) >= 0 )
+        {
+            if($typeSend == "notMail")
+            {
+                $contentNotification = str_replace(self::PARAM_BR, "\r\n", $contentNotification);
+            }
+            else
+            {
+                $contentNotification = str_replace(self::PARAM_BR, "<br>", $contentNotification);
+            }
+        }
+
         return $contentNotification;
     }
 }
