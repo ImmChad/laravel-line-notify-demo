@@ -96,32 +96,8 @@ Route::group(array('prefix' => '/admin', 'middleware' => 'checkAdminLogin'), fun
         [NotificationController::class, 'sendUpdateForListUser'])
         ->name('admin.notification.sendUpdateForListUser');
 
-    // 3. template
-    Route::get('/template-management',
-        [NotificationTemplateController::class, 'showTemplateManagementView'])
-        ->name('admin.notification.template-management');
 
-    Route::get('/add-new-template-view',
-        [NotificationTemplateController::class, 'showAddNewTemplateView'])
-        ->name('admin.notification.template-management.add_get');
-
-    Route::post('/add-template',
-        [NotificationTemplateController::class, 'reqAddNewTemplate'])
-        ->name('admin.notification.reqAddNewTemplate');
-
-    Route::get('/update-template-view/{templateId}',
-        [NotificationTemplateController::class, 'showUpdateTemplateView'])
-        ->name('admin.notification.template-management');
-
-    Route::post('/update-template',
-        [NotificationTemplateController::class, 'reqUpdateNewTemplate'])
-        ->name('admin.notification.reqUpdateNewTemplate');
-
-    Route::post('/get-template-for-send-mail',
-        [NotificationTemplateController::class, 'getTemplateForSendMail'])
-        ->name('admin.notification.getTemplateForSendMail');
-
-
+    // 3. draft
     Route::get('/update-notification-draft/{notificationDraftId}/{notificationSender?}/{notificationTemplate?}',
         [NotificationDraftController::class, 'renderUpdateNotificationDraft'])
         ->name('admin.notification.renderUpdateNotificationDraft');
@@ -138,13 +114,39 @@ Route::group(array('prefix' => '/admin', 'middleware' => 'checkAdminLogin'), fun
         [NotificationDraftController::class, 'saveNotificationDraft'])
         ->name('admin.notification.saveNotificationDraft');
 
+    // 4. template
+    Route::get('/template-management',
+        [NotificationTemplateController::class, 'showTemplateManagementView'])
+        ->name('admin.notification.backend-view-management');
 
-    // 4. Cronjob
+    Route::get('/add-new-template-view',
+        [NotificationTemplateController::class, 'showAddNewTemplateView'])
+        ->name('admin.notification.backend-view-management.add_get');
+
+    Route::post('/add-template',
+        [NotificationTemplateController::class, 'reqAddNewTemplate'])
+        ->name('admin.notification.reqAddNewTemplate');
+
+    Route::get('/update-template-view/{templateId}',
+        [NotificationTemplateController::class, 'showUpdateTemplateView'])
+        ->name('admin.notification.backend-view-management');
+
+    Route::post('/update-template',
+        [NotificationTemplateController::class, 'reqUpdateNewTemplate'])
+        ->name('admin.notification.reqUpdateNewTemplate');
+
+    Route::post('/get-template-for-send-mail',
+        [NotificationTemplateController::class, 'getTemplateForSendMail'])
+        ->name('admin.notification.getTemplateForSendMail');
+
+
+
+    // 5. Cronjob
     Route::post('/send-notification',
         [NotificationController::class, 'sendMessForListUser'])
         ->name('admin.notification.sendMessForListUser');
-});
 
+});
 
 
 

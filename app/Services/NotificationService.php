@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Repository\NotificationRepository;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Exception;
 
 class NotificationService
 {
@@ -24,13 +24,18 @@ class NotificationService
     const PARAM_BR = "{br}";
 
 
-    public function __construct(private NotificationRepository $notificationRepository)
+    public function __construct(
+        private NotificationRepository $notificationRepository,
+        private NotificationUserService $notificationUserService
+    )
     {
-
     }
 
     /**
      * @param string $contentNotification
+     *
+     * @throws Exception
+     *
      * @return string
      */
     public function loadParamNotificationStore(string $contentNotification, string $storeId, String $typeSend="notMail"): string
@@ -125,13 +130,13 @@ class NotificationService
         return $contentNotification;
     }
 
-    public function loadParamNotificationUser(string $contentNotification, string $userId, String $typeSend="notMail"): string
+    public function loadParamNotificationSeeker(string $contentNotification, string $userId, String $typeSend="notMail"): string
     {
         $dataUser = DB::table('user')->where("id", $userId)->first();
 
         //{}
         if (strpos($contentNotification, self::PARAM_USER_NAME) >= 0) {
-            $dataUser->detailSeeker = $this->notificationRepository->getSeekerWithUserId($userId);
+            $dataUser->detailSeeker = $this->notificationUserService->getSeekerWithUserId($userId);
             if (isset($dataUser->detailSeeker)) {
                 $contentNotification = str_replace(self::PARAM_USER_NAME, $dataUser->detailSeeker->nickname, $contentNotification);
             } else {
@@ -213,6 +218,23 @@ class NotificationService
             $contentNotification = str_replace(self::PARAM_SHOP_ID, $id ?? "", $contentNotification);
         }
 
+        if (strpos($contentNotification, self::PARAM_BR) >= 0 )
+        {
+            if($typeSend == "notMail")
+            {
+                $contentNotification = str_replace(self::PARAM_BR, "\r\n", $contentNotification);
+            }
+            else
+            {
+                $contentNotification = str_replace(self::PARAM_BR, "<br>", $contentNotification);
+            }
+        }
+
+        return $contentNotification;
+    }
+
+    public function loadParamNotificationUserForNewStore(string $contentNotification, string $userId, String $typeSend="notMail"): string
+    {
         if (strpos($contentNotification, self::PARAM_BR) >= 0 )
         {
             if($typeSend == "notMail")

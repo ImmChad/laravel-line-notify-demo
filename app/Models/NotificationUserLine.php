@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class NotificationUserLine extends Model
 {
-    public $timestamps = false;
+    public $timestamps = false; //set time to false
     /**
      * @var string[]
      */

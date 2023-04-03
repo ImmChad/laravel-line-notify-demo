@@ -2,8 +2,9 @@
 
 namespace App\Providers;
 
-use App\Events\NewStoreRequestRegistration;
-use App\Listeners\TriggerNewStoreRequestRegistration;
+
+use App\Events\NewStoreRequestRegistrationEvent;
+use App\Listeners\TriggerNewStoreRequestRegistrationListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -30,8 +31,8 @@ class EventServiceProvider extends ServiceProvider
         NewEmailMagazineEvent::class =>[
             TriggerForNewEmailMagazineListener::class
         ],
-        NewStoreRequestRegistration::class =>[
-            TriggerNewStoreRequestRegistration::class
+        NewStoreRequestRegistrationEvent::class =>[
+            TriggerNewStoreRequestRegistrationListener::class
         ]
     ];
 

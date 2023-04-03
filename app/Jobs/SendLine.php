@@ -14,7 +14,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\User\UserController;
 
 class SendLine implements ShouldQueue
 {
@@ -29,10 +28,11 @@ class SendLine implements ShouldQueue
      * @param int $notificationId
      */
     public function __construct(
-        int $notificationId,
-        private NotificationRepository $notificationRepository,
-        private NotificationDraftRepository $notificationDraftRepository,
-        private NotificationUserService $notificationUserService
+        int                                $notificationId,
+        public NotificationRepository      $notificationRepository,
+        public NotificationDraftRepository $notificationDraftRepository,
+        public NotificationService         $notificationService,
+        public NotificationUserService     $notificationUserService
     )
     {
         $this->notificationId = $notificationId;
@@ -50,7 +50,6 @@ class SendLine implements ShouldQueue
             ->first();
 
         if (isset($data_notification)) {
-            $notificationRepository = new NotificationRepository();
             $dataNotificationDraft = $this->notificationDraftRepository->getNotificationDraftWithID($data_notification->notification_draft_id);
             $userLine = [];
 
@@ -60,18 +59,17 @@ class SendLine implements ShouldQueue
                 $userLine = $this->notificationUserService->getStoreHasLineWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id, $dataNotificationDraft->created_at);
             }
 
-            $notificationService = new NotificationService($notificationRepository);
 
             foreach ($userLine as $subUserLine) {
                 $title = "";
                 $content = "";
 
                 if ($dataNotificationDraft->notification_for == "user") {
-                    $title = $notificationService->loadParamNotificationUser($data_notification->announce_title, $subUserLine->id);
-                    $content = $notificationService->loadParamNotificationUser($data_notification->announce_content, $subUserLine->id);
+                    $title = $this->notificationService->loadParamNotificationSeeker($data_notification->announce_title, $subUserLine->id);
+                    $content = $this->notificationService->loadParamNotificationSeeker($data_notification->announce_content, $subUserLine->id);
                 } else if ($dataNotificationDraft->notification_for == "store") {
-                    $title = $notificationService->loadParamNotificationStore($data_notification->announce_title, $subUserLine->id);
-                    $content = $notificationService->loadParamNotificationStore($data_notification->announce_content, $subUserLine->id);
+                    $title = $this->notificationService->loadParamNotificationStore($data_notification->announce_title, $subUserLine->id);
+                    $content = $this->notificationService->loadParamNotificationStore($data_notification->announce_content, $subUserLine->id);
                 }
 
                 $mess = "{$title} \r\n \r\n {$content}";

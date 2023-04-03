@@ -34,5 +34,4 @@ class ConnectGmailController extends Controller
     {
             return $this->userHandler->handleGoogleCallback($request);
     }
-
 }

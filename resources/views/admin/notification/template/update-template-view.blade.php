@@ -1,4 +1,4 @@
-@extends('admin.backend-view')
+@extends('admin.notification.backend-view')
 @section('ContentAdmin')
     <style>
         .content-send-notification {

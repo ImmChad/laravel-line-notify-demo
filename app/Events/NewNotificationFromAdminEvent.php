@@ -2,6 +2,10 @@
 
 namespace App\Events;
 
+use App\Repository\NotificationDraftRepository;
+use App\Repository\NotificationRepository;
+use App\Services\NotificationService;
+use App\Services\NotificationUserService;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -17,10 +21,20 @@ class NewNotificationFromAdminEvent
     /**
      * Create a new event instance.
      */
-    public int $notification_id;
-    public function __construct($notification_id)
+    /**
+     * @param int $notificationId
+     * @param NotificationRepository $notificationRepository
+     * @param NotificationDraftRepository $notificationDraftRepository
+     * @param NotificationService $notificationService
+     */
+    public function __construct
+    (
+        public int                         $notificationId,
+        public NotificationRepository      $notificationRepository,
+        public NotificationDraftRepository $notificationDraftRepository,
+        public NotificationService         $notificationService,
+        public NotificationUserService     $notificationUserService,
+    )
     {
-        $this->notification_id = $notification_id;
     }
-
 }

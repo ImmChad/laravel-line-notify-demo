@@ -1,4 +1,4 @@
-@extends('admin.backend-view')
+@extends('admin.notification.backend-view')
 @section('ContentAdmin')
     <style>
         .content-send-notification {
@@ -195,35 +195,35 @@
                             <div class="part-input-text-template">
                                 <div class="field-ipt-text field-title-notification">
                                     <input
-                                            placeholder="Please input name"
-                                            required
-                                            minlength="10"
-                                            maxlength="225"
-                                            contenteditable="true"
-                                            class="ipt-text-notification"
-                                            id="ipt-name-notification">
+                                        placeholder="Please input name"
+                                        required
+                                        minlength="10"
+                                        maxlength="225"
+                                        contenteditable="true"
+                                        class="ipt-text-notification"
+                                        id="ipt-name-notification">
                                 </div>
 
                                 <div class="field-ipt-text field-title-notification">
                                     <div
-                                            placeholder="Please input title"
-                                            required
-                                            minlength="10"
-                                            maxlength="225"
-                                            contenteditable="true"
-                                            class="ipt-text-notification"
-                                            id="ipt-title-notification"></div>
+                                        placeholder="Please input title"
+                                        required
+                                        minlength="10"
+                                        maxlength="225"
+                                        contenteditable="true"
+                                        class="ipt-text-notification"
+                                        id="ipt-title-notification"></div>
                                 </div>
 
                                 <div class="field-ipt-text field-content-notification">
                                     <div
-                                            contenteditable="true"
-                                            placeholder="Please input content"
-                                            required
-                                            minlength="100"
-                                            maxlength="200"
-                                            class="ipt-text-notification"
-                                            id="ipt-content-notification"></div>
+                                        contenteditable="true"
+                                        placeholder="Please input content"
+                                        required
+                                        minlength="100"
+                                        maxlength="200"
+                                        class="ipt-text-notification"
+                                        id="ipt-content-notification"></div>
                                 </div>
                             </div>
 
@@ -277,7 +277,18 @@
                         btn.contentEditable = false
                         btn.appendChild(icRemove);
 
-                        if (range.commonAncestorContainer.parentNode == edt || range.commonAncestorContainer == edt || range.commonAncestorContainer.parentNode == itn || range.commonAncestorContainer == itn) {
+                        if
+                        (
+                            range.commonAncestorContainer.parentNode == edt
+                            || range.commonAncestorContainer == edt
+                            || range.commonAncestorContainer.parentNode == itn
+                            || range.commonAncestorContainer == itn
+                            || edt.contains(range.commonAncestorContainer.parentNode)
+                            || edt.contains(range.commonAncestorContainer)
+                            || itn.contains(range.commonAncestorContainer.parentNode)
+                            || itn.contains(range.commonAncestorContainer)
+                        )
+                        {
                             range.insertNode(btn);
                         }
                         // edt.innerHTML = edt.innerHTML.trim().replace("\n") + btn.outerHTML

@@ -38,13 +38,13 @@ class NotificationDraftController extends Controller
      * @param string|null $notificationSender
      * @param string|null $notificationTemplate
      *
-     * @return Application|Factory|View|\Illuminate\Foundation\Application|RedirectResponse
+     * @return Application|Factory|View|RedirectResponse
      */
     function renderUpdateNotificationDraft(
         string $notificationDraftId,
         string $notificationSender = null,
         string $notificationTemplate = null
-    ): \Illuminate\Foundation\Application|View|Factory|RedirectResponse|Application {
+    ): View|Factory|RedirectResponse|Application {
         return $this->notificationDraftHandler->renderUpdateNotificationDraft(
             $notificationDraftId,
             $notificationSender,
@@ -72,6 +72,7 @@ class NotificationDraftController extends Controller
             'title' => 'required',
             'message' => 'required',
         ]);
+
         return $this->notificationDraftHandler->saveNotificationDraft($request);
     }
 }

@@ -12,6 +12,6 @@ class NotificationParamUserRepository
      */
     public function getAll(): Collection
     {
-        return DB::table('notification_user_store')->get();
+        return DB::table('notification_param_user')->get();
     }
 }

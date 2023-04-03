@@ -323,7 +323,7 @@
                         success: function(data) {
                             if(data.logged_in)
                             {
-                                location.href='/admin';
+                                window.location.href='/admin';
                             }
                             else
                             {

@@ -1,4 +1,4 @@
-@extends('seeker.home-user')
+@extends('seeker.notification.home-user')
 @section('content')
     <style>
         /* @import 'root.css'; */
@@ -24,7 +24,7 @@
         tr.field-client,
         tr.field-user {
             margin-bottom: 20px;
-            border-spacing: 20px solid transparent;
+            border: 20px solid transparent;
             display: flex;
             justify-content: space-between;
         }
