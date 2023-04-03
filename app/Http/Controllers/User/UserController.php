@@ -52,16 +52,19 @@ class UserController extends Controller
     {
     }
 
-    public function index(Request $request)
+    /**
+     * @return Factory|View|Application
+     */
+    public function index()
     {
-            return $this->userHandler->index($request);
+            return $this->userHandler->index();
     }
 
     /**
      * @param Request $request
-     * @return View|Factory|Application|RedirectResponse|\Illuminate\Contracts\Foundation\Application
+     * @return View|Factory|Application|RedirectResponse
      */
-    public function viewLoginUser(Request $request): View|Factory|Application|RedirectResponse|\Illuminate\Contracts\Foundation\Application
+    public function viewLoginUser(Request $request): View|Factory|Application|RedirectResponse
     {
         return $this->userHandler->viewLoginUser($request);
     }
@@ -83,9 +86,9 @@ class UserController extends Controller
     }
 
     /**
-     * @return View|Factory|Application|RedirectResponse|\Illuminate\Contracts\Foundation\Application
+     * @return View|Factory|Application|RedirectResponse
      */
-    function viewUser(): View|Factory|Application|RedirectResponse|\Illuminate\Contracts\Foundation\Application
+    function viewUser(): View|Factory|Application|RedirectResponse
     {
         return $this->userHandler->viewUser();
     }

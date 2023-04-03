@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+  * @method static Builder|NotificationRead whereNotificationId($value)
+ */
 class NotificationRead extends Model
 {
     public $timestamps = false; //set time to false

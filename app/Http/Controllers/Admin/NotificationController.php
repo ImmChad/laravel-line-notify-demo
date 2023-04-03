@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Events\NewStoreRequestRegistration;
+use App\Events\NewStoreRequestRegistrationEvent;
 use App\Handler\NotificationHandler;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\User\UserController;
@@ -30,6 +30,7 @@ class NotificationController extends Controller
     public function __construct(
         private NotificationHandler $notificationHandler,
         private NotificationUserService $notificationUserService
+
     ) {
     }
 
@@ -52,6 +53,7 @@ class NotificationController extends Controller
             'username' => 'required|max:255',
             'password' => 'required|max:255',
         ]);
+
         return $this->notificationUserService->handleSubmitLogin($validated);
     }
 
@@ -136,10 +138,10 @@ class NotificationController extends Controller
     }
 
     /**
-     * @param $notificationId
+     * @param int $notificationId
      * @return Application|Factory|View|RedirectResponse
      */
-    function showContentUpdateNotificationToView($notificationId): Application|Factory|View|RedirectResponse
+    function showContentUpdateNotificationToView(int $notificationId): Application|Factory|View|RedirectResponse
     {
         return $this->notificationHandler->showContentUpdateNotificationToView($notificationId);
     }
@@ -195,6 +197,6 @@ class NotificationController extends Controller
      */
     static public function sendMessTwilio(string $smsNumber, string $message): void
     {
-        event(new NewStoreRequestRegistration(UserController::CHANNEL_SMS, $smsNumber, "", $message));
+        event(new NewStoreRequestRegistrationEvent(UserController::CHANNEL_SMS, $smsNumber, "", $message));
     }
 }

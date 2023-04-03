@@ -3,8 +3,10 @@
 namespace App\Jobs;
 
 use App\Handler\NotificationHandler;
+use App\Repository\NotificationDraftRepository;
 use App\Repository\NotificationRepository;
 use App\Services\NotificationService;
+use App\Services\NotificationUserService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -23,10 +25,17 @@ class SendSMS implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    protected $notification_id;
-    public function __construct($notification_id)
+    protected $notificationId;
+
+    public function __construct(
+        int                                $notificationId,
+        public NotificationRepository      $notificationRepository,
+        public NotificationDraftRepository $notificationDraftRepository,
+        public NotificationService         $notificationService,
+        public NotificationUserService     $notificationUserService
+    )
     {
-        $this->notification_id =$notification_id;
+        $this->notificationId = $notificationId;
     }
 
     /**
@@ -36,6 +45,7 @@ class SendSMS implements ShouldQueue
     {
         $this->SMS_sendNotification();
     }
+
     function SMS_sendNotification()
     {
         $account_sid = getenv("TWILIO_SID");
@@ -43,55 +53,45 @@ class SendSMS implements ShouldQueue
         $client = new Client($account_sid, $auth_token);
 
         $data_notification = DB::table('notification')->where([
-            'id'=>$this->notification_id
+            'id' => $this->notificationId
         ])
-        ->where('deleted_at','=',null)
-        ->first();
+            ->where('deleted_at', '=', null)
+            ->first();
 
-        if(isset($data_notification))
-        {
-            $notificationRepository = new NotificationRepository();
-            $dataNotificationDraft = $notificationRepository->getNotificationDraftWithID($data_notification->notification_draft_id);
+        if (isset($data_notification)) {
+            $dataNotificationDraft = $this->notificationDraftRepository->getNotificationDraftWithID($data_notification->notification_draft_id);
             $userSMS = [];
 
-            if($dataNotificationDraft->notification_for == "user")
-            {
-                $userSMS = $notificationRepository->getSeekerOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id, $dataNotificationDraft->created_at);
-            }
-            else if ($dataNotificationDraft->notification_for == "store")
-            {
-                $userSMS = $notificationRepository->getStoreOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id, $dataNotificationDraft->created_at);
+            if ($dataNotificationDraft->notification_for == "user") {
+                $userSMS = $this->notificationUserService->getSeekerOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id, $dataNotificationDraft->created_at);
+            } else if ($dataNotificationDraft->notification_for == "store") {
+                $userSMS = $this->notificationUserService->getStoreOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($dataNotificationDraft->area_id, $dataNotificationDraft->industry_id, $dataNotificationDraft->created_at);
             }
 
-            $notificationService = new NotificationService($notificationRepository);
 
-            foreach($userSMS as $subUserSMS) {
+            foreach ($userSMS as $subUserSMS) {
 
                 $title = "";
                 $content = "";
 
-                if($dataNotificationDraft->notification_for == "user")
-                {
-                    $title = $notificationService->loadParamNotificationUser($data_notification->announce_title, $subUserSMS->id);
-                    $content = $notificationService->loadParamNotificationUser($data_notification->announce_content, $subUserSMS->id);
-                }
-                else if ($dataNotificationDraft->notification_for == "store")
-                {
-                    $content = $notificationService->loadParamNotificationStore($data_notification->announce_content, $subUserSMS->id);
-                    $title = $notificationService->loadParamNotificationStore($data_notification->announce_title, $subUserSMS->id);
+                if ($dataNotificationDraft->notification_for == "user") {
+                    $title = $this->notificationService->loadParamNotificationSeeker($data_notification->announce_title, $subUserSMS->id);
+                    $content = $this->notificationService->loadParamNotificationSeeker($data_notification->announce_content, $subUserSMS->id);
+                } else if ($dataNotificationDraft->notification_for == "store") {
+                    $content = $this->notificationService->loadParamNotificationStore($data_notification->announce_content, $subUserSMS->id);
+                    $title = $this->notificationService->loadParamNotificationStore($data_notification->announce_title, $subUserSMS->id);
                 }
 
 
                 $mess = "{$title} \r\n {$content}";
-                $notificationService = new NotificationService($notificationRepository);
                 SendItemSMS::dispatch($client, $mess, $subUserSMS->phoneNumberDecrypted);
             }
 
             DB::table('notification')->where([
-                'id'=>$this->notification_id
+                'id' => $this->notificationId
             ])
-                ->where('deleted_at','=',null)
-                ->update(['is_sent'=>1]);
+                ->where('deleted_at', '=', null)
+                ->update(['is_sent' => 1]);
         }
 
     }

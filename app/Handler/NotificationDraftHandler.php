@@ -2,6 +2,7 @@
 
 namespace App\Handler;
 
+use App\Models\NotificationDraft;
 use App\Models\NotificationTemplate;
 use App\Repository\NotificationDraftRepository;
 use App\Repository\NotificationParamStoreRepository;
@@ -19,6 +20,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
 
 class NotificationDraftHandler
 {
@@ -34,16 +36,17 @@ class NotificationDraftHandler
      * @param NotificationUserService $notificationUserService
      */
     public function __construct(
-        private NotificationRepository $notificationRepository,
-        private NotificationReadRepository $notificationReadRepository,
-        private NotificationUserLineRepository $notificationUserLineRepository,
-        private NotificationTemplateRepository $notificationTemplateRepository,
-        private NotificationTypeRepository $notificationTypeRepository,
-        private NotificationDraftRepository $notificationDraftRepository,
+        private NotificationRepository           $notificationRepository,
+        private NotificationReadRepository       $notificationReadRepository,
+        private NotificationUserLineRepository   $notificationUserLineRepository,
+        private NotificationTemplateRepository   $notificationTemplateRepository,
+        private NotificationTypeRepository       $notificationTypeRepository,
+        private NotificationDraftRepository      $notificationDraftRepository,
         private NotificationParamStoreRepository $notificationParamStoreRepository,
-        private NotificationParamUserRepository $notificationParamUserRepository,
-        private NotificationUserService $notificationUserService
-    ) {
+        private NotificationParamUserRepository  $notificationParamUserRepository,
+        private NotificationUserService          $notificationUserService
+    )
+    {
     }
 
     /**
@@ -60,13 +63,14 @@ class NotificationDraftHandler
      * @param string|null $notificationSender
      * @param string|null $notificationTemplate
      *
-     * @return Application|Factory|View|\Illuminate\Foundation\Application|RedirectResponse
+     * @return Application|Factory|View|RedirectResponse
      */
     public function renderUpdateNotificationDraft(
         string $notificationDraftId,
         string $notificationSender = null,
         string $notificationTemplate = null
-    ): Application|Factory|View|\Illuminate\Foundation\Application|RedirectResponse {
+    ): Application|Factory|View|RedirectResponse
+    {
         $dataDraft = $this->notificationDraftRepository->getNotificationDraftWithID($notificationDraftId);
 
         $detailTemplate = new NotificationTemplate();
@@ -130,137 +134,194 @@ class NotificationDraftHandler
      *
      * @return int
      */
-    public function updateNotificationDraft(Request $request): int
-    {
-        $request->validate([
-            'title' => 'required|max:255',
-            'message' => 'required',
-        ]);
-
-        if ($request->announceFor == "user") {
-            if (intval($request->announceTypeFor) == 1) {
-                $listSeeker = $this->notificationUserService->getListUserAllRole2();
-            } else {
-                if (intval($request->areaId) == 0 && intval($request->industryId) == 0) {
-                    $listSeeker = $this->notificationUserService->getListUserAllRole2();
-                } else {
-                    $listSeeker = $this->notificationUserService->getListUserRole2ById($request);
-                }
-            }
-
-            $totalUserLine = 0;
-            $totalUserMail = 0;
-            $totalUserSms = 0;
-            foreach ($listSeeker as $subListSeeker) {
-                if (count($this->notificationUserLineRepository->getListUserLine($subListSeeker->id)) > 0) {
-                    $totalUserLine += 1;
-                } else {
-                    if ($subListSeeker->email != null) {
-                        $totalUserMail += 1;
-                    } else {
-                        if ($subListSeeker->phone_number_landline != null) {
-                            $totalUserSms += 1;
-                        }
-                    }
-                }
-            }
-        } else {
-            if ($request->announceTypeFor == 1) {
-                $listStore = $this->notificationUserService->getListUserAllRole3();
-            } else {
-                if (intval($request->areaId) == 0 && intval($request->industryId) == 0) {
-                    $listStore = $this->notificationUserService->getListUserAllRole3();
-                } else {
-                    $listStore = $this->notificationUserService->getListUserRole3ById($request);
-                }
-            }
-            $totalUserLine = 0;
-            $totalUserMail = 0;
-            $totalUserSms = 0;
-            foreach ($listStore as $subListStore) {
-                if (count($this->notificationUserLineRepository->getListUserLine($subListStore->id)) > 0) {
-                    $totalUserLine += 1;
-                } else {
-                    if ($subListStore->mail_address != null) {
-                        $totalUserMail += 1;
-                    } else {
-                        if ($subListStore->phone_number != null) {
-                            $totalUserSms += 1;
-                        }
-                    }
-                }
-            }
-        }
-        return $this->notificationDraftRepository->updateNotificationDraft($request);
-    }
 
     /**
      * @param object $request
      * @return int
      */
-    public function saveNotificationDraft(object $request): int
+
+
+    /**
+     * @return NotificationDraft|null
+     */
+    public function getNotificationDraftForSummaryView(): ?NotificationDraft
     {
-        if ($request->announceFor == "user") {
-            if (intval($request->announceTypeFor) == 1) {
-                $listSeeker = $this->notificationUserService->getListUserAllRole2();
-            } else {
-                if (intval($request->areaId) == 0 && intval($request->industryId) == 0) {
-                    $listSeeker = $this->notificationUserService->getListUserAllRole2();
-                } else {
-                    $listSeeker = $this->notificationUserService->getListUserRole2ById($request);
-                }
-            }
 
-            $totalUserLine = 0;
-            $totalUserMail = 0;
-            $totalUserSms = 0;
 
-            foreach ($listSeeker as $subListSeeker) {
-                if (count($this->notificationUserLineRepository->getListUserLine($subListSeeker->id)) > 0) {
-                    $totalUserLine += 1;
-                } else {
-                    if ($subListSeeker->email != null) {
-                        $totalUserMail += 1;
-                    } else {
-                        if ($subListSeeker->phone_number_landline != null) {
-                            $totalUserSms += 1;
-                        }
-                    }
-                }
-            }
-        } else {
-            if ($request->announceTypeFor == 1) {
-                $listStore = $this->notificationUserService->getListUserAllRole3();
-            } else {
-                if (intval($request->areaId) == 0 && intval($request->industryId) == 0) {
-                    $listStore = $this->notificationUserService->getListUserAllRole3();
-                } else {
-                    $listStore = $this->notificationUserService->getListUserRole3ById($request);
-                }
-            }
-            $totalUserLine = 0;
-            $totalUserMail = 0;
-            $totalUserSms = 0;
-            foreach ($listStore as $subListStore) {
-                if (count($this->notificationUserLineRepository->getListUserLine($subListStore->id)) > 0) {
-                    $totalUserLine += 1;
-                } else {
-                    if ($subListStore->mail_address != null) {
-                        $totalUserMail += 1;
-                    } else {
-                        if ($subListStore->phone_number != null) {
-                            $totalUserSms += 1;
-                        }
-                    }
-                }
+        $dataDraft = NotificationDraft::where(['is_processed' => 0])->first();
+
+        if (isset($dataDraft)) {
+            if ($dataDraft->notification_for == "user") {
+                $dataDraft->lineUsers = $this->notificationUserService->getSeekerHasLineWithAreaIDIndustryIDCreatedAt($dataDraft->area_id, $dataDraft->industry_id, $dataDraft->created_at);
+                $dataDraft->emailUsers = $this->notificationUserService->getSeekerNotLineHasMailWithAreaIDIndustryIDCreatedAt($dataDraft->area_id, $dataDraft->industry_id, $dataDraft->created_at);
+                $dataDraft->smsUsers = $this->notificationUserService->getSeekerOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($dataDraft->area_id, $dataDraft->industry_id, $dataDraft->created_at);
+            } else if ($dataDraft->notification_for == "store") {
+                $dataDraft->lineUsers = $this->notificationUserService->getStoreHasLineWithAreaIDIndustryIDCreatedAt($dataDraft->area_id, $dataDraft->industry_id, $dataDraft->created_at);
+                $dataDraft->emailUsers = $this->notificationUserService->getStoreNotLineHasMailWithAreaIDIndustryIDCreatedAt($dataDraft->area_id, $dataDraft->industry_id, $dataDraft->created_at);
+                $dataDraft->smsUsers = $this->notificationUserService->getStoreOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt($dataDraft->area_id, $dataDraft->industry_id, $dataDraft->created_at);
             }
         }
 
-        return $this->notificationDraftRepository->saveNotificationDraft(
-            $request,
-            $totalUserLine,
-            $totalUserMail,
-            $totalUserSms
-        );
+        return $dataDraft;
     }
+
+
+    /**
+     * From Repository
+     * @param Request $request
+     *
+     * @return int
+     */
+    public function saveNotificationDraft(Request $request): int
+    {
+        $isScheduled = $request->delayTime > 0;
+        $scheduledAt = $isScheduled ? now()->addSeconds(intval($request->delayTime)) : null;
+        $now = date('Y/m/d H:i:s');
+        $totalUserSms = 0;
+        $totalUserLine = 0;
+        $totalUserMail = 0;
+
+        if ("user" === $request->announceFor) {
+
+
+            $totalUserSms = count(
+                $this->notificationUserService->getSeekerOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt(
+                    $request->areaId,
+                    $request->industryId,
+                    $now
+                )
+            );
+
+            $totalUserMail = count(
+                $this->notificationUserService->getSeekerNotLineHasMailWithAreaIDIndustryIDCreatedAt(
+                    $request->areaId,
+                    $request->industryId,
+                    $now
+                )
+            );
+
+            $totalUserLine = count(
+                $this->notificationUserService->getSeekerHasLineWithAreaIDIndustryIDCreatedAt(
+                    $request->areaId,
+                    $request->industryId,
+                    $now
+                )
+            );
+
+        } else if ("store" === $request->announceFor) {
+            $totalUserSms = count(
+                $this->notificationUserService->getStoreOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt(
+                    $request->areaId,
+                    $request->industryId,
+                    $now
+                )
+            );
+            $totalUserMail = count(
+                $this->notificationUserService->getStoreNotLineHasMailWithAreaIDIndustryIDCreatedAt(
+                    $request->areaId,
+                    $request->industryId,
+                    $now
+                )
+            );
+            $totalUserLine = count(
+                $this->notificationUserService->getStoreHasLineWithAreaIDIndustryIDCreatedAt(
+                    $request->areaId,
+                    $request->industryId,
+                    $now
+                )
+            );
+        }
+
+
+        return DB::table('notification_draft')->insertGetId([
+            'id' => Str::uuid()->toString(),
+            'notification_for' => $request->announceFor,
+            'notification_title' => $request->title,
+            'notification_content' => $request->message,
+            'area_id' => $request->areaId,
+            'industry_id' => $request->industryId,
+            'sms_user' => $totalUserSms,
+            'line_user' => $totalUserLine,
+            'mail_user' => $totalUserMail,
+            'created_at' => $now,
+            'scheduled_at' => $scheduledAt,
+        ]);
+    }
+
+    /**
+     * From Repository
+     *
+     * @param Request $request
+     *
+     * @return int
+     */
+    public function updateNotificationDraft(Request $request): int
+    {
+        $isScheduled = $request->delayTime > 0;
+        $scheduledAt = $isScheduled ? now()->addSeconds(intval($request->delayTime)) : null;
+        $totalUserSms = 0;
+        $totalUserLine = 0;
+        $totalUserMail = 0;
+        $now = date('Y/m/d H:i:s');
+        if ($request->announceFor == "user") {
+
+            $totalUserSms = count(
+                $this->notificationUserService->getSeekerOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt(
+                    $request->areaId,
+                    $request->industryId,
+                    $now
+                )
+            );
+
+            $totalUserMail = count(
+                $this->notificationUserService->getSeekerNotLineHasMailWithAreaIDIndustryIDCreatedAt(
+                    $request->areaId,
+                    $request->industryId,
+                    $now
+                )
+            );
+
+            $totalUserLine = count(
+                $this->notificationUserService->getSeekerHasLineWithAreaIDIndustryIDCreatedAt($request->areaId, $request->industryId, $now)
+            );
+
+
+        } else {
+            if ($request->announceFor == "store") {
+                $totalUserSms = count(
+                    $this->notificationUserService->getStoreOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt(
+                        $request->areaId,
+                        $request->industryId,
+                        $now
+                    )
+                );
+                $totalUserMail = count(
+                    $this->notificationUserService->getStoreNotLineHasMailWithAreaIDIndustryIDCreatedAt(
+                        $request->areaId,
+                        $request->industryId,
+                        $now
+                    )
+                );
+                $totalUserLine = count(
+                    $this->notificationUserService->getStoreHasLineWithAreaIDIndustryIDCreatedAt($request->areaId, $request->industryId, $now)
+                );
+            }
+        }
+
+        return DB::table('notification_draft')
+            ->where('id', $request->notification_draft_id)
+            ->update([
+                'notification_for' => $request->announceFor,
+                'notification_title' => $request->title,
+                'notification_content' => $request->message,
+                'area_id' => $request->areaId,
+                'industry_id' => $request->industryId,
+                'sms_user' => $totalUserSms,
+                'line_user' => $totalUserLine,
+                'mail_user' => $totalUserMail,
+                'updated_at' => $now,
+                'scheduled_at' => $scheduledAt,
+            ]);
+    }
+
 }

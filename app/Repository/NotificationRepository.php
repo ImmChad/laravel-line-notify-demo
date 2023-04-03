@@ -15,7 +15,7 @@ class NotificationRepository
      */
     public function getDetail(int $id): Notification
     {
-        return DB::table('notification')->where('id', $id)->first();
+        return Notification::find($id);
     }
 
     /**
@@ -24,10 +24,7 @@ class NotificationRepository
      */
     public function getNotificationBySearch(string $textSearch): Collection
     {
-        return Notification::where('type', '!=', 1)
-            ->where('announce_title', 'like', "%{$textSearch}%")
-            ->orderBy('created_at', 'DESC')
-            ->get();
+        return Notification::where('announce_title', 'like', "%{$textSearch}%")->orderBy('created_at', 'DESC')->get();
     }
 
     /**
@@ -47,8 +44,8 @@ class NotificationRepository
      */
     function updateNotificationForListUser(object $request): int
     {
-        return Notification::where('id', $request->announce_id)
-            ->update(['announce_title' => $request->title, 'announce_content' => $request->message]);
+        return Notification::where('id', $request->getNotificationId)
+            ->update(['announce_title' => $request->notificationTitle, 'announce_content' => $request->notificationContent]);
     }
 
     /**

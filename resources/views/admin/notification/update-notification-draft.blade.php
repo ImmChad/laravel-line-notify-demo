@@ -1,4 +1,4 @@
-@extends('admin.backend-view')
+@extends('admin.notification.backend-view')
 @section('ContentAdmin')
     <style>
 
@@ -207,7 +207,7 @@
                          class="ipt-text-notification"
                          id="ipt-title-notification"
                     >
-                        {!! $detailTemplate->template_content !!}
+                        {!! $detailTemplate->template_title !!}
                     </div>
 
                     <div class="section-template">

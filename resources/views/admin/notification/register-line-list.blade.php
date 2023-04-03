@@ -1,4 +1,4 @@
-@extends('admin.backend-view')
+@extends('admin.notification.backend-view')
 @section('ContentAdmin')
     <style>
         .link-detail-announce {
@@ -37,12 +37,14 @@
                     <tbody>
                     @foreach ($dataList as $subDataList )
                         <tr data-id-register='{{$subDataList->id}}'>
-                            <td>{{ $subDataList->name }}</td>
+                            <td>{{ $subDataList->name??"" }}</td>
                             <td>
                                 @if($subDataList->typeRole == 2)
                                     Seeker
                                 @elseif($subDataList->typeRole == 3)
                                     Store
+                                @elseif($subDataList->typeRole == 1)
+                                    User
                                 @else
                                 @endif
                             </td>

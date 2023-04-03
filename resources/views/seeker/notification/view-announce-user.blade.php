@@ -1,4 +1,4 @@
-@extends('seeker.home-user')
+@extends('seeker.notification.home-user')
 @section('content')
     <style>
         .page-wrapper .page-header .header-wrapper {

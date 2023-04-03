@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Handler\UserHandler;
+use App\Models\NotificationRead;
 use App\Models\NotificationUserInfo;
 use App\Models\NotificationUserSettings;
 use App\Models\User;
@@ -121,7 +122,7 @@ class UserRepository
      * @param string $userCreatedAt
      * @return Collection
      */
-    public function getNotificationExceptNewRegisterBefore(string $userCreatedAt): Collection
+    public function getUnreadNotification(string $userCreatedAt): Collection
     {
         return DB::table('notification')
             ->where('created_at', '>=', $userCreatedAt)
@@ -135,18 +136,13 @@ class UserRepository
     /**
      * @param int $notificationId
      * @param string $userId
-     * @return Collection|null
+     * @return NotificationRead|null
      */
-    public function getNotificationReadWithUserIdNotificationId(int $notificationId, string $userId): Collection|null
+    public function getNotificationHasRead(int $notificationId, string $userId): ?NotificationRead
     {
-        return DB::table('notification_read')
-            ->where(['notification_id' => $notificationId])
-            ->where(['user_id' => $userId])
-            ->get(
-                array(
-                    'read_at'
-                )
-            );
+        return NotificationRead::where(['notification_id' => $notificationId])
+                            ->where(['user_id' => $userId])
+                            ->first();
     }
 
     /**
@@ -154,7 +150,7 @@ class UserRepository
      * @param $created_at
      * @return stdClass
      */
-    public function getNotificationBeforeUserCreatedAtWithId($id, $created_at): stdClass
+    public function getNotificationsAfterRegistration($id, $created_at): stdClass
     {
         return DB::table('notification')
             ->where('created_at', '>=', $created_at)

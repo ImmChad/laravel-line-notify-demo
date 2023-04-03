@@ -1,4 +1,4 @@
-@extends('admin.backend-view')
+@extends('admin.notification.backend-view')
 @section('ContentAdmin')
     <style>
         .content-send-notification {
@@ -450,7 +450,8 @@
                 btn.contentEditable = false
                 btn.appendChild(icRemove);
 
-                if (
+                if
+                (
                     range.commonAncestorContainer.parentNode == edt
                     || range.commonAncestorContainer == edt
                     || range.commonAncestorContainer.parentNode == itn
@@ -459,7 +460,8 @@
                     || edt.contains(range.commonAncestorContainer)
                     || itn.contains(range.commonAncestorContainer.parentNode)
                     || itn.contains(range.commonAncestorContainer)
-                ) {
+                )
+                {
                     range.insertNode(btn);
                 }
 

@@ -2,11 +2,14 @@
 
 namespace App\Services;
 
+use App\Models\Admin;
 use App\Models\Seeker;
 use App\Models\Store;
+
 use App\Repository\NotificationDraftRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\NotificationUserLineRepository;
+
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -16,20 +19,19 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
+use Exception;
 
 class NotificationUserService
 {
     /**
-     * @param NotificationRepository $notificationRepository
-     * @param NotificationUserLineRepository $notificationUserLineRepository
-     * @param NotificationDraftRepository $notificationDraftRepository
-     * @param NotificationUserService $notificationUserService
+     * @param NotificationRepository|null $notificationRepository
+     * @param NotificationUserLineRepository|null $notificationUserLineRepository
+     * @param NotificationDraftRepository|null $notificationDraftRepository
      */
     public function __construct(
-        private NotificationRepository $notificationRepository,
-        private NotificationUserLineRepository $notificationUserLineRepository,
-        private NotificationDraftRepository $notificationDraftRepository,
-        private NotificationUserService $notificationUserService
+        private ?NotificationRepository $notificationRepository,
+        private ?NotificationUserLineRepository $notificationUserLineRepository,
+        private ?NotificationDraftRepository $notificationDraftRepository
     )
     {
     }
@@ -40,15 +42,28 @@ class NotificationUserService
      * @return Collection|array
      */
 
-    public function getUsersCreatedBeforeNotificationCurrent(int $id): Collection|array
+    // old function name: getUserReadNotification
+    public function getUserReadNotification(int $id): Collection|array
     {
         $dataNotification = DB::table("notification")->where("id", $id)->first();
-        $dataNotificationDraft = $this->notificationDraftRepository
-            ->getNotificationDraftWithID($dataNotification->notification_draft_id);
+
+        if($dataNotification->notification_draft_id == null)
+        {
+//            dump($dataNotification->notification_draft_id);
+        }
+        else
+        {
+            $dataNotificationDraft = $this->notificationDraftRepository
+                ->getNotificationDraftWithID($dataNotification->notification_draft_id);
+        }
+
+//        dump($dataNotification->type);
+//        dd($dataNotificationDraft);
+
 
         if (isset($dataNotificationDraft) && $dataNotification->type != 1) {
             if ($dataNotificationDraft->notification_for == "user") {
-                return self::getAllUserIdSeekerWithAreaIDIndustryIDCreatedAt(
+                return self::getAllUserIdSeekerByCriteria(
                     $dataNotificationDraft->area_id,
                     $dataNotificationDraft->industry_id,
                     $dataNotificationDraft->created_at
@@ -93,19 +108,7 @@ class NotificationUserService
      */
     public function getPrefFromRegionCd(int $regionCd): Collection
     {
-        return DB::table('static_pref')
-            ->where('region_cd', $regionCd)
-            ->get(
-                array(
-                    'id',
-                    'region_cd',
-                    'pref_name',
-                    'created_at',
-                    'update_at',
-                    'pref_cd',
-                    'pref_name_latin'
-                )
-            );
+        return DB::table('static_pref')->where('region_cd', $regionCd)->get();
     }
 
     /**
@@ -116,17 +119,7 @@ class NotificationUserService
     {
         return DB::table('static_area')
             ->where('pref_cd', $prefId)
-            ->get(
-                array(
-                    'id',
-                    'area_cd',
-                    'area_name',
-                    'pref_cd',
-                    'created_at',
-                    'updated_at',
-                    'area_name_jp'
-                )
-            );
+            ->get();
     }
 
     /**
@@ -209,7 +202,7 @@ class NotificationUserService
      *
      * @return Collection
      */
-    public function getAllUserIdSeekerWithAreaIDIndustryIDCreatedAt(int $areaId, int $industryId, string $createdAt): Collection
+    public function getAllUserIdSeekerByCriteria(int $areaId, int $industryId, string $createdAt): Collection
     {
         $nameTableSeekerLocation = ($areaId > 0 ? ', seeker_expect_location sel' : '');
         $nameTableSeekerIndustry = ($industryId > 0 ? ', seeker_expect_industry sei' : '');
@@ -344,7 +337,12 @@ class NotificationUserService
                 ->get();
 
         return $stores->map(function ($store) use ($industryId, $areaId) {
-            $store->emailDecrypted = Crypt::decryptString($store->mail_address);
+
+            $store->emailDecrypted = ($store->mail_address);
+            try{
+                $store->emailDecrypted = Crypt::decryptString($store->mail_address);
+            }catch(Exception $ex){
+            }
 
             return $store;
         });
@@ -386,7 +384,13 @@ class NotificationUserService
                 ->get();
 
         return $stores->map(function ($store) {
-            $store->phoneNumberDecrypted = Crypt::decryptString($store->phone_number);
+            $store->phoneNumberDecrypted = $store->phone_number;
+
+            try{
+                $store->phoneNumberDecrypted = Crypt::decryptString($store->phone_number);
+            }catch(Exception $ex){
+            }
+
             return $store;
         });
     }
@@ -398,7 +402,7 @@ class NotificationUserService
      */
     public function getSeekerWithUserId(string $userId): ?Seeker
     {
-        return DB::table('seeker')->where(['user_id' => $userId])->first();
+        return Seeker::whereUserId($userId)->first();
     }
 
     /**
@@ -425,6 +429,7 @@ class NotificationUserService
                     $query->where('sel.area_id', '=', $areaId);
                     $query->whereRaw("user.id = sel.user_id");
                 }
+
                 if ($industryId > 0) {
                     $query->where('sei.industry_id', '=', $industryId);
                     $query->whereRaw("user.id = sei.user_id");
@@ -439,10 +444,17 @@ class NotificationUserService
         return $seekers->map(function ($seeker) {
             $seeker->lineId = $this->notificationUserLineRepository->getLineIdWithUserId($seeker->id);
 
-            $dataSeeker = self::getSeekerWithUserId($seeker->id);
+            $dataSeeker = $this->getSeekerWithUserId($seeker->id);
+
             if (isset($dataSeeker)) {
                 $seeker->nickname = $dataSeeker->nickname;
-                $seeker->realname = $dataSeeker !== null ? Crypt::decryptString($dataSeeker->realname) : null;
+
+                $seeker->realname = $dataSeeker->realname;
+
+                try{
+                    $seeker->realname = $dataSeeker !== null ? Crypt::decryptString($dataSeeker->realname) : null;
+                }catch(Exception $ex){
+                }
             } else {
                 $seeker->nickname = "";
             }
@@ -454,14 +466,23 @@ class NotificationUserService
     /**
      * @param int $areaId
      * @param int $industryId
-     * @param string $created_at
+     * @param string $createdAt
+     *
+     * @return mixed
+     */
+
+
+    /**
+     * @param int $areaId
+     * @param int $industryId
+     * @param string $createdAt
      *
      * @return mixed
      */
     public function getSeekerNotLineHasMailWithAreaIDIndustryIDCreatedAt(
         int $areaId,
         int $industryId,
-        string $created_at
+        string $createdAt
     ) {
         $allUserLine = $this->notificationUserLineRepository->getAllUserIdUserLine();
 
@@ -482,19 +503,30 @@ class NotificationUserService
             ->whereNotNull('user.email')
             ->whereRaw("LENGTH(TRIM(user.email)) > 0")
             ->where('user.role', '=', 2)
-            ->where('user.created_at', '<=', $created_at)
+            ->where('user.created_at', '<=', $createdAt)
             ->whereNotIn('user.id', $allUserLine)
             ->distinct()
             ->get();
+
         return $seekers->map(function ($seeker) {
-            $dataSeeker = self::getSeekerWithUserId($seeker->id);
+            $dataSeeker = $this->getSeekerWithUserId($seeker->id);
+
             if (isset($dataSeeker)) {
                 $seeker->nickname = $dataSeeker->nickname;
-                $seeker->realname = $dataSeeker !== null ? Crypt::decryptString($dataSeeker->realname) : null;
+                try{
+                    $seeker->realname = $dataSeeker->realname;
+                    $seeker->realname = $dataSeeker !== null ? Crypt::decryptString($dataSeeker->realname) : null;
+                }catch(Exception $ex){
+                }
             } else {
                 $seeker->nickname = "";
             }
-            $seeker->emailDecrypted = Crypt::decryptString($seeker->email);
+
+            $seeker->emailDecrypted = $seeker->email;
+            try {
+                $seeker->emailDecrypted = Crypt::decryptString($seeker->email);
+            }catch(Exception $ex){
+            }
 
             return $seeker;
         });
@@ -509,7 +541,7 @@ class NotificationUserService
      */
     public function getSeekerOnlyHasPhoneNumberWithAreaIDIndustryIDCreatedAt(
         int $areaId,
-        $industryId,
+            $industryId,
         string $createdAt
     ) {
         $allUserLine = $this->notificationUserLineRepository->getAllUserIdUserLine();
@@ -538,26 +570,122 @@ class NotificationUserService
             ->get();
 
         return $seekers->map(function ($seeker) {
-            $dataSeeker = self::getSeekerWithUserId($seeker->id);
+            $dataSeeker = $this->getSeekerWithUserId($seeker->id);
+
             if (isset($dataSeeker)) {
                 $seeker->nickname = $dataSeeker->nickname;
-                $seeker->realname = $dataSeeker !== null ? Crypt::decryptString($dataSeeker->realname) : null;
+                $seeker->realname = $dataSeeker->realname;
+
+                try{
+                    $seeker->realname = $dataSeeker !== null ? Crypt::decryptString($dataSeeker->realname) : null;
+                }catch(Exception $ex){
+                }
             } else {
                 $seeker->nickname = "";
             }
-            $seeker->phoneNumberDecrypted = Crypt::decryptString($seeker->phone_number_landline);
+
+            $seeker->phoneNumberDecrypted = $seeker->phone_number_landline;
+
+            try{
+                $seeker->phoneNumberDecrypted = Crypt::decryptString($seeker->phone_number_landline);
+            }catch(Exception $ex){
+            }
+
             return $seeker;
         });
     }
+
+    /**
+     * @param int $areaId
+     * @param int $industryId
+     * @param string $createdAt
+     *
+     * @return Collection
+     */
+    public function getUserHasLine() : Collection
+    {
+        $allUserLine = $this->notificationUserLineRepository->getAllUserIdUserLine();
+
+        $lineUsers = DB::table("user")
+            ->select('user.id')
+            ->where('user.role', '=', 1)
+            ->whereIn('user.id', $allUserLine)
+            ->distinct()
+            ->get();
+
+        return $lineUsers->map(function ($lineUser) {
+            $lineUser->lineId = $this->notificationUserLineRepository->getLineIdWithUserId($lineUser->id);
+            unset($lineUser->id);
+            return $lineUser;
+        });
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUserNotLineHasMail() : mixed
+    {
+        $allUserLine = $this->notificationUserLineRepository->getAllUserIdUserLine();
+
+        $mailUsers = DB::table("user")
+            ->select('user.email')
+            ->whereNotNull('user.email')
+            ->whereRaw("LENGTH(TRIM(user.email)) > 0")
+            ->where('user.role', '=', 1)
+            ->whereNotIn('user.id', $allUserLine)
+            ->distinct()
+            ->get();
+
+        foreach ($mailUsers as $mailUser)
+        {
+            $mailUser->email = $mailUser->email;
+
+            try{
+                $mailUser->email = Crypt::decryptString($mailUser->email);
+            }catch(Exception $ex){
+            }
+        }
+
+        return $mailUsers;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUserOnlyHasPhoneNumber() {
+        $allUserLine = $this->notificationUserLineRepository->getAllUserIdUserLine();
+
+        $smsUsers = DB::table("user")
+            ->select(DB::raw('user.phone_number_landline'))
+            ->whereNull('user.email')
+            ->whereNotNull("user.phone_number_landline")
+            ->whereRaw("LENGTH(TRIM(user.phone_number_landline)) > 0")
+            ->where('user.role', '=', 1)
+            ->whereNotIn('user.id', $allUserLine)
+            ->distinct()
+            ->get();
+
+        return $smsUsers->map(function ($smsUser) {
+            $smsUser->phone_number_landline = $smsUser->phone_number_landline;
+
+            try{
+                $smsUser->phone_number_landline = Crypt::decryptString($smsUser->phone_number_landline);
+            }catch(Exception $ex){
+            }
+
+            return $smsUser;
+        });
+    }
+
 
     /**
      * @param string $userId
      *
      * @return Store|null
      */
-    public function getFirstStoreWithUserID(string $userId): ?Store
+    public function getStoreById(string $userId): ?Store
     {
-        return DB::table('store')->where("user_id", $userId)->first();
+        return Store::whereUserId($userId)->first();
     }
 
 
@@ -568,24 +696,30 @@ class NotificationUserService
     public function loginAdmin(): Application|Factory|View|RedirectResponse
     {
         $adminData = Session::get('data_admin');
-
         if ($adminData) {
             return Redirect::to('/admin/register-line-list');
         } else {
             return view('admin.notification.login-admin');
         }
+
+        return view('admin.notification.login-admin');
     }
 
     /**
-     * @param array $request
+     * @param array $data
      * @return string[]|true[]
      */
-    public function handleSubmitLogin(array $request): array
+    public function handleSubmitLogin(array $data): array
     {
-        $dataAdmin = $this->notificationUserService->handleSubmitLogin($request);
+        $dataAdmin = Admin::where([
+            'username' => $data['username'],
+            'password' => $data['password']
+        ])->get()->first();
 
-        if (count($dataAdmin) == 1) {
+        if (null !== $dataAdmin) {
+
             session()->put('data_admin', $dataAdmin);
+
             return ['logged_in' => true];
         } else {
             return ['mess' => "Wrong username or password"];

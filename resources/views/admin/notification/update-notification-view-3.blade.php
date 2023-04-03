@@ -1,4 +1,4 @@
-@extends('admin.backend-view')
+@extends('admin.notification.backend-view')
 @section('ContentAdmin')
     <style>
         .content-send-notification {
@@ -518,6 +518,7 @@
                     form.append('title', announceTitle);
                     form.append('notificationTitle', convertHTMLToContentNotification(document.querySelector("#ipt-title-notification")))
                     form.append('notificationContent', convertHTMLToContentNotification(document.querySelector("#ipt-content-notification")));
+                    form.append('announceFor', announceFor);
                     form.append('areaId', areaId);
                     form.append('industryId', industryId);
                     form.append('type_notification', "2");
@@ -598,6 +599,7 @@
             const paramAddedS = htmlTagContent.querySelectorAll(".param-added");
             paramAddedS.forEach(paramAdded => {
                 paramAdded.querySelector(".icon-remove").remove()
+                paramAdded.textContent = paramAdded.textContent.trim();
                 paramAdded.outerHTML = `{${paramAdded.textContent}}`
             })
 

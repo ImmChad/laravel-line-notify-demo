@@ -1,9 +1,11 @@
-@extends('admin.backend-view')
+@extends('admin.notification.backend-view')
 @section('ContentAdmin')
     <style>
+        #preview-mess-content-notification table,
+        #preview-mess-content-notification td
+        {width: 220px !important;}
         .widget-joins:after {
             height: 0px;
-
         }
 
         .content-send-notification {
@@ -221,17 +223,17 @@
                                 <td id="notification-title">{!!  $dataDraft->notification_title  !!}</td>
                             </tr>
 
-                            <tr id="tr-user-line" class="template-box">
+                            <tr id="tr-user-line" class="template-box" style="cursor:pointer;">
                                 <th scope="row">Line user List will see</th>
-                                <td>{{ $dataDraft->line_user }}</td>
+                                <td>{{ $dataDraft->line_user }} <i class="fa fa-info-circle" aria-hidden="true"></i></td>
                             </tr>
-                            <tr id="tr-user-email" class="template-box">
+                            <tr id="tr-user-email" class="template-box" style="cursor:pointer;">
                                 <th scope="row">Mail user List will see</th>
-                                <td>{{ $dataDraft->mail_user }}</td>
+                                <td>{{ $dataDraft->mail_user }} <i class="fa fa-info-circle" aria-hidden="true"></i></td>
                             </tr>
-                            <tr id="tr-user-sms" class="template-box">
+                            <tr id="tr-user-sms" class="template-box" style="cursor:pointer;">
                                 <th scope="row">SMS User List will see</th>
-                                <td>{{ $dataDraft->sms_user }}</td>
+                                <td>{{ $dataDraft->sms_user }} <i class="fa fa-info-circle" aria-hidden="true"></i></td>
                             </tr>
                             <tr class="template-box">
                                 <th scope="row">Created at</th>
@@ -338,8 +340,8 @@
                     @foreach($dataDraft->emailUsers as $sublistUser)
                         <tr data-id-register=''>
                             <td>{{ $sublistUser->nickname }}</td>
-                            <td>{{ $sublistUser->realname }}</td>
-                            <td>{{ $sublistUser->emailDecrypted }}</td>
+                            <td>{{ $sublistUser->realname ?? '' }}</td>
+                            <td>{{ $sublistUser->emailDecrypted ?? '' }}</td>
                         </tr>
                     @endforeach
                     </tbody>
@@ -363,8 +365,8 @@
                     @foreach($dataDraft->smsUsers as $sublistUser)
                         <tr data-id-register=''>
                             <td>{{ $sublistUser->nickname }}</td>
-                            <td>{{ $sublistUser->realname }}</td>
-                            <td>{{ $sublistUser->phoneNumberDecrypted }}</td>
+                            <td>{{ $sublistUser->realname ?? '' }}</td>
+                            <td>{{ $sublistUser->phoneNumberDecrypted ?? '' }}</td>
                         </tr>
                     @endforeach
                     </tbody>
@@ -444,12 +446,9 @@
             @endif
         </div>
     @endif
-
 @endsection
 
-
 @section('script')
-
     <script>
         let btnBackPage = document.querySelector('#btn-back-page');
         btnBackPage.addEventListener('click', (e) => {
@@ -462,6 +461,7 @@
             const paramAddedS = htmlTagContent.querySelectorAll(".param-added");
             paramAddedS.forEach(paramAdded => {
                 paramAdded.querySelector(".icon-remove").remove()
+                paramAdded.textContent = paramAdded.textContent.trim();
                 paramAdded.outerHTML = `{${paramAdded.textContent}}`
             })
 
@@ -479,6 +479,12 @@
             form.append("notificationContent", convertHTMLToContentNotification(document.querySelector("#preview-mess-content-notification")))
             form.append("notificationTitle", convertHTMLToContentNotification(document.querySelector("#notification-title")))
             form.append("notification_draft_id", event.currentTarget.getAttribute("draft_id"))
+
+
+
+            console.log(convertHTMLToContentNotification(document.querySelector("#preview-mess-content-notification")))
+            console.log(convertHTMLToContentNotification(document.querySelector("#notification-title")))
+
 
             $.ajaxSetup({
                 headers: {
@@ -522,7 +528,7 @@
                 dataType: 'json',
                 success: function (data) {
 
-                    window.location.href = "/admin/notification-list?messToast=Send Success!";
+                    window.location.href = "/admin/notification-list?messToast=Cancel Success!";
 
                 },
                 error: function () {
@@ -579,39 +585,3 @@
     </script>
 
 @endsection
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
